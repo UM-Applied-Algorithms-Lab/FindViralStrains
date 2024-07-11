@@ -5,4 +5,4 @@ If you do have questions about anything that is happening in this workflow feel 
 mckayl.bailey@umt.edu
 
 Cheers,
-McKayl
+McKayl & Lucy
