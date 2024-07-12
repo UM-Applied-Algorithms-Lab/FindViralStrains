@@ -156,7 +156,7 @@ onsuccess:
 # all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
 rule all:
 	input:
-		expand(bd("wgs/{filename}.wg"), filename=fastq_filenames)[0:3]
+		expand(bd("wgs/{filename}.wg"), filename=fastq_filenames)
 
 rule create_contigs: 
 	input:
@@ -198,3 +198,12 @@ rule Run_jf:
 		bd("wgs/{sample}.wg")
 	shell:
 		"{input.script} {input.reads} {input.mg} {output}"
+
+rule Decompose:
+	input:
+		wg = bd("wgs/{sample}.wg"),
+		script = "scripts/fracdecomp.py",
+	output:
+		decomp = bd("decomp_results/{sample}.txt")
+	shell:
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3"

@@ -15,7 +15,7 @@ print_elapsed_time() {
 echo "Processing file: $file"
 print_elapsed_time
 JellyfishIndex="$OutputFile.jf"
-jellyfish count -m 28 -s 100M -t 10 -C $file -o $JellyfishIndex
+jellyfish count -m 28 -s 100M -t 1 -C $file -o $JellyfishIndex
 
 echo "jellyfish index built for $file"
 print_elapsed_time
