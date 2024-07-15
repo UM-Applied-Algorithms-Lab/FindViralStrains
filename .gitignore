@@ -1,7 +1,6 @@
 *.log
 output/
 .snakemake/
-
 logmover.sh
 Logs
 
