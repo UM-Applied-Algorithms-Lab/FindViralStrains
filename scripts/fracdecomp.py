@@ -304,7 +304,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     threads = args.threads
     if threads == 0:
-        threads = os.cpu_count()
+        threads = os.cpu_count()/2
     print(f"INFO: Using {threads} threads for the Gurobi solver")
     minK = args.minpaths
     maxK = args.maxpaths
