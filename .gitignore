@@ -9,4 +9,5 @@ Logs
 3path.txt
 allr1.txt
 all.txt
+*.swp
 from_reads*
