@@ -202,8 +202,8 @@ rule Run_jf:
 rule Decompose:
 	input:
 		wg = bd("wgs/{sample}.wg"),
-		script = "scripts/fracdecomp.py",
+		script = "scripts/fracdecompnew.py",
 	output:
 		decomp = bd("decomp_results/{sample}.txt")
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3"
+		"python3 {input.script} -i {input.wg} -o {output.decomp}"

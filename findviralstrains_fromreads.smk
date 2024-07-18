@@ -156,7 +156,7 @@ onsuccess:
 # all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
 rule all:
 	input:
-		expand(bd("wg/{filename}.wg"), filename=fastq_filenames)
+		expand(bd("wgs/{filename}.wg"), filename=fastq_filenames)
 
 rule create_contigs: 
 	input:

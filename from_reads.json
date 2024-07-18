@@ -1,0 +1,25 @@
+{
+    "parameters info": {
+        "input": "/projects/lw226023e/brendans_data_and_code/data/BaseCalls/24069_S91_L001_R1_001.fastq",
+        "k": 27,
+        "output prefix": "from_reads"
+    },
+    "basic info": {
+        "vertex count": 235967,
+        "edge count": 240696
+    },
+    "contigs info": {
+        "maximal unitig count": 25122,
+        "vertex count in the maximal unitigs": 235967,
+        "shortest maximal unitig length": 27,
+        "longest maximal unitig length": 222,
+        "sum maximal unitig length": 889139,
+        "avg. maximal unitig length": 35,
+        "_comment": "lengths are in bases"
+    },
+    "detached chordless cycles (DCC) info": {
+        "DCC count": 1,
+        "vertex count in the DCCs": 2,
+        "sum DCC length (in bases)": 28
+    }
+}
