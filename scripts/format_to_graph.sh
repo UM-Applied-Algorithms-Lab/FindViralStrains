@@ -8,7 +8,7 @@
 #fi
 
 # Define the input file from the command-line argument #
-input_file="$1"
+input_file="$1" # 
 input_file2="$2"
 
 # Check if the input file exists #
@@ -25,6 +25,7 @@ output_png_file="${input_file%.*}.pdf"
 # Start the DOT file #
 echo "digraph G {" > "$output_dot_file"
 
+# Potential here to have the file that we intake have some sort of indicator between each path #
 # Read the input file line by line #
 while read -r line; do
   # Skip lines that are comments or empty #
