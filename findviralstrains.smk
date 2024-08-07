@@ -156,7 +156,7 @@ onsuccess:
 # all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
 rule all:
 	input:
-		expand(bd("wg/{filename}.wg"), filename=fastq_filenames)
+		expand(bd("decomp_results/{filename}.txt"), filename=fastq_filenames)
 
 rule create_contigs: 
 	input:
@@ -170,14 +170,13 @@ rule create_contigs:
 
 rule Cuttlefish: 
 	input:
-		ref = REF,
 		file = bd("all_samples_consensus_contigs.fasta")
 	output:
 		seg = bd("out.cf_seg"), 
 		seq = bd("out.cf_seq") 
 	shell:
 		#"ulimit -n 2048 ",
-		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.ref},{input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
+		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
 
 rule Mer_graph: 
 	input:

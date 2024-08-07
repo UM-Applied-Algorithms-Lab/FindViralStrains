@@ -2,8 +2,8 @@
 The goal of this pipeline is to sift out viral strains from data sets using MFD.
 These are early drafts and ideas for our workflow, and are not yet polished and/or finished.
 If you do have questions about anything that is happening in this workflow feel free to reach
-out to us via github or email. Below you'll find the basic setup instructions for a Redhat
-based Linux system.
+out to us via github or email. Below you'll find the basic setup instructions that have been
+tested on Redhat and Debian based Linux systems. 
 
 Cheers,
 McKayl & Lucy
@@ -20,7 +20,9 @@ https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 To set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
 command below.
 
->conda env create -f CondaTemplate.yml
+```conda env create -f CondaTemplate.yml```
 
 Once you have build list and verified that all packages are successfully installed you can move on to
 actually running 
+
+```snakemake -s findviralstrains_noref.smk --configfile config_files/no_ref_test.yml --cores 2```
