@@ -121,8 +121,8 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
             model.addConstr(w[k] >= w[k + 1])
 
         for (i, j) in CE:
-            model.addConstr(r[i, j] - (1.0/count[i, j]) * eps[i, j] <= (1.0/count[i, j]) * sum(z[i, j, k] for k in range(0, K)))
-            model.addConstr(r[i, j] + (1.0/count[i, j]) * eps[i, j] >= (1.0/count[i, j]) * sum(z[i, j, k] for k in range(0, K)))
+            model.addConstr(r[i, j] * count[i, j] - sum(z[i, j, k] for k in range(0, K)) <= eps[i, j])
+            model.addConstr(sum(z[i, j, k] for k in range(0, K)) - r[i, j] * count[i, j] <= eps[i, j])
 
         for (i, j) in CE:
             for (k, l) in CE:
