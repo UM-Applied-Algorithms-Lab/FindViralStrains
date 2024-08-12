@@ -26,3 +26,12 @@ Once you have build list and verified that all packages are successfully install
 actually running 
 
 ```snakemake -s findviralstrains_noref.smk --configfile config_files/no_ref_test.yml --cores 2```
+
+Note: `cuttlefish` needs to be able to create many temporary files; you probably need to run
+```
+ulimit -n 2048
+```
+to allow your system to create so many files. If not, you will get this error in the cuttlefish step:
+```
+Error: Cannot open temporary file output/Test1/kmc_01021.bin:
+```
