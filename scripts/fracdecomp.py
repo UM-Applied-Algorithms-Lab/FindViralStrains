@@ -4,6 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import time
 import os
+import math
 
 def get_extremity(neighbors, extremity_type):
     extremity = None
@@ -85,7 +86,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
     try:
         T = [(i, j, k) for (i, j) in E for k in range(0, K)]
         SC = [k for k in range(0, K)]
-        CE = [(i, j) for (i, j) in E if count[i, j] > 0]
+        CE = [(i, j) for (i, j) in E]
 
         model = gp.Model("MFD")
         model.Params.LogToConsole = 0
@@ -169,9 +170,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
                     i = elements[1]
                     j = elements[2]
                     eps_sol[i, j] = v.x
-
             paths = extract_paths(x_sol, source, sink, out_neighbors, K)
-
             data['weights'] = w_sol
             data['paths'] = paths
             data['r_sol'] = r_sol
@@ -186,19 +185,48 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
     print(data['message'])
     return data
 
+#def extract_paths(x, source, sink, out_neighbors, K):
+#    paths = []
+#    for k in range(0, K):
+#        vertex = source
+#        path = [vertex]
+#        print(path)
+#        while vertex != sink:
+#            for out_neighbor in out_neighbors[vertex]:
+#                if x[vertex, out_neighbor, k] == 1:
+#                    vertex = out_neighbor
+#                    break
+#            path.append(vertex)
+#        paths.append(path)
+#    return paths
+
 def extract_paths(x, source, sink, out_neighbors, K):
     paths = []
     for k in range(0, K):
         vertex = source
         path = [vertex]
+        print(f"Starting path extraction for path {k} from source {source} to sink {sink}")
+
         while vertex != sink:
+            found = False
             for out_neighbor in out_neighbors[vertex]:
-                if x[vertex, out_neighbor, k] == 1:
+                if (vertex, out_neighbor, k) in x and math.isclose(x[vertex,out_neighbor, k],1,rel_tol=1e-5 ):
+                # Use math.isclose, because gurobi sometimes returns numbers like 1.00000007 #
                     vertex = out_neighbor
+                    path.append(vertex)
+                    found = True
                     break
-            path.append(vertex)
+            
+            if not found:
+                print(f"Warning: No valid outgoing edge found for vertex {vertex} in path {k}")
+                # Later on change thus to throw a real error to warn the user #
+                break
+
         paths.append(path)
+        print(f"Extracted path {k}: {path}")
+
     return paths
+
 
 def write_results(data, outputfilename, K):
 
@@ -263,7 +291,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--timelimit', type=int, default=100, help='time limit for Gurobi to solve one instance.')
     parser.add_argument('-m', '--minpaths', type=int, default=1,
                         help='minimum number of paths to try (default 1).')
-    parser.add_argument('-mc', '--mincount', type=int, default=50, help='minimum valid count on an edge')
+    parser.add_argument('-mc', '--mincount', type=int, default=0, help='minimum valid count on an edge')
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
     requiredNamed.add_argument('-o', '--output', type=str, help='Output filename', required=True)
