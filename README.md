@@ -20,12 +20,16 @@ https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 To set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
 command below.
 
-```conda env create -f CondaTemplate.yml```
+```
+conda env create -f CondaTemplate.yml
+```
 
 Once you have build list and verified that all packages are successfully installed you can move on to
 actually running 
 
-```snakemake -s findviralstrains_noref.smk --configfile config_files/no_ref_test.yml --cores 2```
+```
+snakemake -s findviralstrains_noref.smk --configfile config_files/no_ref_test.yml --cores 2
+```
 
 Note: `cuttlefish` needs to be able to create many temporary files; you probably need to run
 ```
