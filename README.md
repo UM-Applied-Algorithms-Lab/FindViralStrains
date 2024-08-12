@@ -25,10 +25,10 @@ conda env create -f CondaTemplate.yml
 ```
 
 Once you have build list and verified that all packages are successfully installed you can move on to
-actually running 
+actually running. There are some example config files in the `config_files` directory, but you will need to change the paths to point to your data.
 
 ```
-snakemake -s findviralstrains_noref.smk --configfile config_files/no_ref_test.yml --cores 2
+snakemake -s findviralstrains.smk --configfile config_files/no_ref_test.yml --cores 2
 ```
 
 Note: `cuttlefish` needs to be able to create many temporary files; you probably need to run
