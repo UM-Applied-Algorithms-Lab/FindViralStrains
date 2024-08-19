@@ -19,7 +19,7 @@ input_file2="$2"
 # Define the output DOT file and PNG file based on the input file name
 output_dot_file="graph.dot"
 # Does this so that the file is overwritten eventually when run again
-output_png_file="${input_file%.*}.pdf"
+output_pdf_file="${input_file%.*}.pdf"
 
 # Start the DOT file
 echo "digraph G {" > "$output_dot_file"
@@ -81,7 +81,7 @@ done < "$input_file2"
 echo "}" >> "$output_dot_file"
 
 # Generate the graph image using Graphviz
-dot -Tpdf "$output_dot_file" -o "$output_png_file"
+dot -Tpdf "$output_dot_file" -o "$output_pdf_file"
 
-echo "Graph has been generated as $output_png_file"
+echo "Graph has been generated as $output_pdf_file"
 
