@@ -158,6 +158,7 @@ rule all:
 	input:
 		expand(bd("decomp_results/{filename}.txt"), filename=fastq_filenames)
 
+# Cleans files and makes sure to remove trailing whitespace that may cause issues later #
 rule create_contigs: 
 	input:
 		file = CONSENSUS_FILE,
@@ -167,7 +168,7 @@ rule create_contigs:
 	shell:
 		"bash {input.script} {input.file} {output.file}"	
 
-
+# Runs Cuttlefish #
 rule Cuttlefish: 
 	input:
 		file = bd("all_samples_consensus_contigs.fasta")
@@ -188,6 +189,7 @@ rule Mer_graph:
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
 
+# Runs Jellyfish #
 rule Run_jf:
 	input:
 		script = "scripts/runjf.sh",
@@ -198,6 +200,7 @@ rule Run_jf:
 	shell:
 		"{input.script} {input.reads} {input.mg} {output}"
 
+# Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
 		wg = bd("wgs/{sample}.wg"),
@@ -206,3 +209,5 @@ rule Decompose:
 		decomp = bd("decomp_results/{sample}.txt")
 	shell:
 		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3"
+
+# Potential future rule to be added to use format_to_graph that will create graphs showing each path #
