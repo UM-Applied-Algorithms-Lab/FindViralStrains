@@ -2,7 +2,7 @@
 
 # File paths (adjust as necessary) #
 seq_file="out.cf_seg"
-path_file="decomp_results/54754002_S19_L001_R2_001.txt_2_paths.txt"
+path_file="decomp_results/54754002_S19_L001_R2_001.txt_1_paths.txt"
 output_dir="output_genomes"
 
 # Create output directory if it doesn't exist #
@@ -31,6 +31,7 @@ while IFS= read -r line; do
 
         # Initialize final genome #
         genome=""
+        first_node=true
 
         # Process each node in the path #
         IFS=' ' read -ra nodes <<< "$path"
@@ -40,18 +41,29 @@ while IFS= read -r line; do
                 clean_node=$(echo "$node" | sed 's/-//g')
                 if [[ -n "${sequences[$clean_node]}" ]]; then
                     # Add the reverse complement if needed #
-                    genome+=$(reverse_complement "${sequences[$clean_node]}")
+                    sequence=$(reverse_complement "${sequences[$clean_node]}")
                 else
                     echo "Warning: Node $clean_node not found in sequences."
+                    continue
                 fi
             else
                 clean_node=$(echo "$node" | sed 's/+//g')
                 if [[ -n "${sequences[$clean_node]}" ]]; then
                     # Add the sequence directly #
-                    genome+="${sequences[$clean_node]}"
+                    sequence="${sequences[$clean_node]}"
                 else
                     echo "Warning: Node $clean_node not found in sequences."
+                    continue
                 fi
+            fi
+
+            # Check if it's the first node
+            if $first_node; then
+                genome+="$sequence"
+                first_node=false
+            else
+                # Cut off the first 27 characters for subsequent nodes
+                genome+="${sequence:27}"
             fi
         done
 
