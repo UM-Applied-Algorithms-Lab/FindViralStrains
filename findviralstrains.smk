@@ -164,7 +164,7 @@ onsuccess:
 # all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
 rule all:
 	input:
-		expand(bd("decomp_results/{filename}.txt"), filename=fastq_filenames)
+		expand(bd("output_genomes/{filename}.fasta"), filename=fastq_filenames)
 
 # Cleans files and makes sure to remove trailing whitespace that may cause issues later #
 rule create_contigs: 
@@ -216,6 +216,16 @@ rule Decompose:
 	output:
 		decomp = bd("decomp_results/{sample}.txt")
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3"
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3" # TODO Change name scheme #
 
-# Potential future rule to be added to use format_to_graph that will create graphs showing each path #
+# Future rule to be added to use format_to_graph that will create graphs showing each path #
+
+# Runs rebuild.sh to create a genome that follows each of the paths #
+rule Rebuild:
+	input:
+		script = ("scripts/rebuild.sh"),
+		flow = bd("decomp_results/{sample}") # TODO change input #
+	output:
+		genome = bd ("output_genomes/{sample}.fasta")
+	shell:
+		"bash {input.script} {input.flow}"
