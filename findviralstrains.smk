@@ -26,7 +26,7 @@ OUTPUT_DIR = config["output_dir"]
 REF = config["ref_genome"]
 SEQUENCER = config["sequencer"]
 CONTIG_FILE = config["contig_file"]
-
+CF_FILE = config["cf_file"]
 ###############
 ##   SETUP   ##
 ############### 
@@ -214,7 +214,7 @@ rule Decompose:
 		wg = bd("wgs/{sample}.wg"),
 		script = "scripts/fracdecomp.py",
 	output:
-		decomp = bd("decomp_results/{sample}.txt")
+		decomp = bd("decomp_results/{sample}.txt_1_paths.txt")
 	shell:
 		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3" # TODO Change name scheme #
 
@@ -224,8 +224,8 @@ rule Decompose:
 rule Rebuild:
 	input:
 		script = ("scripts/rebuild.sh"),
-		flow = bd("decomp_results/{sample}") # TODO change input #
+		flow = bd("decomp_results/{sample}.txt_3_paths.txt") 
 	output:
-		genome = bd ("output_genomes/{sample}.fasta")
+		genome = bd("output_genomes/{sample}.fasta") 
 	shell:
-		"bash {input.script} {input.flow}"
+		"bash {input.script} {input.flow} {CF_FILE} {REF} {bd}"

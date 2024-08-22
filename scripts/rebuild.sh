@@ -2,15 +2,18 @@
 
 # File paths (adjust as necessary)
 
-seq_file="out.cf_seg"
+#"~/Code/MFD-ILP/FindViralStrains/output/NoRefTest/out.cf_seg"
 path_file="$1"
-ref_genome="~/Code/MFD-ILP/FindViralStrains/reference_genomes/covid19ref.fasta"
-
+seq_file="$2"
+# Add seg file and ref genome with bd() and output #
+ref_genome="$3"
+#"~/Code/MFD-ILP/FindViralStrains/reference_genomes/covid19ref.fasta"
+bd_outfile="$4"
 # Extract the base name without the extension and directory
 base_name=$(basename "$path_file" | cut -d'.' -f1)
 
 # Construct the output directory with the part of the name and .fasta
-output_dir="output_genomes/${base_name}"
+output_dir="${bd_outfile}/output_genomes/${base_name}"
 
 # Create output directory if it doesn't exist
 mkdir -p "$output_dir"
@@ -81,8 +84,8 @@ while IFS= read -r line; do
 
     # Perform alignment with the reference genome
     alignment_file="$output_dir/alignment_${counter}_of_${total_alignments}.txt"
-    needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file"
-
+#    needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file"
+# TODO Add the step that will do this
     ((counter++))
   fi
 done < "$path_file"

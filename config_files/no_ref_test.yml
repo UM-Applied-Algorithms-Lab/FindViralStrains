@@ -37,6 +37,7 @@ ref_genome: /home/mikhail/Code/MDF-ILP/brendans_data_and_code/flow/GCF_009858895
 # Contig file output name
 contig_file: all_samples_consensus_contigs.fasta
 
+cf_file: ~/Code/MFD-ILP/FindViralStrains/output/NoRefTest/out.cf_seg 
 #######################
 ## Optional settings ##
 #######################
