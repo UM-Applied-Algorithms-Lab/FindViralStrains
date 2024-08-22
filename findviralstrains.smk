@@ -197,16 +197,16 @@ rule Mer_graph:
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
 
-# Runs Jellyfish #
 rule Run_jf:
-	input:
-		script = "scripts/runjf.sh",
-		mg = bd("out.mg"),
-		reads = READ_DIR + "{sample}.fastq"
-	output:
-		bd("wgs/{sample}.wg")
-	shell:
-		"{input.script} {input.reads} {input.mg} {output}"
+    input:
+        script = "scripts/runjf.sh",
+        mg = bd("out.mg"),
+        reads = READ_DIR + "{sample}.fastq"
+    output:
+        bd("wgs/{sample}.wg")
+    shell:
+        "{input.script} {input.reads} {input.mg} {output}"
+
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
@@ -214,7 +214,7 @@ rule Decompose:
 		wg = bd("wgs/{sample}.wg"),
 		script = "scripts/fracdecomp.py",
 	output:
-		decomp = bd("decomp_results/{sample}.txt_1_paths.txt")
+		decomp = bd("decomp_results/{sample}.txt")
 	shell:
 		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3" # TODO Change name scheme #
 
@@ -224,8 +224,11 @@ rule Decompose:
 rule Rebuild:
 	input:
 		script = ("scripts/rebuild.sh"),
-		flow = bd("decomp_results/{sample}.txt_3_paths.txt") 
+		flow = bd("decomp_results/{sample}.txt_1_paths.txt"),
+		cf_seg = bd("out.cf_seg"),
 	output:
-		genome = bd("output_genomes/{sample}.fasta") 
+		genome = (bd("output_genomes/{sample}.fasta"))
 	shell:
-		"bash {input.script} {input.flow} {CF_FILE} {REF} {bd}"
+		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
+
+
