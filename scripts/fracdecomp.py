@@ -223,14 +223,13 @@ def extract_paths(x, source, sink, out_neighbors, K):
                 break
 
         paths.append(path)
-        print(f"Extracted path {k}: {path}")
 
     return paths
 
 
 def write_results(data, outputfilename, K):
 
-    output_filename = f"{outputfilename}_{K}_paths.txt"
+    output_filename = f"{outputfilename[:-4]}_{K}.paths"
     with open(output_filename, 'w') as outputfile:
         outputfile.write(f"Decomposition into {K} paths\n")
         outputfile.write(f"Runtime: {data['runtime']:.2f} seconds\n")

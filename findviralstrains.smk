@@ -214,9 +214,10 @@ rule Decompose:
 		wg = bd("wgs/{sample}.wg"),
 		script = "scripts/fracdecomp.py",
 	output:
-		decomp = bd("decomp_results/{sample}.txt")
+		decomp = bd("decomp_results/{sample}.txt"),
+		flow = bd("decomp_results/{sample}_1.paths"),
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3" # TODO Change name scheme #
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 6" # TODO Change name scheme #
 
 # Future rule to be added to use format_to_graph that will create graphs showing each path #
 
@@ -224,11 +225,10 @@ rule Decompose:
 rule Rebuild:
 	input:
 		script = ("scripts/rebuild.sh"),
-		flow = bd("decomp_results/{sample}.txt_1_paths.txt"),
+		flow = bd("decomp_results/{sample}_1.paths"),
 		cf_seg = bd("out.cf_seg"),
 	output:
 		genome = (bd("output_genomes/{sample}.fasta"))
 	shell:
 		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
-
 
