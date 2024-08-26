@@ -163,8 +163,8 @@ onsuccess:
 
 # all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
 rule all:
-	input:
-		expand(bd("output_genomes/{filename}.fasta"), filename=fastq_filenames)
+	output:
+		expand(bd("output_genomes/{filename}/{filename}_vs_ref.txt"), filename=fastq_filenames)
 
 # Cleans files and makes sure to remove trailing whitespace that may cause issues later #
 rule create_contigs: 
@@ -187,6 +187,7 @@ rule Cuttlefish:
 		#"ulimit -n 2048 ",
 		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
 
+# Runs edgemer.py to build kmer index file #
 rule Mer_graph: 
 	input:
 		script = "scripts/edgemer.py",
@@ -197,6 +198,7 @@ rule Mer_graph:
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
 
+# Runs Jellyfih to build weighted graph file #
 rule Run_jf:
     input:
         script = "scripts/runjf.sh",
@@ -207,7 +209,6 @@ rule Run_jf:
     shell:
         "{input.script} {input.reads} {input.mg} {output}"
 
-
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
@@ -217,18 +218,29 @@ rule Decompose:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 6" # TODO Change name scheme #
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 6"
 
-# Future rule to be added to use format_to_graph that will create graphs showing each path #
+# TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
-# Runs rebuild.sh to create a genome that follows each of the paths #
+# Runs rebuild.sh to create a genome that follows each of the chosen paths #
 rule Rebuild:
 	input:
 		script = ("scripts/rebuild.sh"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 		cf_seg = bd("out.cf_seg"),
 	output:
-		genome = (bd("output_genomes/{sample}.fasta"))
+		genome = (bd("output_genomes/{sample}/{sample}.fasta")) # Test for new Dir #
 	shell:
 		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
+# Compares our newly constructed genomes to original covid reference, and varients using Needleman-Wunsch #
+# Its looking for samplename.txt, and I am not sure why here #
+rule Compare:
+	input:
+		rebuilt_genome = (bd("output_genomes/{sample}/{sample}.fasta")),
+		origin_covid = bd("reference_genomes/covid19ref.fasta")
+	output:
+		compar_file = ("output_genomes/{sample}/{sample}_vs_ref.txt") # Guess for what this would look like #
+	shell:
+		"needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
+# needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file" #
