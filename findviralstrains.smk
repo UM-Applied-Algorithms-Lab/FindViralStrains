@@ -161,14 +161,10 @@ onsuccess:
         writer.writerow(["Elapsed time:", str(elapsed_time)])
         writer.writerow(["Copy of snakefile used stored at:", str(bd("snakefile_used_copy.smk"))])
 
-# all: The rule that looks for the final desired output files to initiate running all rules to generate those files.
-#rule all:
-#	input:
-#		expand(bd("output_genomes/{filename}_vs_ref.txt"), filename=fastq_filenames) # Maybe this needs to be output? #
-
+# The final goal of all of the rules #
 rule all:
     input:
-        expand(("output/NoRefTest/output_genomes/{sample}_vs_ref.txt"), sample=fastq_filenames)
+        expand(("output/NoRefTest/output_genomes/{sample}/{sample}_vs_ref.txt"), sample=fastq_filenames)
 
 
 # Cleans files and makes sure to remove trailing whitespace that may cause issues later #
@@ -227,34 +223,47 @@ rule Decompose:
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
-# Runs rebuild.sh to create a genome that follows each of the chosen paths #
-rule Rebuild:
+# Runs rebuild.sh to create a genome that follows the paths from Gurobi #
+rule Rebuild1:
 	input:
 		script = ("scripts/rebuild.sh"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 		cf_seg = bd("out.cf_seg"),
 	output:
-		genome = (bd("output_genomes/{sample}.fasta")) # Test for new Dir #
+		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
 	shell:
 		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
+
+
+#rule Rebuild2:
+#	input:
+#		script = ("scripts/rebuild.sh"),
+#		flow = bd("decomp_results/{sample}_3.paths"),
+#		cf_seg = bd("out.cf_seg"),
+#	output:
+#		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
+#	shell:
+#		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
+
+# Need to add 2 and 3 to the fasta names, and for it to have multiple outputs
+
+#rule Rebuild3:
+#	input:
+#		script = ("scripts/rebuild.sh"),
+#		flow = bd("decomp_results/{sample}_2.paths"),
+#		cf_seg = bd("out.cf_seg"),
+#	output:
+#		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
+#	shell:
+#		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
 # Compares our newly constructed genomes to original covid reference, and variants using Needleman-Wunsch #
 rule Compare:
     input:
-        rebuilt_genome = bd("output_genomes/{sample}.fasta"),
+        rebuilt_genome = bd("output_genomes/{sample}/{sample}.fasta"),
         origin_covid = ("reference_genomes/covid19ref.fasta")
     output:
-        compar_file = bd("output_genomes/{sample}_vs_ref.txt")
+        compar_file = bd("output_genomes/{sample}/{sample}_vs_ref.txt")
     shell:
         "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
 
-
-#rule Compare:
-#	input:
-#		rebuilt_genome = (bd("output_genomes/{sample}.fasta")),
-#		origin_covid = bd("reference_genomes/covid19ref.fasta")
-#	output:
-#		compar_file = ("output_genomes/{sample}_vs_ref.txt") # Guess for what this would look like #
-#	shell:
-#		"needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
-# needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file" #
