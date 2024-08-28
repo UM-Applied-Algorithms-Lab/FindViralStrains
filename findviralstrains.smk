@@ -219,7 +219,7 @@ rule Decompose:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 6"
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 124"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
