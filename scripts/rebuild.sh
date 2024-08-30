@@ -73,7 +73,7 @@ while IFS= read -r line; do
     echo -e ">Weight: $weight\n$genome" > "$bd_outfile"
 	echo "output_file"
     # Perform alignment with the reference genome
-#    alignment_file="$output_dir/alignment_${counter}_of_${total_alignments}.txt"
+    alignment_file="$output_dir/alignment_${counter}_of_${total_alignments}.txt"
 #    needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file"
 # TODO Add the step that will do this
     ((counter++))

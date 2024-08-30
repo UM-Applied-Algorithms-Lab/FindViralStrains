@@ -217,9 +217,9 @@ rule Decompose:
 		script = "scripts/fracdecomp.py",
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
-		flow = bd("decomp_results/{sample}_1.paths"),
+		flow = bd("decomp_results/{sample}_3.paths"),
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 124"
+		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 125"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
@@ -245,7 +245,7 @@ rule Rebuild1:
 #	shell:
 #		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
-# Need to add 2 and 3 to the fasta names, and for it to have multiple outputs
+# Need to add 2 and 3 to the fasta names, and for it to have multiple outputs #
 
 #rule Rebuild3:
 #	input:
