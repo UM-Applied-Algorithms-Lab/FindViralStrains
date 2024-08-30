@@ -11,3 +11,5 @@ all.txt
 *.swp
 from_reads*
 output_genomes/
+similarity_gap_results.txt
+temp_similarity_gap_results.txt
