@@ -217,7 +217,7 @@ rule Decompose:
 		script = "scripts/fracdecomp.py",
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
-		flow = bd("decomp_results/{sample}_3.paths"),
+		flow = bd("decomp_results/{sample}_1.paths"),
 	shell:
 		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 125"
 
