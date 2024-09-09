@@ -39,17 +39,17 @@ if os.path.isdir(READ_DIR) == False:
 if os.path.isdir(READ_DIR) == False:
     raise OSError("\nConsensus file " + CONSENSUS_FILE + " not found\n")
 
-# Pull all sample files from the raw data folder
-# get filenames of the individual fastq files
-fastq_fullpath = []
 samples = []
-fastq_filenames = [] # including the illumina stuff but not .fastq
+fastq_fullpath = []
+fastq_filenames = []
+
 for root, dirs, files in os.walk(READ_DIR):
     for name in files:
-        if re.search("_S\d+_L\d+_R[12]_001.fastq$", name):
-            samples.append(re.sub("_S\d+_L\d+_R\d+_001.fastq$", "", name))
-            fastq_fullpath.append(os.path.join(root, name))
-            fastq_filenames.append(re.sub(".fastq$", "", name))
+        # Remove the last 13 characters from each filename, will make it check for the .fastq ending later #
+        sample_name = name[:-13]
+        samples.append(sample_name)
+        fastq_fullpath.append(os.path.join(root, name))
+        fastq_filenames.append(sample_name)
 
 if len(fastq_fullpath) < 1:
     raise OSError("\nNo .fastq files matching Illumina naming scheme found in input dir:\n" + READ_DIR + "\n")
@@ -77,6 +77,11 @@ def bd(filepath):
 
 # Create the cuttlefish prefix
 CF_PREF = bd("out")
+
+fastq_filenames = set(fastq_filenames) # Deletes duplicate file entrys by converting to a set #
+fastq_filenames = list(fastq_filenames)
+
+fastq_filenames = [entry for entry in fastq_filenames if entry != ""] # Remake list with only populated values #
 
 ######################
 ## HELPER FUNCTIONS ##
@@ -161,11 +166,28 @@ onsuccess:
         writer.writerow(["Elapsed time:", str(elapsed_time)])
         writer.writerow(["Copy of snakefile used stored at:", str(bd("snakefile_used_copy.smk"))])
 
-# The final goal of all of the rules #
+# One rule to rule them all #
 rule all:
-    input:
-        expand(("output/NoRefTest/output_genomes/{sample}/{sample}_vs_ref.txt"), sample=fastq_filenames)
+    input: # Change from input to output #
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_vs_ref.txt"), input_list=fastq_filenames)
 
+rule trim_and_merge_raw_reads:
+    input:
+        raw_r1 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R1_001.fastq", # Change back to READ_DIR after testing #
+        raw_r2 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R2_001.fastq"
+    output:
+        trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+        trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
+        trim_r2_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R2.fq.gz")),
+        trim_r1_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R1.fq.gz")),
+        trim_r2_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R2.fq.gz")),
+        rep_html= bd("logs/fastp/{sample}_trim_fastp.html"),
+        rep_json= bd("logs/fastp/{sample}_trim_fastp.json")
+#    threads: trim_threads # Unsure if this is needed #
+    shell:
+        """
+        fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
+        """
 
 # Cleans files and makes sure to remove trailing whitespace that may cause issues later #
 rule create_contigs: 
@@ -188,7 +210,7 @@ rule Cuttlefish:
 		#"ulimit -n 2048 ",
 		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
 
-# Runs edgemer.py to build kmer index file #
+# Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
 		script = "scripts/edgemer.py",
@@ -204,7 +226,7 @@ rule Run_jf:
     input:
         script = "scripts/runjf.sh",
         mg = bd("out.mg"),
-        reads = READ_DIR + "{sample}.fastq"
+        reads = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")), # New input dir #
     output:
         bd("wgs/{sample}.wg")
     shell:
@@ -234,6 +256,7 @@ rule Rebuild1:
 	shell:
 		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
+# 2 and 3 are commented out for easier testing, could potentially use a multiline comment to have all three ran at the same time #
 
 #rule Rebuild2:
 #	input:
@@ -257,7 +280,7 @@ rule Rebuild1:
 #	shell:
 #		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
-# Compares our newly constructed genomes to original covid reference, and variants using Needleman-Wunsch #
+# Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
 rule Compare:
     input:
         rebuilt_genome = bd("output_genomes/{sample}/{sample}.fasta"),
