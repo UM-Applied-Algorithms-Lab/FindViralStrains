@@ -189,6 +189,14 @@ rule trim_and_merge_raw_reads:
         fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
         """
 
+rule unzip_merged:
+    input:
+        trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+    output:
+        reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # Unzip our new files #
+    shell:
+        "gunzip {input.trim_merged}"
+
 # Cleans files and makes sure to remove trailing whitespace that may cause issues later #
 rule create_contigs: 
 	input:
@@ -226,7 +234,7 @@ rule Run_jf:
     input:
         script = "scripts/runjf.sh",
         mg = bd("out.mg"),
-        reads = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")), # New input dir #
+        reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input dir #
     output:
         bd("wgs/{sample}.wg")
     shell:
