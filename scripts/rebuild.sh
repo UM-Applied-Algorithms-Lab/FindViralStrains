@@ -31,7 +31,7 @@ while IFS= read -r line; do
     weight=$(echo "$line" | cut -d' ' -f1)
     path=$(echo "$line" | cut -d' ' -f2-)
 
-	echo "Read Seg"
+    echo "Read Seg"
     # Initialize final genome
     genome=""
     is_first_node=true
@@ -67,16 +67,11 @@ while IFS= read -r line; do
       fi
       is_first_node=false
     done
+    # Generate a unique output filename in the format "counter_of_total.fasta"
+    output_file="${bd_outfile%.fasta}_${counter}_of_${total_alignments}.fasta"
+    echo -e ">Weight: $weight\n$genome" > "$output_file"
+    echo "Generated output file: $output_file"
 
-    # Write to a file in the output directory
-   # output_file="$output_dir/genome_${counter}_of_${total_alignments}.fasta"
-    echo -e ">Weight: $weight\n$genome" > "$bd_outfile"
-	echo "output_file"
-    # Perform alignment with the reference genome
-    alignment_file="$output_dir/alignment_${counter}_of_${total_alignments}.txt"
-#    needle -asequence "$ref_genome" -bsequence "$output_file" -gapopen 10 -gapextend 0.5 -outfile "$alignment_file"
-# TODO Add the step that will do this
     ((counter++))
   fi
 done < "$path_file"
-
