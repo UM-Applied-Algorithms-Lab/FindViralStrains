@@ -168,8 +168,10 @@ onsuccess:
 
 # One rule to rule them all #
 rule all:
-    input: # Add multiple files to rule all #
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames)
+    input: # This is the end goal of our program, we are requesting the very last steps #
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames),
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames),
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
 
 rule trim_and_merge_raw_reads:
     input:
@@ -276,6 +278,7 @@ rule Rebuild_2:
         cf_seg = bd("out.cf_seg"),
     output:
         genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
+        genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
     shell:
         """
         genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
@@ -291,6 +294,8 @@ rule Rebuild_3:
         cf_seg = bd("out.cf_seg"),
     output:
         genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
+        genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
+        genome3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
     shell:
         """
         genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
