@@ -168,7 +168,7 @@ onsuccess:
 
 # One rule to rule them all #
 rule all:
-    input: # Change from input to output #
+    input: # Add multiple files to rule all #
         expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames)
 
 rule trim_and_merge_raw_reads:
@@ -300,7 +300,8 @@ rule Rebuild_3:
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
 # A more modern reference could be used, or regional samples as well #
-rule Compare:
+# There are also better versions of this, and I may make my own #
+rule Compare_1:
     input:
         rebuilt_genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
         origin_covid = ("reference_genomes/covid19ref.fasta")
@@ -308,3 +309,36 @@ rule Compare:
         compar_file = bd("output_genomes/{sample}/{sample}_1_of_1_vs_ref.txt")
     shell:
         "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
+
+# Compares genomes from the two path result to the reference #
+rule Compare_2:
+    input:
+        rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
+        rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
+        origin_covid = ("reference_genomes/covid19ref.fasta")
+    output:
+        compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_2_vs_ref.txt"),
+        compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_2_vs_ref.txt")
+    shell:
+        """
+        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+        """
+
+# Compares genomes from the three path result to the reference #
+rule Compare_3:
+    input:
+        rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
+        rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
+        rebuilt_genome_3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
+        origin_covid = ("reference_genomes/covid19ref.fasta")
+    output:
+        compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_3_vs_ref.txt"),
+        compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_3_vs_ref.txt"),
+        compar_file_3 = bd("output_genomes/{sample}/{sample}_3_of_3_vs_ref.txt")
+    shell:
+        """
+        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_3} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_3}
+        """
