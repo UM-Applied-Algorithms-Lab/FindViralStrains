@@ -254,7 +254,6 @@ rule Decompose:
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
-
 rule Rebuild_1:
     input:
         script = "scripts/rebuild.sh",
@@ -269,6 +268,7 @@ rule Rebuild_1:
         bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
         """
 
+# This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
     input:
         script = "scripts/rebuild.sh",
@@ -283,6 +283,7 @@ rule Rebuild_2:
         bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
         """
 
+# Outputs three genomes, one for each path #
 rule Rebuild_3:
     input:
         script = "scripts/rebuild.sh",
@@ -298,6 +299,7 @@ rule Rebuild_3:
         """
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
+# A more modern reference could be used, or regional samples as well #
 rule Compare:
     input:
         rebuilt_genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
@@ -306,4 +308,3 @@ rule Compare:
         compar_file = bd("output_genomes/{sample}/{sample}_1_of_1_vs_ref.txt")
     shell:
         "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
-
