@@ -169,7 +169,7 @@ onsuccess:
 # One rule to rule them all #
 rule all:
     input: # Change from input to output #
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_vs_ref.txt"), input_list=fastq_filenames)
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames)
 
 rule trim_and_merge_raw_reads:
     input:
@@ -254,47 +254,56 @@ rule Decompose:
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
-rule Rebuild1:
-	input:
-		script = ("scripts/rebuild.sh"),
-		flow = bd("decomp_results/{sample}_1.paths"),
-		cf_seg = bd("out.cf_seg"),
-	output:
-		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
-	shell:
-		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
 
-# 2 and 3 are commented out for easier testing, could potentially use a multiline comment to have all three ran at the same time #
+rule Rebuild_1:
+    input:
+        script = "scripts/rebuild.sh",
+        flow = bd("decomp_results/{sample}_1.paths"),
+        cf_seg = bd("out.cf_seg"),
+    output:
+        genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
+    shell: # We use sed here to filter out the name we give our script, then run it #
+        """
+        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_1//')
+        echo "Trimmed genome: $genome_trimmed"
+        bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
+        """
 
-#rule Rebuild2:
-#	input:
-#		script = ("scripts/rebuild.sh"),
-#		flow = bd("decomp_results/{sample}_3.paths"),
-#		cf_seg = bd("out.cf_seg"),
-#	output:
-#		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
-#	shell:
-#		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
+rule Rebuild_2:
+    input:
+        script = "scripts/rebuild.sh",
+        flow2 = bd("decomp_results/{sample}_2.paths"),
+        cf_seg = bd("out.cf_seg"),
+    output:
+        genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
+    shell:
+        """
+        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
+        echo "Trimmed genome: $genome_trimmed"
+        bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
+        """
 
-# Need to add 2 and 3 to the fasta names, and for it to have multiple outputs #
-
-#rule Rebuild3:
-#	input:
-#		script = ("scripts/rebuild.sh"),
-#		flow = bd("decomp_results/{sample}_2.paths"),
-#		cf_seg = bd("out.cf_seg"),
-#	output:
-#		genome = (bd("output_genomes/{sample}/{sample}.fasta"))
-#	shell:
-#		"bash {input.script} {input.flow} {input.cf_seg} {output.genome}"
+rule Rebuild_3:
+    input:
+        script = "scripts/rebuild.sh",
+        flow3 = bd("decomp_results/{sample}_3.paths"),
+        cf_seg = bd("out.cf_seg"),
+    output:
+        genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
+    shell:
+        """
+        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
+        echo "Trimmed genome: $genome_trimmed"
+        bash {input.script} {input.flow3} {input.cf_seg} $genome_trimmed
+        """
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
 rule Compare:
     input:
-        rebuilt_genome = bd("output_genomes/{sample}/{sample}.fasta"),
+        rebuilt_genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
         origin_covid = ("reference_genomes/covid19ref.fasta")
     output:
-        compar_file = bd("output_genomes/{sample}/{sample}_vs_ref.txt")
+        compar_file = bd("output_genomes/{sample}/{sample}_1_of_1_vs_ref.txt")
     shell:
         "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
 
