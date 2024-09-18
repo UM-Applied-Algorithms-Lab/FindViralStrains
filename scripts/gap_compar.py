@@ -1,52 +1,51 @@
 import os
-import re
+import numpy as np
 import matplotlib.pyplot as plt
 
-def process_file(file_path):
-    gap_locations = ["/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/output_genomes"]
-    in_alignment_section = False
-    
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            if line.startswith("NC_045512.2"):
-                in_alignment_section = True
-                continue
+fasta_files = "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/output_genomes"
+
+# Initialize array of length 35,000 with all 0s
+gaps_array = np.zeros(35000, dtype=int)
+
+# Function to mark gaps in the array based on 'Weight' lines
+def mark_gaps_from_weight_line(line, gaps_array):
+    parts = line.split()
+    position = int(parts[1])  # The number at the start of the 'Weight' line marks the position in the genome
+    sequence = parts[2]
+
+    for i, base in enumerate(sequence):
+        if base == "-":  # Gaps are marked as '-'
+            genome_position = position + i - 1  # Adjust to 0-based index
+            if genome_position < len(gaps_array):  # Ensure we don't go out of bounds
+                gaps_array[genome_position] += 1
+
+# Loop through subdirectories and files
+for root, dirs, files in os.walk(fasta_files):
+    for file in files:
+        if file.endswith("_vs_ref.txt"):
+            file_path = os.path.join(root, file)
+            print(f"Parsing file: {file_path}")
             
-            if line.startswith("Weight"):
-                in_alignment_section = False
-                continue
-            
-            if in_alignment_section:
-                # Extract gap locations from alignment lines
-                gap_matches = [m.start() for m in re.finditer(r'-', line)]
-                gap_locations.extend(gap_matches)
-    
-    print(f"Gaps found in {file_path}: {gap_locations}")
-    return gap_locations
+            # Open the .vs_ref.txt file and parse the lines
+            with open(file_path, 'r') as f:
+                for line in f:
+                    if line.startswith("Weight"):  # Only process lines that start with 'Weight'
+                        mark_gaps_from_weight_line(line, gaps_array)
 
-def plot_gaps(all_gap_locations):
-    plt.figure(figsize=(10, 6))
-    plt.scatter(range(len(all_gap_locations)), all_gap_locations, c='blue', marker='o')
-    plt.title('Gap Locations')
-    plt.xlabel('Index')
-    plt.ylabel('Position')
-    plt.grid(True)
-    plt.savefig('gaps_plot.png')
-    plt.show()
+print(gaps_array[:1000])  # Print the first 100 elements
+print(gaps_array[-1000:])  # Print the last 100 elements
 
-def main(directory_path):
-    all_gap_locations = []
+# Plotting the aggregated gaps_array
+plt.figure(figsize=(12, 6))
+plt.bar(np.arange(len(gaps_array)), gaps_array, width=1.0, color='blue', alpha=0.7)
+plt.xlabel('Genome Position')
+plt.ylabel('Number of Occurrences')
+plt.title('Distribution of Gaps in Genome Across All Files')
+plt.xlim(0, len(gaps_array))  # Ensure the x-axis covers the full length of gaps_array
+plt.ylim(0, np.max(gaps_array) + 1)  # Adjust y-axis to accommodate the maximum value
 
-    for filename in os.listdir(directory_path):
-        if filename.endswith('_vs_ref.txt'):
-            file_path = os.path.join(directory_path, filename)
-            print(f"Processing file: {file_path}")
-            gap_locations = process_file(file_path)
-            all_gap_locations.extend(gap_locations)
-    
-    plot_gaps(all_gap_locations)
-
-if __name__ == "__main__":
-    directory_path = "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/output_genomes"  # Replace with your directory path
-    main(directory_path)
+# Save the plot as a file
+plot_filename = "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/gaps_distribution.png"
+plt.savefig(plot_filename)
+plt.close()  # Close the plot to free up memory
+print(f"Saved plot as: {plot_filename}")
