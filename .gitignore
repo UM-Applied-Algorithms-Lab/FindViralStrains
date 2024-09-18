@@ -14,3 +14,5 @@ output_genomes/
 similarity_gap_results.txt
 temp_similarity_gap_results.txt
 scripts/gaps_plot.png
+with_ref_findviralstrains.smk
+yes_ref_test.yml
