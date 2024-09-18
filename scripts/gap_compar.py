@@ -8,14 +8,13 @@ fasta_files = "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/outp
 gaps_array = np.zeros(35000, dtype=int)
 
 # Function to mark gaps in the array based on 'Weight' lines #
-def mark_gaps_from_weight_line(line, gaps_array):
+def mark_gaps_from_weight_line(line, gaps_array, current_position):
     parts = line.split()
-    position = int(parts[1])  # The number at the start of the 'Weight' line marks the position in the genome #
-    sequence = parts[2]
-
+    sequence = parts[2]  # The actual comparison data from this line #
+    
     for i, base in enumerate(sequence):
         if base == "-":  # Gaps are marked as '-' #
-            genome_position = position + i - 1  # Adjust to 0-based index #
+            genome_position = current_position + i  # Use the cumulative position #
             if genome_position < len(gaps_array):  # Ensure we don't go out of bounds #
                 gaps_array[genome_position] += 1
 
@@ -26,11 +25,16 @@ for root, dirs, files in os.walk(fasta_files):
             file_path = os.path.join(root, file)
             print(f"Parsing file: {file_path}")
             
-            # Open the .vs_ref.txt file and parse the lines, may modify to also output seperate graphs for each *.paths type #
+            # Open the .vs_ref.txt file and parse the lines #
+            current_position = 0  # Initialize the position counter for each file
             with open(file_path, 'r') as f:
                 for line in f:
                     if line.startswith("Weight"):  # Only process lines that start with 'Weight' #
-                        mark_gaps_from_weight_line(line, gaps_array)
+                        mark_gaps_from_weight_line(line, gaps_array, current_position)
+                    # Update the cumulative position based on sequence length
+                    if line.startswith("Weight"):
+                        sequence = line.split()[2]
+                        current_position += len(sequence)
 
 # Plotting the aggregated gaps_array, not running plt.show incase this is run on a server #
 plt.figure(figsize=(12, 6))
