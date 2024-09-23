@@ -22,5 +22,4 @@
 # Your job commands go below this line
 
 #ulimit -n 2048
-snakemake -s findviralstrains.smk --configfile config_files/my_config.yaml --cores 1 --rerun-incomplete           # Replace with your program's command
-
+snakemake -s findviralstrains.smk --configfile config_files/no_ref_test.yml --cores 1 --rerun-incomplete

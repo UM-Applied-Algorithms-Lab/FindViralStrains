@@ -9,17 +9,17 @@
 analysis_ID: NoRefTest
 
 # Input read directory
-# Folder where where reads are stored. 
-read_dir: /home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/
+# Folder where where reads are stored.
+read_dir: /projects/mb163954/MFD-ILP/brendans_data_and_code/data/BaseCalls/
 #/home/example_reads/
 
 # Input consensus sequence directory
-# Folder where where consensus sequences are stored. 
-consensus_file: /home/mikhail/Code/MFD-ILP/brendans_data_and_code/UM-CoV-Seq/output/FlowRNA_run4/results/ivar/all_samples_consensus.fasta
+# Folder where where consensus sequences are stored.
+consensus_file: /projects/mb163954/MFD-ILP/brendans_data_and_code/UM-CoV-Seq/output/FlowRNA_run4/results/ivar/all_samples_consensus.fasta
 
 # Output directory
-# Directory where you would like the ouput files 
-# for this analysis batch to be placed. 
+# Directory where you would like the ouput files
+# for this analysis batch to be placed.
 # The pipeline will create a folder, analysis_ID, within this output directory.
 output_dir: output/
 
@@ -32,12 +32,12 @@ sequencer: MiSeq
 
 # Reference genome
 # Give the path to the reference genome file for including in the Debruijn graph
-ref_genome: /home/mikhail/Code/MDF-ILP/brendans_data_and_code/flow/GCF_009858895.2_ASM985889v3_genomic_notail.fna
+ref_genome: /projects/mb163954/MDF-ILP/brendans_data_and_code/flow/GCF_009858895.2_ASM985889v3_genomic_notail.fna
 
 # Contig file output name
 contig_file: all_samples_consensus_contigs.fasta
 
-cf_file: ~/Code/MFD-ILP/FindViralStrains/output/NoRefTest/out.cf_seg 
+cf_file: /projects/mb163954/MFD-ILP/FindViralStrains/output/NoRefTest/out.cf_seg
 #######################
 ## Optional settings ##
 #######################
