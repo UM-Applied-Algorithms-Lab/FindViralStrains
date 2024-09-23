@@ -14,7 +14,7 @@ print(" |  __| | | '_ \\ / _` | \\ \\/ / | | '__/ _` | |\\___ \\| __| '__/ _` | 
 print(" | |    | | | | | (_| |  \\  /  | | | | (_| | |____) | |_| | | (_| | | | | \\__ \\    \\  /  __/ |  \\__ \\ | (_) | | | | | |_| || || |_| |")
 print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ ")
 
-
+# Do not put tabs in this file. It breaks snakemake and gives awful errors #
 #################
 ##   GLOBALS   ##
 ################# 
@@ -168,10 +168,8 @@ onsuccess:
 
 # One rule to rule them all #
 rule all:
-    input: # This is the end goal of our program, we are requesting the very last steps #
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames),
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames),
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
+    input:
+        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
 
 rule trim_and_merge_raw_reads:
     input:
@@ -215,9 +213,8 @@ rule Cuttlefish:
 		file = bd("all_samples_consensus_contigs.fasta")
 	output:
 		seg = bd("out.cf_seg"), 
-		seq = bd("out.cf_seq") 
+		seq = bd("out.cf_seq")
 	shell:
-		#"ulimit -n 2048 ",
 		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
