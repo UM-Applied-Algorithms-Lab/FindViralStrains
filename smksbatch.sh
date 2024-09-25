@@ -9,7 +9,7 @@
 
 #SBATCH --ntasks-per-node=1        # Request 1 tasks per node
 
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 
 #SBATCH --time=72:00:00            # Time limit hrs:min:sec (e.g., 1 hour)
 
