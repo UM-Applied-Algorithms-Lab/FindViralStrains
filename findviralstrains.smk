@@ -14,7 +14,7 @@ print(" |  __| | | '_ \\ / _` | \\ \\/ / | | '__/ _` | |\\___ \\| __| '__/ _` | 
 print(" | |    | | | | | (_| |  \\  /  | | | | (_| | |____) | |_| | | (_| | | | | \\__ \\    \\  /  __/ |  \\__ \\ | (_) | | | | | |_| || || |_| |")
 print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ ")
 
-# Do not put tabs in this file. It breaks snakemake and gives awful errors #
+# Do not put spaces in this file. It breaks snakemake and gives awful errors #
 #################
 ##   GLOBALS   ##
 ################# 
@@ -82,6 +82,7 @@ fastq_filenames = set(fastq_filenames) # Deletes duplicate file entrys by conver
 fastq_filenames = list(fastq_filenames)
 
 fastq_filenames = [entry for entry in fastq_filenames if entry != ""] # Remake list with only populated values #
+print(fastq_filenames)
 
 ######################
 ## HELPER FUNCTIONS ##
@@ -189,33 +190,17 @@ rule trim_and_merge_raw_reads:
         fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
         """
 
-rule unzip_merged:
+rule Cuttlefish:
     input:
-        trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fq.gz"), sample=fastq_filenames), # Needs to input all files, but {sample} needs to be in the input and the output #
     output:
-        reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # Unzip our new files #
+        seg = bd("out.cf_seg"),
+        seq = bd("out.cf_seq")
     shell:
-        "gunzip {input.trim_merged}"
-
-# Cleans files and makes sure to remove trailing whitespace that may cause issues later #
-rule create_contigs: 
-	input:
-		file = CONSENSUS_FILE,
-		script = "scripts/createcontigs.sh",
-	output:
-		file = bd("all_samples_consensus_contigs.fasta")
-	shell:
-		"bash {input.script} {input.file} {output.file}"	
-
-# Runs Cuttlefish #
-rule Cuttlefish: 
-	input:
-		file = bd("all_samples_consensus_contigs.fasta")
-	output:
-		seg = bd("out.cf_seg"), 
-		seq = bd("out.cf_seq")
-	shell:
-		"rm -f " + bd("out.json") + " && cuttlefish build -s {input.file} -t 1 -o {CF_PREF} -f 3 -m 12"
+        """
+        rm -f {bd("out.json")}
+        cuttlefish build -d {input.trim_merged} -t 1 -o {CF_PREF} -f 3 -m 12
+        """
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
@@ -228,16 +213,25 @@ rule Mer_graph:
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
 
+# Unzip fastq files #
+rule unzip:
+    input:
+        trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+    output:
+        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
+    shell:
+        "gunzip {input.trim_merged}"
+
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:
-    input:
-        script = "scripts/runjf.sh",
-        mg = bd("out.mg"),
-        reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input dir #
-    output:
-        bd("wgs/{sample}.wg")
-    shell:
-        "{input.script} {input.reads} {input.mg} {output}"
+	input:
+		script = "scripts/runjf.sh",
+		mg = bd("out.mg"),
+		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input dir #
+	output:
+		bd("wgs/{sample}.wg")
+	shell:
+		"{input.script} {input.reads} {input.mg} {output}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
@@ -247,6 +241,8 @@ rule Decompose:
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
+		flow2 = bd("decomp_results/{sample}_2.paths"),
+		flow3 = bd("decomp_results/{sample}_3.paths"),
 	shell:
 		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 125"
 
@@ -269,19 +265,19 @@ rule Rebuild_1:
 
 # This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
-    input:
-        script = "scripts/rebuild.sh",
-        flow2 = bd("decomp_results/{sample}_2.paths"),
-        cf_seg = bd("out.cf_seg"),
-    output:
-        genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
-        genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
-    shell:
-        """
-        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
-        echo "Trimmed genome: $genome_trimmed"
-        bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
-        """
+	input:
+		script = "scripts/rebuild.sh",
+		flow2 = bd("decomp_results/{sample}_2.paths"),
+		cf_seg = bd("out.cf_seg"),
+	output:
+		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
+		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
+	shell:
+		"""
+		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
+		echo "Trimmed genome: $genome_trimmed"
+		bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
+		"""
 
 # Outputs three genomes, one for each path #
 rule Rebuild_3:
