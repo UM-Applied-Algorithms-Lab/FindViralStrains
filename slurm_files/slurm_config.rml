@@ -1,0 +1,16 @@
+jobs: 15
+cluster:
+    mkdir -p {config[output_dir]}/{config[analysis_ID]}/logs/slurm_logs/{rule}/ &&
+    sbatch
+    --partition={resources.partition}
+    --cpus-per-task={resources.cpus}
+    --job-name={rule}-{wildcards}
+    --output={config[output_dir]}/{config[analysis_ID]}/logs/slurm_logs/{rule}/{rule}-{wildcards}-%j.out
+    --mail-type=FAIL
+    --mail-user=mckayl.bailey@umt.edu
+default-resources:
+  - cpus=1
+  - partition="cpu(all)"
+latency-wait: 15
+verbose: true
+

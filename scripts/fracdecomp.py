@@ -300,7 +300,7 @@ if __name__ == '__main__':
 
     threads = args.threads
     if threads == 0:
-        threads = os.cpu_count()//2
+        threads = 4
     print(f"INFO: Using {threads} threads for the Gurobi solver")
 
     # Set minK and maxK to fixed values

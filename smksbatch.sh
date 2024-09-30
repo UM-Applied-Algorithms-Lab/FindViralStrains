@@ -9,7 +9,7 @@
 
 #SBATCH --ntasks-per-node=1        # Request 1 tasks per node
 
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 
 #SBATCH --time=72:00:00            # Time limit hrs:min:sec (e.g., 1 hour)
 
@@ -22,5 +22,4 @@
 # Your job commands go below this line
 
 #ulimit -n 2048
-snakemake -s findviralstrains.smk --configfile config_files/my_config.yaml --cores 1 --rerun-incomplete           # Replace with your program's command
-
+snakemake -s findviralstrains.smk --configfile config_files/no_ref_test.yml --cores 1 --rerun-incomplete
