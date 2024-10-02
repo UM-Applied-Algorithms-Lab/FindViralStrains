@@ -190,17 +190,31 @@ rule trim_and_merge_raw_reads:
         fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
         """
 
+# Unzip fastq files #
+rule Unzip:
+    input:
+        trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+    output:
+        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
+    shell:
+        "gunzip {input.trim_merged}"
+
+rule Convert_To_Fasta:
+    input:
+        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
+    output:
+        converted = (bd("processed_reads/trimmed/{sample}.merged.fasta")),
+    shell:
+        "seqtk seq -A {input.unzipped} > {output.converted}"
+
 rule Cuttlefish:
     input:
-        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fq.gz"), sample=fastq_filenames), # Needs to input all files, but {sample} needs to be in the input and the output #
+        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames), # Needs to input all files, but {sample} needs to be in the input and the output #
     output:
         seg = bd("out.cf_seg"),
         seq = bd("out.cf_seq")
     shell:
-        """
-        rm -f {bd("out.json")}
-        cuttlefish build -d {input.trim_merged} -t 1 -o {CF_PREF} -f 3 -m 12
-        """
+        "rm -f " + bd("out.json") + " && cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12"
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
@@ -212,15 +226,6 @@ rule Mer_graph:
 		file = bd("out.mg"),
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
-
-# Unzip fastq files #
-rule unzip:
-    input:
-        trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-    output:
-        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-    shell:
-        "gunzip {input.trim_merged}"
 
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:
