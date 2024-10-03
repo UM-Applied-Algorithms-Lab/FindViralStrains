@@ -15,11 +15,11 @@ print_elapsed_time() {
 echo "Processing file: $file"
 print_elapsed_time
 JellyfishIndex="$OutputFile.jf"
-jellyfish count -m 28 -s 100M -t 1 -C $file -o $JellyfishIndex
+jellyfish count -m 28 -s 500M -t 1 -C $file -o $JellyfishIndex
 
 echo "jellyfish index built for $file"
 print_elapsed_time
-
+index=0
 # Open and read the input file line by line 
 while IFS= read -r line; do
 	# Remove leading/trailing whitespace
@@ -33,6 +33,8 @@ while IFS= read -r line; do
 	
 	# if it's a line for an edge
 	if [ "$fields" -eq 3 ]; then
+		#index=$((index+1))
+		#echo $index 
 		seq="${array[2]}"
 		# query the index for the edgemer count
 		count=$(jellyfish query $JellyfishIndex "$seq" | awk '{print $2}')
