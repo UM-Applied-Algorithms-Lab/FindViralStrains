@@ -207,9 +207,12 @@ rule Convert_To_Fasta:
     shell:
         "seqtk seq -A {input.unzipped} > {output.converted}"
 
+
+fastq_filenames.append("covid19ref") # Temp for troubleshooting
+
 rule Cuttlefish:
     input:
-        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames), # Needs to input all files, but {sample} needs to be in the input and the output #
+        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames), # Need to add ref to the list somehow #
     output:
         seg = bd("out.cf_seg"),
         seq = bd("out.cf_seq")
