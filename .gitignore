@@ -18,3 +18,5 @@ with_ref_findviralstrains.smk
 yes_ref_test.yml
 FlameGraph/
 perf*
+target
+.cargo
