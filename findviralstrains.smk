@@ -1,4 +1,3 @@
-# Python env setup
 import os
 import re
 import csv
@@ -217,14 +216,14 @@ rule Cuttlefish:
         seg = bd("out.cf_seg"),
         seq = bd("out.cf_seq")
     shell:
-        "rm -f " + bd("out.json") + " && flamegraph -- cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12"
+        "rm -f " + bd("out.json") + "cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12"
 
 # Fake source and sink rules go here. Probably named preprocessing or something similar #
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
-		script = "scripts/edgemer.py",
+		script = "libs/mer_graph/edgemer.py",
 		seg = bd("out.cf_seg"), 
 		seq = bd("out.cf_seq"), 
 	output:
@@ -235,7 +234,7 @@ rule Mer_graph:
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:
 	input:
-		script = "scripts/runjf.sh",
+		script = "libs/runjf/runjf.sh",
 		mg = bd("out.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input dir #
 	output:
@@ -247,7 +246,7 @@ rule Run_jf:
 rule Decompose:
 	input:
 		wg = bd("wgs/{sample}.wg"),
-		script = "scripts/fracdecomp.py",
+		script = "libs/decompose/fracdecomp.py",
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
@@ -261,7 +260,7 @@ rule Decompose:
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
     input:
-        script = "scripts/rebuild.sh",
+        script = "libs/rebuild/rebuild.sh",
         flow = bd("decomp_results/{sample}_1.paths"),
         cf_seg = bd("out.cf_seg"),
     output:
@@ -276,7 +275,7 @@ rule Rebuild_1:
 # This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
 	input:
-		script = "scripts/rebuild.sh",
+		script = "libs/rebuild/rebuild.sh",
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		cf_seg = bd("out.cf_seg"),
 	output:
@@ -292,7 +291,7 @@ rule Rebuild_2:
 # Outputs three genomes, one for each path #
 rule Rebuild_3:
     input:
-        script = "scripts/rebuild.sh",
+        script = "libs/rebuild/rebuild.sh",
         flow3 = bd("decomp_results/{sample}_3.paths"),
         cf_seg = bd("out.cf_seg"),
     output:

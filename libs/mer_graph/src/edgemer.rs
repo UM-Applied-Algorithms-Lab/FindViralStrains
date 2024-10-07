@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 
+// Work in progress, sorry //
 fn read_seq(file: &str) -> Vec<[String; 2]> {
     let mut edges = Vec::new();
     let lines = read_lines(file).expect("Could not read lines");

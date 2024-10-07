@@ -2,7 +2,7 @@
 output/
 .snakemake/
 logmover.sh
-Logs
+logs
 1path.txt
 2path.txt
 3path.txt
