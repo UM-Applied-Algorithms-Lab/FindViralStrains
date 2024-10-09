@@ -2,6 +2,8 @@ import os
 import re
 import csv
 import sys
+import warnings
+import resource
 from datetime import datetime
 
 start_time = datetime.now()
@@ -29,6 +31,15 @@ CF_FILE = config["cf_file"]
 ###############
 ##   SETUP   ##
 ############### 
+
+# Get the current ulimit for file descriptors #
+soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
+
+# Check if the soft limit is less than 2048 #
+if soft_limit < 2048:
+    warnings.warn("The current ulimit is less than 2048. This can cause Cuttlefish to fail.", ResourceWarning)
+else:
+    print("Ulimit is sufficient for program execution.")
 
 # Check that the input folder exists
 # Error if not
