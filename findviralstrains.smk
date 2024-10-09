@@ -207,16 +207,22 @@ rule Convert_To_Fasta:
         "seqtk seq -A {input.unzipped} > {output.converted}"
 
 
-fastq_filenames.append("covid19ref") # Temp for troubleshooting
+#fastq_filenames.append("covid19ref") # Temp for troubleshooting
+
+# Rule to check ulimit and give warning if its not 2048 or larger #
 
 rule Cuttlefish:
     input:
-        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames), # Need to add ref to the list somehow #
+        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames)
     output:
-        seg = bd("out.cf_seg"),
-        seq = bd("out.cf_seq")
+        seg=bd("out.cf_seg"),
+        seq=bd("out.cf_seq"),
+        json=bd("out.json")
     shell:
-        "rm -f " + bd("out.json") + "cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12"
+        """
+        rm -f {output.json}
+        cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12
+        """
 
 # Fake source and sink creation #
 # Call graph_analyze #
