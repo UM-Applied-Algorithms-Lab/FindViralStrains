@@ -6,7 +6,7 @@ out to us via github or email. Below you'll find the basic setup instructions th
 tested on Redhat and Debian based Linux systems. 
 
 Cheers,
-McKayl & Lucy
+McKayl, Lucy, & Tim
 
 
 Please note that everything below assumes that you already have copied our code into a working
@@ -17,7 +17,12 @@ administrators for help/training if you are setting this up on any sort of HPC e
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
-To set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
+First, run the build script that compiles all of the needed rust code. 
+'''
+bash build.sh
+'''
+
+Then set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
 command below.
 
 ```

@@ -218,7 +218,8 @@ rule Cuttlefish:
     shell:
         "rm -f " + bd("out.json") + "cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12"
 
-# Fake source and sink rules go here. Probably named preprocessing or something similar #
+# Fake source and sink creation #
+# Call graph_analyze #
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
