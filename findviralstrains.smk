@@ -28,6 +28,9 @@ REF = config["ref_genome"]
 SEQUENCER = config["sequencer"]
 CONTIG_FILE = config["contig_file"]
 CF_FILE = config["cf_file"]
+READ_PURGE_PERCENT = config["read_purge_percent"]
+DECOMP_TIME_LIMIT = config["decomp_time_limit"]
+GUROBI_THREADS = config["gurobi_threads"]
 ###############
 ##   SETUP   ##
 ############### 
@@ -234,9 +237,6 @@ rule Cuttlefish:
         cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12
         """
 
-# Fake source and sink creation #
-# Call graph_analyze #
-
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
@@ -247,6 +247,9 @@ rule Mer_graph:
 		file = bd("out.mg"),
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
+
+# Fake source and sink creation #
+# Call graph_analyze #
 
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:

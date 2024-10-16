@@ -38,6 +38,11 @@ ref_genome: /home/mikhail/Code/MDF-ILP/brendans_data_and_code/flow/GCF_009858895
 contig_file: all_samples_consensus_contigs.fasta
 
 cf_file: /home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/out.cf_seg
+read_purge_percent: 5
+# Model Time Limit (in min)
+decomp_time_limit: 5
+# Threads used by solver
+gurobi_threads: 4
 #######################
 ## Optional settings ##
 #######################
