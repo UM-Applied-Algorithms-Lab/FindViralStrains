@@ -220,8 +220,7 @@ rule Convert_To_Fasta:
 
 #fastq_filenames.append("covid19ref") # Temp for troubleshooting
 
-# Rule to check ulimit and give warning if its not 2048 or larger #
-
+# Creates De Bruijn Graph #
 rule Cuttlefish:
     input:
         trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames)
