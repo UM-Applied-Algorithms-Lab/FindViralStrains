@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {       
+            "name": "Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/graph_analyzer",
+            "args": [ "-m","/home/teem/data/For_Tim2/refPlusSamples.mg"],
+            "cwd": "${workspaceRoot}",
+        }
+    ]
+}
