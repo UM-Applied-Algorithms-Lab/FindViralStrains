@@ -161,11 +161,12 @@ fn write_subgraph_files(
             Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
-        let mut subgraph_mg_file = match std::fs::OpenOptions::new()
+        let mut subgraph_mg_file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true) // Overwrite if exists
             .open(subgraph_file_path)
+            .expect("unable to open subgraph mg file for writing");
 
         //write the subgraph label
         subgraph_mg_file
@@ -180,17 +181,16 @@ fn write_subgraph_files(
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                match subgraph_mg_file.write_fmt(format_args!(
+                subgraph_mg_file
+                    .write_fmt(format_args!(
                     "{}\t{} \t{}\n",
                     from_node,
                     to_node,
                     edge_kmers
                         .get(&(from_node.clone(), to_node.clone()))
                         .unwrap()
-                )) {
-                    Ok(_) => {}
-                    Err(err) => panic!("could not open subgraph mg file for writing: {}", err),
-                }
+                    ))
+                    .expect("unable to write graph line to subgraph file");
             }
         }
     }
