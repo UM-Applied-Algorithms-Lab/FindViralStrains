@@ -4,6 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader, Result, Write};
 use std::path::Path;
+use std::rc::Rc;
 
 //Struct used to handle input args, with the Clap rust crate.
 //This pulls help text from the comments, and compiler flags/options from the variable names
@@ -28,8 +29,8 @@ struct GraphAnalysisData {
     num_nodes: usize,
     num_edges: usize,
     num_disconnected_subgraphs: usize,
-    sources: Vec<String>,
-    sinks: Vec<String>,
+    sources: Vec<Rc<str>>,
+    sinks: Vec<Rc<str>>,
     is_acyclic: bool,
 }
 
@@ -54,9 +55,10 @@ impl std::fmt::Display for GraphAnalysisData {
             self.num_disconnected_subgraphs,
             self.sources.len(),
             self.sinks.len(),
-            match self.is_acyclic {
-                true => "yes".green(),
-                false => "no".red(),
+            if self.is_acyclic {
+                format!("{}", "yes").green()
+            } else {
+                format!("{}", "no").red()
             }
         )
     }
@@ -64,8 +66,8 @@ impl std::fmt::Display for GraphAnalysisData {
 
 //for any node in a graph, store the in and out edges as vectors
 struct NodeEdges {
-    in_edges: Vec<String>,
-    out_edges: Vec<String>,
+    in_edges: Vec<Rc<str>>,
+    out_edges: Vec<Rc<str>>,
 }
 
 impl Clone for NodeEdges {
@@ -90,8 +92,7 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.mg_file_name))
-    {
+    let (main_graph, edge_kmers) = match make_main_graph(Path::new(&args.mg_file_name)) {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
     };
@@ -115,12 +116,7 @@ fn main() {
     );
 
     //writes the subgraphs over the node % cutoff to individual files for further processing
-    write_subgraph_files(
-        significant_subgraph_list,
-        &args.mg_file_name,
-        &graph_label,
-        &edge_kmers,
-    );
+    write_subgraph_files(significant_subgraph_list, &args.mg_file_name, &edge_kmers);
 }
 
 /// given a list of subgraphs, writes them to files for further use in the pipeline.
@@ -128,10 +124,9 @@ fn main() {
 ///
 /// significant_subgraph_list should be the list of all subgraphs to print
 fn write_subgraph_files(
-    significant_subgraph_list: Vec<&HashMap<String, NodeEdges>>,
+    significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
-    main_graph_label: &String,
-    edge_kmers: &HashMap<(String, String), String>,
+    edge_kmers: &HashMap<(Rc<str>, Rc<str>), Rc<str>>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
         let subgraph_directory_name = base_file_name.to_string() + "_subgraphs";
@@ -161,36 +156,29 @@ fn write_subgraph_files(
             Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
-        let mut subgraph_mg_file = std::fs::OpenOptions::new()
+        let mut subgraph_mg_file = match std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true) // Overwrite if exists
             .open(subgraph_file_path)
-            .expect("unable to open subgraph mg file for writing");
-
-        //write the subgraph label
-        subgraph_mg_file
-            .write_fmt(format_args!("{} subgraph_{}\n", main_graph_label, subgraph_idx))
-            .expect("unable to write subgraph label to file");
-
-        //get the number of nodes for the subgraph
-        let subgraph_num_nodes = subgraph.len();
-        subgraph_mg_file
-            .write_fmt(format_args!("{}\n", subgraph_num_nodes))
-            .expect("unable to write subgraph node count to file");
+        {
+            Ok(file) => file,
+            Err(_) => panic!("unable to open subgraph mg file for writing"),
+        };
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                subgraph_mg_file
-                    .write_fmt(format_args!(
-                    "{}\t{} \t{}\n",
+                match subgraph_mg_file.write_fmt(format_args!(
+                    "{}\t{} \t{}",
                     from_node,
                     to_node,
                     edge_kmers
                         .get(&(from_node.clone(), to_node.clone()))
                         .unwrap()
-                    ))
-                    .expect("unable to write graph line to subgraph file");
+                )) {
+                    Ok(_) => {}
+                    Err(err) => panic!("could not open subgraph mg file for writing: {}", err),
+                }
             }
         }
     }
@@ -198,8 +186,8 @@ fn write_subgraph_files(
 
 /// displays the statistics of the main graph and all subgraphs (or only all significant subgraphs)
 fn display_graph_stats(
-    main_graph: &HashMap<String, NodeEdges>,
-    subgraph_list: &Vec<HashMap<String, NodeEdges>>,
+    main_graph: &HashMap<Rc<str>, NodeEdges>,
+    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
     subgraph_display_type: SubgraphDisplayType,
 ) {
     println!(
@@ -233,7 +221,7 @@ fn display_graph_stats(
 
 /// generates the stats for a graph (or subgraph)
 /// If using for the full graph, give the num_subgraphs, for a subgraph just give zero, I guess...
-fn make_graph_stats(graph: &HashMap<String, NodeEdges>, num_subgraphs: usize) -> GraphAnalysisData {
+fn make_graph_stats(graph: &HashMap<Rc<str>, NodeEdges>, num_subgraphs: usize) -> GraphAnalysisData {
     let (sources, sinks) = make_source_sink_lists(&graph);
     GraphAnalysisData {
         num_nodes: graph.len(),
@@ -247,9 +235,9 @@ fn make_graph_stats(graph: &HashMap<String, NodeEdges>, num_subgraphs: usize) ->
 
 /// generates the list of subgraphs. This is a new graph list, so it increaes memory, but avoids memory issues and the
 /// borrow checker (and lifetimes)
-fn make_subgraph_list(main_graph: &HashMap<String, NodeEdges>) -> Vec<HashMap<String, NodeEdges>> {
-    let mut node_colors: HashMap<String, usize> = HashMap::new();
-    let mut subgraph_list: Vec<HashMap<String, NodeEdges>> = Vec::new();
+fn make_subgraph_list(main_graph: &HashMap<Rc<str>, NodeEdges>) -> Vec<HashMap<Rc<str>, NodeEdges>> {
+    let mut node_colors: HashMap<Rc<str>, usize> = HashMap::new();
+    let mut subgraph_list: Vec<HashMap<Rc<str>, NodeEdges>> = Vec::new();
 
     // flood fills the graph to find all connected nodes
     for (node_idx, (node_name, _)) in main_graph.iter().enumerate() {
@@ -265,7 +253,7 @@ fn make_subgraph_list(main_graph: &HashMap<String, NodeEdges>) -> Vec<HashMap<St
 
     // generates separate hashmaps for each subgraph
     for node_color in node_color_set {
-        let subgraph: HashMap<String, NodeEdges> = node_colors
+        let subgraph: HashMap<Rc<str>, NodeEdges> = node_colors
             .iter()
             .filter(|(_, color)| node_color == **color)
             .map(|(node_name, _)| main_graph.get_key_value(node_name).unwrap())
@@ -279,9 +267,9 @@ fn make_subgraph_list(main_graph: &HashMap<String, NodeEdges>) -> Vec<HashMap<St
 /// using a percent cutoff, filters the list of subgraphs to only those who have a large enough share of nodes.
 /// "large enough share" is defined as at least 'node_percent_cutoff' percent of the total nodes of the full graph.
 fn make_significant_subgraph_list(
-    subgraph_list: &Vec<HashMap<String, NodeEdges>>,
+    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
     node_percent_cutoff: f32,
-) -> Vec<&HashMap<String, NodeEdges>> {
+) -> Vec<&HashMap<Rc<str>, NodeEdges>> {
     let num_total_nodes: usize = subgraph_list.iter().map(|subgraph| subgraph.len()).sum();
     let min_nodes_for_significant_subgraph: usize =
         ((num_total_nodes as f32) * node_percent_cutoff) as usize;
@@ -296,81 +284,65 @@ fn make_significant_subgraph_list(
 fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
-    HashMap<String, NodeEdges>,
-    HashMap<(String, String), String>,
-    String,
+    HashMap<Rc<str>, NodeEdges>,
+    HashMap<(Rc<str>, Rc<str>), Rc<str>>,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
-    let mut main_graph: HashMap<String, NodeEdges> = HashMap::new();
-    let mut edge_kmers: HashMap<(String, String), String> = HashMap::new();
-    let mut lines = file_reader.lines();
-    let graph_label = lines
-        .next()
-        .expect("could not read any lines from graph file")
-        .expect("unable to read from graph file.");
-
-    //skip the line containing the number of nodes
-    let _ = lines.next();
+    let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
+    let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), Rc<str>> = HashMap::new();
+    let lines = file_reader.lines().skip(2);
 
     for line in lines {
-        match line {
-            Ok(line) => {
-                let mut split_line = line.split_whitespace();
-                let from_node = match split_line.next() {
-                    Some(node) => node.to_string(),
-                    None => {
-                        println!("couldn't parse line {}", line);
-                        continue;
-                    }
-                };
-                let to_node = match split_line.next() {
-                    Some(node) => node.to_string(),
-                    None => {
-                        println!("couldn't parse line {}", line);
-                        continue;
-                    }
-                };
-                let edge_kmer = match split_line.next() {
-                    Some(kmer) => kmer.to_string(),
-                    None => {
-                        println!("couldn't parse line {}", line);
-                        continue;
-                    }
-                };
+        let line = line.expect("unable to read line in input file");
+        let mut split_line = line.split_whitespace();
 
-                main_graph
-                    .entry(from_node.clone())
-                    .or_insert_with(NodeEdges::new)
-                    .out_edges
-                    .push(to_node.clone());
-                main_graph
-                    .entry(to_node.clone())
-                    .or_insert_with(NodeEdges::new)
-                    .in_edges
-                    .push(from_node.clone());
+        let from_node: Rc<str> = Rc::from(split_line.next().expect(
+            "encountered incorrectly formatted line in input file: \
+            could not parse first node name",
+        ));
 
-                edge_kmers.insert((from_node, to_node), edge_kmer);
-            }
-            Err(_) => println!("unable to get file line."),
-        }
+        let to_node: Rc<str> = Rc::from(split_line.next().expect(
+            "encountered incorrectly formatted line in input file: \
+            could not parse second node name",
+        ));
+        let edge_kmer: Rc<str> = Rc::from(split_line.next().expect(
+            "encountered incorrectly formatted line in input file: \
+            could not parse second node name",
+        ));
+
+        main_graph
+            .entry(from_node.clone())
+            .or_insert_with(NodeEdges::new)
+            .out_edges
+            .push(to_node.clone());
+        main_graph
+            .entry(to_node.clone())
+            .or_insert_with(NodeEdges::new)
+            .in_edges
+            .push(from_node.clone());
+
+        edge_kmers.insert(
+            (from_node, to_node),
+            edge_kmer,
+        );
     }
 
-    return Ok((main_graph, edge_kmers, graph_label));
+    return Ok((main_graph, edge_kmers));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph
-fn make_source_sink_lists(edge_map: &HashMap<String, NodeEdges>) -> (Vec<String>, Vec<String>) {
+fn make_source_sink_lists(edge_map: &HashMap<Rc<str>, NodeEdges>) -> (Vec<Rc<str>>, Vec<Rc<str>>) {
     // let end_nodes: HashSet<&String> = out_edge_map.values().flatten().collect();
 
-    let sources: Vec<String> = edge_map
+    let sources: Vec<Rc<str>> = edge_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())
         .map(|(node_name, _)| node_name.clone())
         .collect();
 
-    let sinks: Vec<String> = edge_map
+    let sinks: Vec<Rc<str>> = edge_map
         .iter()
         .filter(|(_, edges)| edges.out_edges.is_empty())
         .map(|(node_name, _)| node_name.clone())
@@ -382,16 +354,16 @@ fn make_source_sink_lists(edge_map: &HashMap<String, NodeEdges>) -> (Vec<String>
 /// uses a flood-fill algorithm to find all nodes connected to the given base_node.
 /// the given color labels the nodes referenced in the node_colors hashmap.
 fn graph_color_flood_fill(
-    edge_map: &HashMap<String, NodeEdges>,
-    node_colors: &mut HashMap<String, usize>,
-    base_node: &String,
+    edge_map: &HashMap<Rc<str>, NodeEdges>,
+    node_colors: &mut HashMap<Rc<str>, usize>,
+    base_node: &Rc<str>,
     color: usize,
 ) {
-    let mut node_stack: Vec<String> = Vec::new();
+    let mut node_stack: Vec<Rc<str>> = Vec::new();
     node_stack.push(base_node.clone());
 
     while !node_stack.is_empty() {
-        let current_node: String = node_stack.pop().unwrap();
+        let current_node: Rc<str> = node_stack.pop().unwrap();
         if !node_colors.contains_key(&current_node.clone()) {
             node_colors.insert(current_node.clone(), color);
 
@@ -403,16 +375,16 @@ fn graph_color_flood_fill(
 }
 
 /// determines if the given graph has any cycles
-fn graph_is_acyclic(node_map: &HashMap<String, NodeEdges>) -> bool {
-    let source_nodes: Vec<String> = node_map
+fn graph_is_acyclic(node_map: &HashMap<Rc<str>, NodeEdges>) -> bool {
+    let source_nodes: Vec<Rc<str>> = node_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())
         .map(|(node_name, _)| node_name.clone())
         .collect();
 
     for source in source_nodes {
-        let mut acyclic_nodes: HashSet<String> = HashSet::new();
-        let mut node_path: Vec<(String, usize)> = Vec::new();
+        let mut acyclic_nodes: HashSet<Rc<str>> = HashSet::new();
+        let mut node_path: Vec<(Rc<str>, usize)> = Vec::new();
 
         node_path.push((source, 0));
 
