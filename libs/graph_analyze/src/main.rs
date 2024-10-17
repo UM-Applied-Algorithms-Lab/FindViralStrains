@@ -54,10 +54,9 @@ impl std::fmt::Display for GraphAnalysisData {
             self.num_disconnected_subgraphs,
             self.sources.len(),
             self.sinks.len(),
-            if self.is_acyclic {
-                format!("{}", "yes").green()
-            } else {
-                format!("{}", "no").red()
+            match self.is_acyclic{
+                true=> "yes".green(),
+                false=>"no".red()
             }
         )
     }
