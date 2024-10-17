@@ -172,6 +172,11 @@ fn write_subgraph_files(
             .write_fmt(format_args!("{} subgraph_{}\n", main_graph_label, subgraph_idx))
             .expect("unable to write subgraph label to file");
 
+        //get the number of nodes for the subgraph
+        let subgraph_num_nodes = subgraph.len();
+        subgraph_mg_file
+            .write_fmt(format_args!("{}\n", subgraph_num_nodes))
+            .expect("unable to write subgraph node count to file");
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
