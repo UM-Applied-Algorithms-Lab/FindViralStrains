@@ -90,7 +90,8 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers) = match make_main_graph(Path::new(&args.mg_file_name)) {
+    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.mg_file_name))
+    {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
     };
@@ -114,7 +115,12 @@ fn main() {
     );
 
     //writes the subgraphs over the node % cutoff to individual files for further processing
-    write_subgraph_files(significant_subgraph_list, &args.mg_file_name, &edge_kmers);
+    write_subgraph_files(
+        significant_subgraph_list,
+        &args.mg_file_name,
+        &graph_label,
+        &edge_kmers,
+    );
 }
 
 /// given a list of subgraphs, writes them to files for further use in the pipeline.
