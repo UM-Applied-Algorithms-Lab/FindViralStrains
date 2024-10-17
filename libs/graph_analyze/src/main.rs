@@ -298,13 +298,21 @@ fn make_main_graph(
 ) -> Result<(
     HashMap<String, NodeEdges>,
     HashMap<(String, String), String>,
+    String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<String, NodeEdges> = HashMap::new();
     let mut edge_kmers: HashMap<(String, String), String> = HashMap::new();
-    let lines = file_reader.lines().skip(2);
+    let mut lines = file_reader.lines();
+    let graph_label = lines
+        .next()
+        .expect("could not read any lines from graph file")
+        .expect("unable to read from graph file.");
+
+    //skip the line containing the number of nodes
+    let _ = lines.next();
 
     for line in lines {
         match line {
@@ -349,7 +357,7 @@ fn make_main_graph(
         }
     }
 
-    return Ok((main_graph, edge_kmers));
+    return Ok((main_graph, edge_kmers, graph_label));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph
