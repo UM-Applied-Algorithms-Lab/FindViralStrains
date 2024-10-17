@@ -130,6 +130,7 @@ fn main() {
 fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<String, NodeEdges>>,
     base_file_name: &String,
+    main_graph_label: &String,
     edge_kmers: &HashMap<(String, String), String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -165,10 +166,12 @@ fn write_subgraph_files(
             .create(true)
             .truncate(true) // Overwrite if exists
             .open(subgraph_file_path)
-        {
-            Ok(file) => file,
-            Err(_) => panic!("unable to open subgraph mg file for writing"),
-        };
+
+        //write the subgraph label
+        subgraph_mg_file
+            .write_fmt(format_args!("{} subgraph_{}\n", main_graph_label, subgraph_idx))
+            .expect("unable to write subgraph label to file");
+
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
