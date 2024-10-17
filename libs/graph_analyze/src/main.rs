@@ -283,7 +283,7 @@ fn make_significant_subgraph_list(
 fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
-    HashMap<String, Node1Edges>,
+    HashMap<String, NodeEdges>,
     HashMap<(String, String), String>,
 )> {
     let file = File::open(file_path)?;

@@ -221,8 +221,6 @@ rule Convert_To_Fasta:
         "seqtk seq -A {input.unzipped} > {output.converted}"
 
 
-#fastq_filenames.append("covid19ref") # Temp for troubleshooting
-
 # Creates De Bruijn Graph #
 rule Cuttlefish:
     input:
@@ -248,15 +246,24 @@ rule Mer_graph:
 	shell:
 		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
 
-# Fake source and sink creation #
-# Call graph_analyze #
+# Returns arguments on various subgraphs in the provided data #
+rule Create_subgraphs:
+    input:
+        script = bd("/libs/graph_analyze/src/main.rs"),
+        infile = bd("out.mg"),
+    output:
+        graph_0 = bd("out.mg_subgraphs/graph_0.mg")
+    shell:
+        "cargo run -- --mg-file-name {infile}"
+
+# 
 
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		mg = bd("out.mg"),
-		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input dir #
+        mg = bd("out.mg_subgraphs/graph_0.mg"),
+		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input #
 	output:
 		bd("wgs/{sample}.wg")
 	shell:

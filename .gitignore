@@ -20,3 +20,4 @@ FlameGraph/
 perf*
 target
 .cargo
+.vscode
