@@ -248,24 +248,22 @@ rule Mer_graph:
 
 # Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
-    input:
-        script = bd("/libs/graph_analyze/src/main.rs"),
-        infile = bd("out.mg"),
-    output:
-        graph_0 = bd("out.mg_subgraphs/graph_0.mg")
-    shell:
-        "cargo run -- --mg-file-name {infile}"
-
-# 
+	input:
+		script = "libs/graph_analyze/src/main.rs",
+		infile = bd("out.mg"),
+	output:
+		graph_0 = bd("out.mg_subgraphs/graph_0.mg")
+	shell:
+		"cargo run -- --mg-file-name {input.script}" 
 
 # Runs Jellyfih to build weighted graph file #
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-        mg = bd("out.mg_subgraphs/graph_0.mg"),
+		mg = bd("out.mg_subgraphs/graph_0.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input #
 	output:
-		bd("wgs/{sample}.wg")
+		bd("wgs/{sample}.wg"),
 	shell:
 		"{input.script} {input.reads} {input.mg} {output}"
 
