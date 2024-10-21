@@ -4,6 +4,7 @@ InputMergraph="$2"
 OutputFile="$3"
 start_time=$(date +%s) 
 
+
 # Function to calculate and print the elapsed time
 print_elapsed_time() {
     local current_time=$(date +%s)
@@ -38,6 +39,9 @@ while IFS= read -r line; do
 		seq="${array[2]}"
 		# query the index for the edgemer count
 		count=$(jellyfish query $JellyfishIndex "$seq" | awk '{print $2}')
+		echo "jellyfishfile $file"
+		echo "mergraph $InputMergraph"
+		echo "output file $OutputFile"
 		# print
 		echo -e "${array[0]}\t${array[1]}\t$count" >> $OutputFile
 	else

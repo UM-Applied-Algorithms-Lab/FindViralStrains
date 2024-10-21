@@ -169,7 +169,7 @@ fn write_subgraph_files(
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
                 match subgraph_mg_file.write_fmt(format_args!(
-                    "{}\t{} \t{}",
+                    "{}\t{} \t{}\n",
                     from_node,
                     to_node,
                     edge_kmers

@@ -254,9 +254,9 @@ rule Create_subgraphs:
 	output:
 		graph_0 = bd("out.mg_subgraphs/graph_0.mg")
 	shell:
-		"cargo run -- --mg-file-name {input.script}" 
+		"cd libs/graph_analyze/src && cargo run  -- -m {input.infile} && cf -"
 
-# Runs Jellyfih to build weighted graph file #
+# Runs Jellyfish to build weighted graph file #
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
@@ -265,7 +265,10 @@ rule Run_jf:
 	output:
 		bd("wgs/{sample}.wg"),
 	shell:
-		"{input.script} {input.reads} {input.mg} {output}"
+		"""
+		echo "Bad"
+		{input.script} {input.reads} {input.mg} {output}
+		"""
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
