@@ -55,10 +55,9 @@ impl std::fmt::Display for GraphAnalysisData {
             self.num_disconnected_subgraphs,
             self.sources.len(),
             self.sinks.len(),
-            if self.is_acyclic {
-                format!("{}", "yes").green()
-            } else {
-                format!("{}", "no").red()
+            match self.is_acyclic {
+                true => "yes".green(),
+                false => "no".red(),
             }
         )
     }
@@ -92,7 +91,8 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers) = match make_main_graph(Path::new(&args.mg_file_name)) {
+    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.mg_file_name))
+    {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
     };
@@ -116,7 +116,12 @@ fn main() {
     );
 
     //writes the subgraphs over the node % cutoff to individual files for further processing
-    write_subgraph_files(significant_subgraph_list, &args.mg_file_name, &edge_kmers);
+    write_subgraph_files(
+        significant_subgraph_list,
+        &args.mg_file_name,
+        &graph_label,
+        &edge_kmers,
+    );
 }
 
 /// given a list of subgraphs, writes them to files for further use in the pipeline.
@@ -126,6 +131,7 @@ fn main() {
 fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
+    main_graph_label: &String,
     edge_kmers: &HashMap<(Rc<str>, Rc<str>), Rc<str>>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -156,29 +162,39 @@ fn write_subgraph_files(
             Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
-        let mut subgraph_mg_file = match std::fs::OpenOptions::new()
+        let mut subgraph_mg_file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true) // Overwrite if exists
             .open(subgraph_file_path)
-        {
-            Ok(file) => file,
-            Err(_) => panic!("unable to open subgraph mg file for writing"),
-        };
+            .expect("unable to open subgraph mg file for writing");
+
+        //write the subgraph label
+        subgraph_mg_file
+            .write_fmt(format_args!(
+                "{} subgraph_{}\n",
+                main_graph_label, subgraph_idx
+            ))
+            .expect("unable to write subgraph label to file");
+
+        //get the number of nodes for the subgraph
+        let subgraph_num_nodes = subgraph.len();
+        subgraph_mg_file
+            .write_fmt(format_args!("{}\n", subgraph_num_nodes))
+            .expect("unable to write subgraph node count to file");
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                match subgraph_mg_file.write_fmt(format_args!(
-                    "{}\t{} \t{}\n",
-                    from_node,
-                    to_node,
-                    edge_kmers
-                        .get(&(from_node.clone(), to_node.clone()))
-                        .unwrap()
-                )) {
-                    Ok(_) => {}
-                    Err(err) => panic!("could not open subgraph mg file for writing: {}", err),
-                }
+                subgraph_mg_file
+                    .write_fmt(format_args!(
+                        "{}\t{}\t{}\n",
+                        from_node,
+                        to_node,
+                        edge_kmers
+                            .get(&(from_node.clone(), to_node.clone()))
+                            .unwrap()
+                    ))
+                    .expect("unable to write graph line to subgraph file");
             }
         }
     }
@@ -221,7 +237,10 @@ fn display_graph_stats(
 
 /// generates the stats for a graph (or subgraph)
 /// If using for the full graph, give the num_subgraphs, for a subgraph just give zero, I guess...
-fn make_graph_stats(graph: &HashMap<Rc<str>, NodeEdges>, num_subgraphs: usize) -> GraphAnalysisData {
+fn make_graph_stats(
+    graph: &HashMap<Rc<str>, NodeEdges>,
+    num_subgraphs: usize,
+) -> GraphAnalysisData {
     let (sources, sinks) = make_source_sink_lists(&graph);
     GraphAnalysisData {
         num_nodes: graph.len(),
@@ -235,7 +254,9 @@ fn make_graph_stats(graph: &HashMap<Rc<str>, NodeEdges>, num_subgraphs: usize) -
 
 /// generates the list of subgraphs. This is a new graph list, so it increaes memory, but avoids memory issues and the
 /// borrow checker (and lifetimes)
-fn make_subgraph_list(main_graph: &HashMap<Rc<str>, NodeEdges>) -> Vec<HashMap<Rc<str>, NodeEdges>> {
+fn make_subgraph_list(
+    main_graph: &HashMap<Rc<str>, NodeEdges>,
+) -> Vec<HashMap<Rc<str>, NodeEdges>> {
     let mut node_colors: HashMap<Rc<str>, usize> = HashMap::new();
     let mut subgraph_list: Vec<HashMap<Rc<str>, NodeEdges>> = Vec::new();
 
@@ -286,13 +307,20 @@ fn make_main_graph(
 ) -> Result<(
     HashMap<Rc<str>, NodeEdges>,
     HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
     let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), Rc<str>> = HashMap::new();
-    let lines = file_reader.lines().skip(2);
+    let mut lines = file_reader.lines();
+    let graph_label = lines
+        .next()
+        .expect("could not read any lines from graph file")
+        .expect("unable to read from graph file.");
+    //skip the line containing the number of nodes
+    let _ = lines.next();
 
     for line in lines {
         let line = line.expect("unable to read line in input file");
@@ -323,13 +351,10 @@ fn make_main_graph(
             .in_edges
             .push(from_node.clone());
 
-        edge_kmers.insert(
-            (from_node, to_node),
-            edge_kmer,
-        );
+        edge_kmers.insert((from_node, to_node), edge_kmer);
     }
 
-    return Ok((main_graph, edge_kmers));
+    return Ok((main_graph, edge_kmers, graph_label));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph
