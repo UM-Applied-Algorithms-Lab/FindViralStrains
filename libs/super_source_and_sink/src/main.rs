@@ -1,51 +1,47 @@
 use std::collections::HashSet;
 use std::env;
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
+use std::io::{self, BufRead, BufReader, Write};
+use std::fs::{File, OpenOptions};
 
+// Helper function to read nodes from a file
 fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
-    let path = Path::new(filename);
-    let file = File::open(&path)?;
-    let reader = io::BufReader::new(file);
-    
+    let file = File::open(filename)?;
+    let reader = BufReader::new(file);
+
     let nodes: HashSet<String> = reader
         .lines()
-        .filter_map(Result::ok)
+        .filter_map(|line| line.ok())
         .collect();
-        
+
     Ok(nodes)
 }
 
+// Create "super source" and "super sink" nodes and return a list of edges
 fn create_super_sources_and_sinks(
     sources_file: &str,
     full_node_list: &str,
     sinks_file: &str,
-) -> io::Result<(HashSet<String>, HashSet<String>)> {
+) -> io::Result<Vec<(String, String)>> {
     // Read the node lists from the files
     let full_nodes = read_nodes_from_file(full_node_list)?;
     let sinks = read_nodes_from_file(sinks_file)?;
     let sources = read_nodes_from_file(sources_file)?;
-    
-    // Create super source and super sink sets
-    let mut super_source = HashSet::new();
-    let mut super_sink = HashSet::new();
-    
-    // Super source: nodes that are sources but not sinks
-    for node in sources.difference(&sinks) {
-        if full_nodes.contains(node) {
-            super_source.insert(node.clone());
-        }
-    }
-    
-    // Super sink: nodes that are sinks but not sources
-    for node in sinks.difference(&sources) {
-        if full_nodes.contains(node) {
-            super_sink.insert(node.clone());
-        }
+
+    let mut edges = Vec::new();
+
+    // Add edges from the "super source" (node "0") to all source nodes
+    let super_source = "0".to_string();
+    for source in &sources {
+        edges.push((super_source.clone(), source.clone()));
     }
 
-    Ok((super_source, super_sink))
+    // Add edges from each sink node to the "super sink" (node "1")
+    let super_sink = "1".to_string();
+    for sink in &sinks {
+        edges.push((sink.clone(), super_sink.clone()));
+    }
+
+    Ok(edges)
 }
 
 fn main() -> io::Result<()> {
@@ -56,14 +52,35 @@ fn main() -> io::Result<()> {
         std::process::exit(1);
     }
 
+    // Command line arguments
     let sources_file = &args[1];
     let full_node_list = &args[2];
     let sinks_file = &args[3];
 
-    let (super_source, super_sink) = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file)?;
-    
-    println!("Super Sources: {:?}", super_source);
-    println!("Super Sinks: {:?}", super_sink);
-    
+    // Create super sources and sinks and retrieve the updated edges list
+    let edges = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file)?;
+
+    // Print information about the new nodes (super source and super sink)
+    println!("New nodes added:");
+    println!("  Super Source Node: 0");
+    println!("  Super Sink Node: 1");
+    println!(); // Line break for better readability
+
+    // Open the full_node_list file in append mode
+    let mut file = OpenOptions::new()
+        .append(true)
+        .open(full_node_list)?;
+
+    // Print the edges in the desired format and append them to the file
+    println!("New edges created:");
+    for (index, (from, to)) in edges.iter().enumerate() {
+        // Example format for printing:
+        // index + 1, from_node, to_node, nucleotide_sequence (empty in this case)
+        println!("{:>3} {}", from, to);
+
+        // Append each 'from' and 'to' section to the full_node_list file
+        writeln!(file, "{} {}", from, to)?;
+    }
+
     Ok(())
 }

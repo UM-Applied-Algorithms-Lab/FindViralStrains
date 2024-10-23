@@ -250,11 +250,15 @@ rule Mer_graph:
 rule Create_subgraphs:
 	input:
 		script = "libs/graph_analyze/src/main.rs",
-		infile = bd("out.mg"),
+		infile = ("../../../output/NoRefTest/out.mg"), # Fix with proper navigation #
 	output:
 		graph_0 = bd("out.mg_subgraphs/graph_0.mg")
 	shell:
-		"cd libs/graph_analyze/src && cargo run  -- -m {input.infile} && cf -"
+		"""
+		cd libs/graph_analyze/src/
+		cargo run  --release -- -m {input.infile}
+		cd ../../..
+		"""
 
 # Runs Jellyfish to build weighted graph file #
 rule Run_jf:
@@ -266,9 +270,10 @@ rule Run_jf:
 		bd("wgs/{sample}.wg"),
 	shell:
 		"""
-		echo "Bad"
 		{input.script} {input.reads} {input.mg} {output}
 		"""
+
+
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
