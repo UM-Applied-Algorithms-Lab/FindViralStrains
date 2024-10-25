@@ -249,14 +249,32 @@ rule Mer_graph:
 # Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
 	input:
-		script = "libs/graph_analyze/src/main.rs",
-		infile = ("../../../output/NoRefTest/out.mg"), # Fix with proper navigation #
+		infile = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg"), # Broken argument #
 	output:
-		graph_0 = bd("out.mg_subgraphs/graph_0.mg")
+		graph_0 = bd("out.mg_subgraphs/graph_0.mg"),
+		sources = bd("out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("out.mg_subgraphs/graph_0.sources"),
 	shell:
 		"""
 		cd libs/graph_analyze/src/
+		pwd
 		cargo run  --release -- -m {input.infile}
+		cd ../../..
+		"""
+
+# Add super source and sink for ILP solver #
+rule Add_super:
+	input:
+		script = "libs/super_source_and_sink/src/main.rs",
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.mg"), # Temp for testing #
+		sources = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sinks"),
+		sinks = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sources"),
+	output:
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0_super.mg"),
+	shell:
+		"""
+		cd libs/super_source_and_sink/src/
+		cargo run --release {input.sources} {input.mg} {input.sinks}
 		cd ../../..
 		"""
 
@@ -264,7 +282,7 @@ rule Create_subgraphs:
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		mg = bd("out.mg_subgraphs/graph_0.mg"),
+		mg = bd("out.mg_subgraphs/graph_0_super.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input #
 	output:
 		bd("wgs/{sample}.wg"),
@@ -272,8 +290,6 @@ rule Run_jf:
 		"""
 		{input.script} {input.reads} {input.mg} {output}
 		"""
-
-
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
