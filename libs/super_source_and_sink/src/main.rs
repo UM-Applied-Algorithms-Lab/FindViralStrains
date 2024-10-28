@@ -21,7 +21,7 @@ fn create_super_sources_and_sinks(
     sources_file: &str,
     full_node_list: &str,
     sinks_file: &str,
-) -> io::Result<Vec<(String, String)>> {
+) -> io::Result<(HashSet<String>, Vec<(String, String)>)> {
     // Read the node lists from the files
     let full_nodes = read_nodes_from_file(full_node_list)?;
     let sinks = read_nodes_from_file(sinks_file)?;
@@ -41,7 +41,7 @@ fn create_super_sources_and_sinks(
         edges.push((sink.clone(), super_sink.clone()));
     }
 
-    Ok(edges)
+    Ok((full_nodes, edges))
 }
 
 fn main() -> io::Result<()> {
@@ -57,30 +57,40 @@ fn main() -> io::Result<()> {
     let full_node_list = &args[2];
     let sinks_file = &args[3];
 
-    // Create super sources and sinks and retrieve the updated edges list
-    let edges = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file)?;
+    // Create super sources and sinks and retrieve the updated nodes and edges list
+    let (full_nodes, edges) = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file)?;
 
-    // Print information about the new nodes (super source and super sink)
-    println!("New nodes added:");
-    println!("  Super Source Node: 0");
-    println!("  Super Sink Node: 1");
-    println!(); // Line break for better readability
-
-    // Open the full_node_list file in append mode
-    let mut file = OpenOptions::new()
-        .append(true)
-        .open(full_node_list)?;
-
-    // Print the edges in the desired format and append them to the file
-    println!("New edges created:");
-    for (index, (from, to)) in edges.iter().enumerate() {
-        // Example format for printing:
-        // index + 1, from_node, to_node, nucleotide_sequence (empty in this case)
-        println!("{:>3} {}", from, to);
-
-        // Append each 'from' and 'to' section to the full_node_list file
-        writeln!(file, "{} {}", from, to)?;
+    // Create a new file name based on the full_node_list file name with ".super.mg" suffix
+    let mut base_name = full_node_list.to_string();
+    if base_name.ends_with(".mg") {
+        // Remove the ".mg" suffix if it exists
+        base_name = base_name.trim_end_matches(".mg").to_string();
     }
 
+    let output_file_name = format!("{}.super.mg", base_name);
+    let mut output_file = File::create(&output_file_name)?;
+
+    // Print information about the new nodes (super source and super sink)
+    writeln!(output_file, "# New nodes added:")?;
+    writeln!(output_file, "# Super Source Node: 0")?;
+    writeln!(output_file, "# Super Sink Node: 1")?;
+    writeln!(output_file)?;
+
+    // Print all nodes including full nodes and super nodes
+    writeln!(output_file, "# Full node list:")?;
+    for node in &full_nodes {
+        writeln!(output_file, "{}", node)?;
+    }
+    writeln!(output_file, "0")?; // Super Source Node
+    writeln!(output_file, "1")?; // Super Sink Node
+    writeln!(output_file)?;
+
+    // Print and append the edges to the new file
+    writeln!(output_file, "# New edges created:")?;
+    for (from, to) in &edges {
+        writeln!(output_file, "{} {}", from, to)?;
+    }
+
+    println!("New nodes and edges written to: {}", output_file_name);
     Ok(())
 }

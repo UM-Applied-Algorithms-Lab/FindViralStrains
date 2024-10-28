@@ -270,7 +270,7 @@ rule Add_super:
 		sources = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sinks"),
 		sinks = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sources"),
 	output:
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0_super.mg"),
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.super.mg"),
 	shell:
 		"""
 		cd libs/super_source_and_sink/src/
@@ -282,7 +282,7 @@ rule Add_super:
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		mg = bd("out.mg_subgraphs/graph_0_super.mg"),
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.super.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input #
 	output:
 		bd("wgs/{sample}.wg"),
