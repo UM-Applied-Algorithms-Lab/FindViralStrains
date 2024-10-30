@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::env;
 use std::io::{self, BufRead, BufReader, Write};
-use std::fs::{File, OpenOptions};
+use std::fs::{File};
 
 // Helper function to read nodes from a file
 fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
@@ -69,12 +69,6 @@ fn main() -> io::Result<()> {
 
     let output_file_name = format!("{}.super.mg", base_name);
     let mut output_file = File::create(&output_file_name)?;
-
-    // Print information about the new nodes (super source and super sink)
-    writeln!(output_file, "# New nodes added:")?;
-    writeln!(output_file, "# Super Source Node: 0")?;
-    writeln!(output_file, "# Super Sink Node: 1")?;
-    writeln!(output_file)?;
 
     // Print all nodes including full nodes and super nodes
     writeln!(output_file, "# Full node list:")?;

@@ -257,24 +257,7 @@ rule Create_subgraphs:
 	shell:
 		"""
 		cd libs/graph_analyze/src/
-		pwd
 		cargo run  --release -- -m {input.infile}
-		cd ../../..
-		"""
-
-# Add super source and sink for ILP solver #
-rule Add_super:
-	input:
-		script = "libs/super_source_and_sink/src/main.rs",
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.mg"), # Temp for testing #
-		sources = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sinks"),
-		sinks = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sources"),
-	output:
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.super.mg"),
-	shell:
-		"""
-		cd libs/super_source_and_sink/src/
-		cargo run --release {input.sources} {input.mg} {input.sinks}
 		cd ../../..
 		"""
 
@@ -282,19 +265,36 @@ rule Add_super:
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.super.mg"),
-		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")), # New input #
+		graph_0 = bd("out.mg_subgraphs/graph_0.mg"),
+		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
 	output:
-		bd("wgs/{sample}.wg"),
+		"/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.wg"),
 	shell:
 		"""
-		{input.script} {input.reads} {input.mg} {output}
+		{input.script} {input.reads} {input.graph_0} {output}
+		"""
+
+# Add super source and sink for ILP solver #
+rule Add_super:
+	input:
+		script = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + "libs/super_source_and_sink/src/main.rs",
+		sources = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sinks"), # To be changed to a config variable later #
+		sinks = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sources"),
+		graph_0 = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.mg"),
+		wg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.wg"),
+	output:
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/{sample}.super.mg"),
+	shell:
+		"""
+		cd libs/super_source_and_sink/src/
+		cargo run --release {input.sources} {input.graph_0} {input.sinks}
+		cd ../../..
 		"""
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		wg = bd("wgs/{sample}.wg"),
+		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/{sample}.super.mg"),
 		script = "libs/decompose/fracdecomp.py",
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
@@ -302,7 +302,7 @@ rule Decompose:
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		flow3 = bd("decomp_results/{sample}_3.paths"),
 	shell:
-		"python3 {input.script} -i {input.wg} -o {output.decomp} -M 3 --timelimit 125"
+		"python3 {input.script} -i {input.mg} -o {output.decomp} -M 3 --timelimit 600"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
