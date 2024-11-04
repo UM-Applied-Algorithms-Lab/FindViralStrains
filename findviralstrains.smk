@@ -283,26 +283,26 @@ rule Add_super:
 		graph_0 = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.mg"),
 		wg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.wg"),
 	output:
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/{sample}.super.mg"),
+		swg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.super.wg"),
 	shell:
 		"""
 		cd libs/super_source_and_sink/src/
-		cargo run --release {input.sources} {input.graph_0} {input.sinks}
+		cargo run --release {input.sources} {input.graph_0} {input.sinks} {input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
 		cd ../../..
 		"""
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		mg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/{sample}.super.mg"),
 		script = "libs/decompose/fracdecomp.py",
+		swg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		flow3 = bd("decomp_results/{sample}_3.paths"),
 	shell:
-		"python3 {input.script} -i {input.mg} -o {output.decomp} -M 3 --timelimit 600"
+		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit 1200"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
