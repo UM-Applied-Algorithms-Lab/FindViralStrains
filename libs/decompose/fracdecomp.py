@@ -38,7 +38,7 @@ def read_input_counts(graphfile, mincount):
 
         for y in range(graphList[i], graphList[i+1]):
             line = lines[y].strip()
-            if line[0] == '#' or line == '':
+            if len(line) == 0 or line[0] == '#':
                 continue
             elements = line.split('\t')
             if len(elements) == 1:
