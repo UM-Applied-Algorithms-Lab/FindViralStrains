@@ -40,7 +40,7 @@ def read_input_counts(graphfile, mincount):
             line = lines[y].strip()
             if len(line) == 0 or line[0] == '#':
                 continue
-            elements = line.split('\t')
+            elements = line.split()
             if len(elements) == 1:
                 num_nodes = int(elements[0])
             elif len(elements) == 3:
