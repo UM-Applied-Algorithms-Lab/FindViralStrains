@@ -18,12 +18,28 @@ fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
 }
 
 // Helper function to read edges with weights from a file
-fn read_edges_with_weights(filename: &str) -> io::Result<Vec<(String, String, i32)>> {
+fn read_edges_with_weights(filename: &str, output_file: &mut File) -> io::Result<Vec<(String, String, i32)>> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
     let mut edges = Vec::new();
+    let mut line_count = 0;
 
-    for line in reader.lines().skip(2) { // Skip the first two lines
+    
+for line in reader.lines() {
+    line_count += 1;
+
+    if line_count == 2 {
+        // Write the second line (summary line) to the output file
+        if let Ok(summary_line) = line { // Ensure line is Ok before parsing
+            // Parse the line directly to a u32
+            let new_summary_line = summary_line.parse::<u32>().unwrap() + 2; // Add two for the super source and sink nodes
+            writeln!(output_file, "# Counts indicate weights on edges")?;
+            writeln!(output_file, "{}", new_summary_line)?;
+        }
+        continue; // Skip further processing for this line
+    }
+    // Further processing for other lines can go here if needed
+        // Process other lines for edges with weights
         if let Ok(line) = line {
             let parts: Vec<&str> = line.split_whitespace().collect();
             if parts.len() == 3 {
@@ -47,14 +63,15 @@ fn create_super_sources_and_sinks(
     full_node_list: &str,
     sinks_file: &str,
     edge_file: &str,
+    output_file: &mut File,
 ) -> io::Result<(HashSet<String>, Vec<(String, String, i32)>)> {
     // Read the node lists from the files
     let full_nodes = read_nodes_from_file(full_node_list)?;
     let sinks = read_nodes_from_file(sinks_file)?;
     let sources = read_nodes_from_file(sources_file)?;
 
-    // Read edges with weights
-    let mut edges = read_edges_with_weights(edge_file)?;
+    // Read edges with weights and write summary line to output file
+    let mut edges = read_edges_with_weights(edge_file, output_file)?;
 
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
     let super_source = "0".to_string();
@@ -104,20 +121,14 @@ fn main() -> io::Result<()> {
     let sample_name = extract_sample_name(edge_file);
     let output_file_path = output_directory.join(format!("{}.super.wg", sample_name));
 
-    // Create super sources and sinks and retrieve the updated nodes and edges list
-    let (_full_nodes, edges) = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file, edge_file)?;
-
     // Open the output file for writing
     let mut output_file = File::create(&output_file_path)?;
 
-    // Write only the super source and super sink nodes
-    writeln!(output_file, "# Super nodes list:")?;
-    writeln!(output_file, "0")?; // Super Source Node
-    writeln!(output_file, "1")?; // Super Sink Node
-    writeln!(output_file)?;
+    // Create super sources and sinks, and retrieve the updated nodes and edges list
+    let (_full_nodes, edges_with_supers) = create_super_sources_and_sinks(sources_file, full_node_list, sinks_file, edge_file, &mut output_file)?;
 
-    // Print and append the edges with weights to the new file, skipping non-numeric weights
-    for (from, to, weight) in &edges {
+    // Append the super nodes and updated edges to the output file
+    for (from, to, weight) in &edges_with_supers {
         writeln!(output_file, "{} {} {}", from, to, weight)?;
     }
 
