@@ -36,10 +36,9 @@ for line in reader.lines() {
             writeln!(output_file, "# Counts indicate weights on edges")?;
             writeln!(output_file, "{}", new_summary_line)?;
         }
-        continue; // Skip further processing for this line
+        continue;
     }
     // Further processing for other lines can go here if needed
-        // Process other lines for edges with weights
         if let Ok(line) = line {
             let parts: Vec<&str> = line.split_whitespace().collect();
             if parts.len() == 3 {
@@ -70,7 +69,6 @@ fn create_super_sources_and_sinks(
     let sinks = read_nodes_from_file(sinks_file)?;
     let sources = read_nodes_from_file(sources_file)?;
 
-    // Read edges with weights and write summary line to output file
     let mut edges = read_edges_with_weights(edge_file, output_file)?;
 
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
