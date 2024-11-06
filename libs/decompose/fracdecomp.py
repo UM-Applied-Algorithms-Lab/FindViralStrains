@@ -6,87 +6,129 @@ import time
 import os
 import math
 
+# TODO: change code to use source/sink files, instead of parsing them from input.
+
 def get_extremity(neighbors, extremity_type):
-    extremity = None
-    for node, node_neighbors in neighbors.items():
-        if len(node_neighbors) == 0:
-            print(node)
-            if extremity != None:
-                sys.exit(f"ERROR: input graph has more than one {extremity_type}")
-            else:
-                extremity = node
-    if extremity == None:
+    """TODO: deprecate this function, and use super-source and super-sink files 
+    Returns the 'extremity', or the node with no neighbors in the given neighbor set
+    Function will exit the program if multiple extremities are found. 
+    For example, this function can identify sources or sinks, depending on the neighbors collection given.
+    """
+    
+    #filter to find any nodes without neighbors 
+    extremity_list = [node for (node, neighbor_nodes) in neighbors.items if len(neighbor_nodes) == 0]
+    
+    # any number of extremities other than 1 is an error
+    if len(extremity_list) == 0:
         sys.exit(f"ERROR: The input graph has no {extremity_type} (and thus it is not a DAG)")
-    return extremity
+    elif len(extremity_list) > 1:
+        sys.exit(f"ERROR: input graph has more than one {extremity_type}")
+    else:
+        return extremity_list[0]
+        
+    # extremity = None
+    # for node, node_neighbors in neighbors.items():
+    #     if len(node_neighbors) == 0:
+    #         print(node)
+    #         if extremity != None:
+    #             sys.exit(f"ERROR: input graph has more than one {extremity_type}")
+    #         else:
+    #             extremity = node
+    # if extremity == None:
+    #     sys.exit(f"ERROR: The input graph has no {extremity_type} (and thus it is not a DAG)")
+    # return extremity
+    
+    
+def read_source_sink_file(source_sink_file_src):
+    """reads the super source or super sink file, and gets the name of the source/sink node
+    """
+    with open(source_sink_file_src, "r") as source_sink_file:
+        return source_sink_file.readline()
 
-def read_input_counts(graphfile, mincount):
-    lines = open(graphfile ,'r').readlines()
-    graphList = []
-    for i in range(0, len(lines)):
-        if lines[i][0] == '#':
-            graphList.append(i)
-    graphList.append(len(lines))
 
+def read_input_counts(graph_file_src, min_edge_weight):
+    """ Read through the input weighted graph file, and returns the data as a dict containing:
+    list of vertices,
+    weights of the edges,
+    out neighbors,
+    in neighbors,
+    the source node,
+    the sink node,
+    and the maximum weight along all edges
+    
+    """
     finalGraphs = []
-    for i in range(0, len(graphList) - 1):
-        num_nodes = 0
-        edges = dict()
-        count = dict()
-        out_neighbors = dict()
-        in_neighbors = dict()
-        max_count = 0
+    with open(graph_file_src, "r") as graph_file:
+    
+        lines = graph_file.readlines()    # This file is never closed!
+        graphList = []  #this is a terrible name, it's not a list of graphs its a list of edges
+        # append the index of the comment (should be line 0), and the num lines in the file, including
+        # the comment line and the count line
+        for i in range(0, len(lines)):
+            if lines[i][0] == '#':
+                graphList.append(i)
+        graphList.append(len(lines))
 
-        for y in range(graphList[i], graphList[i+1]):
-            line = lines[y].strip()
-            if len(line) == 0 or line[0] == '#':
-                continue
-            elements = line.split()
-            if len(elements) == 1:
-                num_nodes = int(elements[0])
-            elif len(elements) == 3:
-                count_value = int(elements[2])
-                count[(elements[0], elements[1])] = 0 if count_value < mincount else count_value
-                max_count = max(max_count, count_value)
-                if elements[0] not in out_neighbors:
-                    out_neighbors[elements[0]] = []
-                out_neighbors[elements[0]].append(elements[1])
-                if elements[1] not in in_neighbors:
-                    in_neighbors[elements[1]] = []
-                in_neighbors[elements[1]].append(elements[0])
-                if elements[0] not in in_neighbors:
-                    in_neighbors[elements[0]] = []
-                if elements[1] not in out_neighbors:
-                    out_neighbors[elements[1]] = []
-            else:
-                sys.exit("ERROR: input file contains an ill-formatted line")
+        for i in range(0, len(graphList) - 1):  # range 0-1, i is bad variable name
+            num_edges = 0
+            edge_weights = dict()  #count of what? should be called "edge weights"
+            out_neighbors = dict()  #dict of node_name -> outgoing neighbors of node
+            in_neighbors = dict()   #dict of node_name -> incoming neighbors of node
+            max_edge_weight = 0   #count of what?
 
-        if num_nodes != len(in_neighbors):
-            sys.exit(f"ERROR: expecting {num_nodes} nodes, the input graph has {len(in_neighbors)} nodes")
+            for y in range(graphList[i], graphList[i+1]):   #0 to num_edges, y is bad variable name
+                line = lines[y].strip()
+                if len(line) == 0 or line[0] == '#':
+                    continue
+                
+                elements = line.split()
+                if len(elements) == 1:
+                    num_edges = int(elements[0])
+                elif len(elements) == 3:
+                    edge_weight_value = int(elements[2])
+                    edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0 tho
+                    max_edge_weight = max(max_edge_weight, edge_weight_value) #just used for a global max edges
+                    if elements[0] not in out_neighbors:
+                        out_neighbors[elements[0]] = []
+                    out_neighbors[elements[0]].append(elements[1])
+                    if elements[1] not in in_neighbors:
+                        in_neighbors[elements[1]] = []
+                    in_neighbors[elements[1]].append(elements[0])
+                    if elements[0] not in in_neighbors:
+                        in_neighbors[elements[0]] = []
+                    if elements[1] not in out_neighbors:
+                        out_neighbors[elements[1]] = []
+                else:
+                    sys.exit("ERROR: input file contains an ill-formatted line")
 
-        source = get_extremity(in_neighbors, 'source')
-        sink = get_extremity(out_neighbors, 'sink')
-        finalGraphs.append({
-            'vertices': list(in_neighbors.keys()),
-            'count': count,
-            'out_neighbors': out_neighbors,
-            'in_neighbors': in_neighbors,
-            'source': source,
-            'sink': sink,
-            'max_count': max_count
-        })
+            if num_edges != len(in_neighbors):
+                sys.exit(f"ERROR: expecting {num_edges} edges, the input graph has {len(in_neighbors)} edges")
+
+            source = get_extremity(in_neighbors, 'source')
+            sink = get_extremity(out_neighbors, 'sink')
+            finalGraphs.append({
+                'vertices': list(in_neighbors.keys()),
+                'count': edge_weights,
+                'out_neighbors': out_neighbors,
+                'in_neighbors': in_neighbors,
+                'source': source,
+                'sink': sink,
+                'max_count': max_edge_weight
+            })
 
     return finalGraphs
 
+
 def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, max_count, K, threads, timelimit, outputfilename):
-    V = vertices
-    E = set(count.keys())
-    data = dict()
-    W = 1
+    
+    edges = set(count.keys())    # this needs a better input that set(counts.keys())
+    output_data = dict()    #this still needs a better name
+    W = 1                   #WTF is W?
 
     try:
-        T = [(i, j, k) for (i, j) in E for k in range(0, K)]
+        T = [(i, j, k) for (i, j) in edges for k in range(0, K)]
         SC = [k for k in range(0, K)]
-        CE = [(i, j) for (i, j) in E]
+        CE = [(i, j) for (i, j) in edges]
 
         model = gp.Model("MFD")
         model.Params.LogToConsole = 0
@@ -100,7 +142,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
         eps = model.addVars(CE, vtype=GRB.CONTINUOUS, name="eps", lb=0)
 
         for k in range(0, K):
-            for i in V:
+            for i in vertices:
                 if i == source:
                     model.addConstr(sum(x[i, j, k] for j in out_neighbors[i]) == 1)
                 elif i == sink:
@@ -110,7 +152,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
                         sum(x[i, j, k] for j in out_neighbors[i]) - sum(x[j, i, k] for j in in_neighbors[i]) == 0
                     )
 
-        for (i, j) in E:
+        for (i, j) in edges:
             for k in range(0, K):
                 model.addConstr(z[i, j, k] <= W * x[i, j, k])
                 model.addConstr(w[k] - (1 - x[i, j, k]) * W <= z[i, j, k])
@@ -144,10 +186,10 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
         print("Model status: ", model.status)
 
         if model.status == GRB.OPTIMAL or model.status == GRB.TIME_LIMIT:
-            data['message'] = 'solved'
-            data['runtime'] = model.Runtime
-            data['mipgap'] = model.MIPGap
-            data['objval'] = model.ObjVal
+            output_data['message'] = 'solved'
+            output_data['runtime'] = model.Runtime
+            output_data['mipgap'] = model.MIPGap
+            output_data['objval'] = model.ObjVal
 
             for v in model.getVars():
                 if 'w' in v.VarName:
@@ -171,19 +213,19 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
                     j = elements[2]
                     eps_sol[i, j] = v.x
             paths = extract_paths(x_sol, source, sink, out_neighbors, K)
-            data['weights'] = w_sol
-            data['paths'] = paths
-            data['r_sol'] = r_sol
-            data['eps_sol'] = eps_sol
+            output_data['weights'] = w_sol
+            output_data['paths'] = paths
+            output_data['r_sol'] = r_sol
+            output_data['eps_sol'] = eps_sol
         if model.status == GRB.INFEASIBLE:
-            data['message'] = 'unsolved'
+            output_data['message'] = 'unsolved'
 
     except (gp.GurobiError, AttributeError, Exception) as e:
         print('Caught: ' + str(e))
         sys.exit('Exiting.')
 
-    print(data['message'])
-    return data
+    print(output_data['message'])
+    return output_data
 
 #def extract_paths(x, source, sink, out_neighbors, K):
 #    paths = []
@@ -227,23 +269,24 @@ def extract_paths(x, source, sink, out_neighbors, K):
     return paths
 
 
-def write_results(data, outputfilename, K):
+def write_results(data, outputfilename, num_paths):
 
-    output_filename = f"{outputfilename[:-4]}_{K}.paths"
+    output_filename = f"{outputfilename[:-4]}_{num_paths}.paths"
     with open(output_filename, 'w') as outputfile:
-        outputfile.write(f"Decomposition into {K} paths\n")
+        outputfile.write(f"Decomposition into {num_paths} paths\n")
         outputfile.write(f"Runtime: {data['runtime']:.2f} seconds\n")
         outputfile.write(f"MIP Gap: {data['mipgap']:.6f}\n")
         outputfile.write(f"Objective Value: {data['objval']:.6f}\n")
         outputfile.write(f"Number of Paths: {len(data['paths'])}\n")
         outputfile.write("Paths and Weights:\n")
-        print(f"INFO: Data for {K} paths decomposition has been written to {output_filename}")
+        print(f"INFO: Data for {num_paths} paths decomposition has been written to {output_filename}")
 
         if data["paths"] is None:
             outputfile.write("ERROR: Did not find any decomposition\n")
         else:
             for k in range(len(data["weights"])):
                 outputfile.write(f"{data['weights'][k]:.6f} {' '.join(map(str, data['paths'][k]))}\n")
+
 
 def write_graph_results(data, outputfilename, K, count):
     output_filename = f"{outputfilename}_{K}_paths.txt"
@@ -255,27 +298,27 @@ def write_graph_results(data, outputfilename, K, count):
             except KeyError:
                 outputfile.write(f'x,x,{count[edge[0], edge[1]]}\n')
 
-def write_table_line(outputfilename, inputfilename, data):
-    outputfile = open(outputfilename, 'a')
-    outputfile.write(str(data["objval"]) + '\t')
-    if data["paths"] == None:
-        outputfile.write("ERROR: Did not find any decomposition")
-    else:
-        for k in range(0, len(data["weights"])):
-            outputfile.write(f"{data['weights'][k]}\t")
+
+def write_table_line(output_file_src, data):
+    with open(output_file_src, 'a') as output_file:
+        output_file.write(str(data["objval"]) + '\t')
+        if data["paths"] == None:
+            output_file.write("ERROR: Did not find any decomposition")
+        else:
+            for k in range(0, len(data["weights"])):
+                output_file.write(f"{data['weights'][k]}\t")
     print("INFO: Data has been written to the output file.")  # Add this line
 
 
-def write_reset(outputfilename, inputfilename):
-    outputfile = open(outputfilename, 'a')
-    outputfile.write(inputfilename + '\t')
-    outputfile.close()
+def write_reset(output_file_src, input_file_src):
+    with open(output_file_src, "a") as output_file:
+        output_file.write(input_file_src + "\t")
 
 
-def write_return(outputfilename):
-    outputfile = open(outputfilename, 'a')
-    outputfile.write("\n")
-    outputfile.close()
+def write_return(output_file_src):
+    with open(output_file_src, 'a') as output_file:
+        output_file.write("\n")
+
 
 if __name__ == '__main__':
     # Argument parser
@@ -287,10 +330,10 @@ if __name__ == '__main__':
         formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument('-t', '--threads', type=int, default=0, help='Number of threads to use for the Gurobi solver; use 0 for all threads (default 0).')
-    parser.add_argument('-l', '--timelimit', type=int, default=100, help='time limit for Gurobi to solve one instance.')
+    parser.add_argument('-l', '--timelimit', type=int, default=100, help='time limit for Gurobi to solve one instance. (default 100)')
     parser.add_argument('-m', '--minpaths', type=int, default=1,
                         help='minimum number of paths to try (default 1).')
-    parser.add_argument('-mc', '--mincount', type=int, default=0, help='minimum valid count on an edge')
+    parser.add_argument('-mc', '--mincount', type=int, default=0, help='minimum valid count on an edge (default 0)')
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
     requiredNamed.add_argument('-o', '--output', type=str, help='Output filename', required=True)
@@ -300,13 +343,14 @@ if __name__ == '__main__':
 
     threads = args.threads
     if threads == 0:
-        threads = 4
-    print(f"INFO: Using {threads} threads for the Gurobi solver")
+        print("INFO: Using as many threads as possible (up to 32) for the Gurobi solver")
+    else:
+        print(f"INFO: Using {threads} threads for the Gurobi solver")
 
     # Set minK and maxK to fixed values
-    minK = args.minpaths
-    maxK = args.maxpaths
-    timelimit = args.timelimit
+    min_num_paths = args.minpaths
+    max_num_paths = args.maxpaths
+    time_limit = args.timelimit
 
     graphList = read_input_counts(args.input, args.mincount)
 
@@ -319,9 +363,9 @@ if __name__ == '__main__':
         sink = graph['sink']
         max_count = graph['max_count']
         write_reset(args.output, args.input)
-        for K in range(minK, maxK + 1):
+        for K in range(min_num_paths, max_num_paths + 1):
             start = time.time()
-            data = decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, max_count, K, threads, timelimit, args.output)
+            data = decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, max_count, K, threads, time_limit, args.output)
             if data['message'] == "solved":
                 write_table_line(args.output, args.input, data)
                 end = time.time()
