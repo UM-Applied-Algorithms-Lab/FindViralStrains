@@ -287,7 +287,7 @@ rule Add_super:
 	shell:
 		"""
 		cd libs/super_source_and_sink/src/
-		cargo run --release {input.sources} {input.graph_0} {input.sinks} {input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
+		cargo run --release {input.sinks} {input.graph_0} {input.sources} {input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
 		cd ../../..
 		"""
 
