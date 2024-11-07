@@ -124,7 +124,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
     
     edges = set(count.keys())    # this needs a better input that set(counts.keys())
     output_data = dict()    #this still needs a better name
-    W = 1                   #WTF is W?
+    W = 1                   #WTF is W? I think it's "is_node_used_in_path"
 
     try:
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
@@ -139,53 +139,73 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 #-------------------------------------------------------------------------------------------------
 # VARS
 #-------------------------------------------------------------------------------------------------
-        x = model.addVars(T, vtype=GRB.BINARY, name="x")
-        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0)
-        z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0)
-        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0)
-        eps = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0)
+        x = model.addVars(T, vtype=GRB.BINARY, name="x")                    # all vertices used in any path (bool if used in any path)
+        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0)         # path idxes 
+        z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0)          # again, all vertices used in any path (weights?)
+        # r = inverse coverage ("flow per read"), or coverage scaling factor, brings weights into range [0-1]
+        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0)      # list of all edges in graph
+        # epsilon: error across the model
+        epsilon = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0)  # list of all edges in path
 
 
 #-------------------------------------------------------------------------------------------------
 #Constraints
 #-------------------------------------------------------------------------------------------------
         for path_idx in range(0, num_paths):
-            for vertex_from in vertices:
-                if vertex_from == source_node_name:
-                    model.addConstr(sum(x[vertex_from, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex_from]) == 1)
-                elif vertex_from == sink_node_name:
-                    model.addConstr(sum(x[neighbor_node, vertex_from, path_idx] for neighbor_node in in_neighbors[vertex_from]) == 1)
+            for vertex in vertices:
+                if vertex == source_node_name:
+                    # the edge weights outgoing from a source must equal 1 (can't take multiple edges out of the source on a single path)
+                    model.addConstr(sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == 1)
+                elif vertex == sink_node_name:
+                    # the edge weights incoming to a sink node must equal 1 (can't take multiple edges into the sink on a single path)
+                    model.addConstr(sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex]) == 1)
                 else:
+                    # the flow coming into a node must come out of that node.
+                    # can a single path split on a non-source/sink node?
                     model.addConstr(
-                        sum(x[vertex_from, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex_from]) - \
-                            sum(x[neighbor_node, vertex_from, path_idx] for neighbor_node in in_neighbors[vertex_from]) == 0
+                        sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == \
+                            sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex])
                     )
 
         for (vertex_from, vertex_to) in edges:
             for path_idx in range(0, num_paths):
+                # flow over edge for path <= 0 input_wight if edge used in path otherwise 0
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= W * x[vertex_from, vertex_to, path_idx])
+                #total flow over path - (1-input_weight)*W  <=  consumed_edge_weight
                 model.addConstr(w[path_idx] - (1 - x[vertex_from, vertex_to, path_idx]) * W <= z[vertex_from, vertex_to, path_idx])
+                # flow over edge for path <= total flow for that path
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
+        # sum of fractional path flows should equal 1
         model.addConstr(sum(w[path_idx] for path_idx in range(0, num_paths)) == 1.0)
 
         for path_idx in range(0, num_paths - 1):
+            #path flows should be ordered, starting at highest flow
             model.addConstr(w[path_idx] >= w[path_idx + 1])
 
         for (vertex_from, vertex_to) in edges:
-            model.addConstr(r[vertex_from, vertex_to] * count[vertex_from, vertex_to] - sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= eps[vertex_from, vertex_to])
-            model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= eps[vertex_from, vertex_to])
+            # These two following constraints, grouped together, say that the error is the difference 
+            # between the scaled input edge weights and the flow used over all the edges
+            
+            # scaled input edge weights - flow used per edge <= the total error (epsilon)
+            model.addConstr(r[vertex_from, vertex_to] * count[vertex_from, vertex_to] - \
+                sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= epsilon[vertex_from, vertex_to])
+            
+            # sum of flow used over all edges - scaled input edge weights <= total error 
+            model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - \
+                r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
 
         for (vertex_from_1, vertex_to_1) in edges:
             for (vertex_from_2, vertex_to_2) in edges:
                 if (vertex_from_1 == vertex_from_2 or vertex_to_1 == vertex_to_2):
+                    # flow going into a node should equal flow going out
                     model.addConstr(r[vertex_from_1, vertex_to_1] == r[vertex_from_2, vertex_to_2])
                     
                     
 #-------------------------------------------------------------------------------------------------
 #OBJECTIVE
 #-------------------------------------------------------------------------------------------------
-        model.setObjective(sum(eps[from_node, to_node] for (from_node, to_node) in edges), GRB.MINIMIZE)
+        model.setObjective(sum(epsilon[from_node, to_node] for (from_node, to_node) in edges), GRB.MINIMIZE)
         model.Params.TimeLimit = time_limit
         model.optimize()
 
@@ -204,27 +224,27 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             output_data['mipgap'] = model.MIPGap
             output_data['objval'] = model.ObjVal
 
-            for v in model.getVars():
-                if 'w' in v.VarName:
-                    elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
+            for model_var in model.getVars():
+                if 'w' in model_var.VarName:
+                    elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     path_idx = int(elements[1])
-                    w_sol[path_idx] = v.x
-                if 'x' in v.VarName:
-                    elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
+                    w_sol[path_idx] = model_var.x
+                if 'x' in model_var.VarName:
+                    elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
                     vertex_to = elements[2]
                     path_idx = int(elements[3])
-                    x_sol[vertex_from, vertex_to, path_idx] = v.x
-                if 'r' in v.VarName:
-                    elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
+                    x_sol[vertex_from, vertex_to, path_idx] = model_var.x
+                if 'r' in model_var.VarName:
+                    elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
                     vertex_to = elements[2]
-                    r_sol[vertex_from, vertex_to] = v.x
-                if 'eps' in v.VarName:
-                    elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
+                    r_sol[vertex_from, vertex_to] = model_var.x
+                if 'eps' in model_var.VarName:
+                    elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
                     vertex_to = elements[2]
-                    eps_sol[vertex_from, vertex_to] = v.x
+                    eps_sol[vertex_from, vertex_to] = model_var.x
             paths = extract_paths(x_sol, source_node_name, sink_node_name, out_neighbors, num_paths)
             output_data['weights'] = w_sol
             output_data['paths'] = paths
