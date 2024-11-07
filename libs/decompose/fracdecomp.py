@@ -119,67 +119,80 @@ def read_input_counts(graph_file_src, min_edge_weight):
     return finalGraphs
 
 
-def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, max_count, K, threads, timelimit, outputfilename):
+def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_name, sink_node_name, \
+    max_count, num_paths, num_threads, time_limit, output_file_name):
     
     edges = set(count.keys())    # this needs a better input that set(counts.keys())
     output_data = dict()    #this still needs a better name
     W = 1                   #WTF is W?
 
     try:
-        T = [(i, j, k) for (i, j) in edges for k in range(0, K)]
-        SC = [k for k in range(0, K)]
-        CE = [(i, j) for (i, j) in edges]
+        T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
+        SC = list(range(0, num_paths))
 
         model = gp.Model("MFD")
         model.Params.LogToConsole = 0
-        model.Params.Threads = threads
-        print(f"INFO: Trying to decompose into {K} paths...")
+        model.Params.Threads = num_threads
+        print(f"INFO: Trying to decompose into {num_paths} paths...")
 
+        #okay, these are the gurobi vars, but what do they mean? why single letter variables?
+#-------------------------------------------------------------------------------------------------
+# VARS
+#-------------------------------------------------------------------------------------------------
         x = model.addVars(T, vtype=GRB.BINARY, name="x")
         w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0)
         z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0)
-        r = model.addVars(CE, vtype=GRB.CONTINUOUS, name="r", lb=0)
-        eps = model.addVars(CE, vtype=GRB.CONTINUOUS, name="eps", lb=0)
+        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0)
+        eps = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0)
 
-        for k in range(0, K):
-            for i in vertices:
-                if i == source:
-                    model.addConstr(sum(x[i, j, k] for j in out_neighbors[i]) == 1)
-                elif i == sink:
-                    model.addConstr(sum(x[j, i, k] for j in in_neighbors[i]) == 1)
+
+#-------------------------------------------------------------------------------------------------
+#Constraints
+#-------------------------------------------------------------------------------------------------
+        for path_idx in range(0, num_paths):
+            for vertex_from in vertices:
+                if vertex_from == source_node_name:
+                    model.addConstr(sum(x[vertex_from, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex_from]) == 1)
+                elif vertex_from == sink_node_name:
+                    model.addConstr(sum(x[neighbor_node, vertex_from, path_idx] for neighbor_node in in_neighbors[vertex_from]) == 1)
                 else:
                     model.addConstr(
-                        sum(x[i, j, k] for j in out_neighbors[i]) - sum(x[j, i, k] for j in in_neighbors[i]) == 0
+                        sum(x[vertex_from, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex_from]) - \
+                            sum(x[neighbor_node, vertex_from, path_idx] for neighbor_node in in_neighbors[vertex_from]) == 0
                     )
 
-        for (i, j) in edges:
-            for k in range(0, K):
-                model.addConstr(z[i, j, k] <= W * x[i, j, k])
-                model.addConstr(w[k] - (1 - x[i, j, k]) * W <= z[i, j, k])
-                model.addConstr(z[i, j, k] <= w[k])
+        for (vertex_from, vertex_to) in edges:
+            for path_idx in range(0, num_paths):
+                model.addConstr(z[vertex_from, vertex_to, path_idx] <= W * x[vertex_from, vertex_to, path_idx])
+                model.addConstr(w[path_idx] - (1 - x[vertex_from, vertex_to, path_idx]) * W <= z[vertex_from, vertex_to, path_idx])
+                model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
-        model.addConstr(sum(w[k] for k in range(0, K)) == 1.0)
+        model.addConstr(sum(w[path_idx] for path_idx in range(0, num_paths)) == 1.0)
 
-        for k in range(0, K - 1):
-            model.addConstr(w[k] >= w[k + 1])
+        for path_idx in range(0, num_paths - 1):
+            model.addConstr(w[path_idx] >= w[path_idx + 1])
 
-        for (i, j) in CE:
-            model.addConstr(r[i, j] * count[i, j] - sum(z[i, j, k] for k in range(0, K)) <= eps[i, j])
-            model.addConstr(sum(z[i, j, k] for k in range(0, K)) - r[i, j] * count[i, j] <= eps[i, j])
+        for (vertex_from, vertex_to) in edges:
+            model.addConstr(r[vertex_from, vertex_to] * count[vertex_from, vertex_to] - sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= eps[vertex_from, vertex_to])
+            model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= eps[vertex_from, vertex_to])
 
-        for (i, j) in CE:
-            for (k, l) in CE:
-                if (i == k or j == l):
-                    model.addConstr(r[i, j] == r[k, l])
-
-        model.setObjective(sum(eps[i, j] for (i, j) in CE), GRB.MINIMIZE)
-        model.Params.TimeLimit = timelimit
+        for (vertex_from_1, vertex_to_1) in edges:
+            for (vertex_from_2, vertex_to_2) in edges:
+                if (vertex_from_1 == vertex_from_2 or vertex_to_1 == vertex_to_2):
+                    model.addConstr(r[vertex_from_1, vertex_to_1] == r[vertex_from_2, vertex_to_2])
+                    
+                    
+#-------------------------------------------------------------------------------------------------
+#OBJECTIVE
+#-------------------------------------------------------------------------------------------------
+        model.setObjective(sum(eps[from_node, to_node] for (from_node, to_node) in edges), GRB.MINIMIZE)
+        model.Params.TimeLimit = time_limit
         model.optimize()
 
         print("Final MIP gap value: %f" % model.MIPGap)
         print('Obj: %g' % model.ObjVal)
 
-        w_sol = [0] * len(range(0, K))
+        w_sol = [0] * len(range(0, num_paths))
         x_sol = {}
         r_sol = {}
         eps_sol = {}
@@ -194,25 +207,25 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source, sink, m
             for v in model.getVars():
                 if 'w' in v.VarName:
                     elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
-                    k = int(elements[1])
-                    w_sol[k] = v.x
+                    path_idx = int(elements[1])
+                    w_sol[path_idx] = v.x
                 if 'x' in v.VarName:
                     elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
-                    i = elements[1]
-                    j = elements[2]
-                    k = int(elements[3])
-                    x_sol[i, j, k] = v.x
+                    vertex_from = elements[1]
+                    vertex_to = elements[2]
+                    path_idx = int(elements[3])
+                    x_sol[vertex_from, vertex_to, path_idx] = v.x
                 if 'r' in v.VarName:
                     elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
-                    i = elements[1]
-                    j = elements[2]
-                    r_sol[i, j] = v.x
+                    vertex_from = elements[1]
+                    vertex_to = elements[2]
+                    r_sol[vertex_from, vertex_to] = v.x
                 if 'eps' in v.VarName:
                     elements = v.VarName.replace('[', ',').replace(']', ',').split(',')
-                    i = elements[1]
-                    j = elements[2]
-                    eps_sol[i, j] = v.x
-            paths = extract_paths(x_sol, source, sink, out_neighbors, K)
+                    vertex_from = elements[1]
+                    vertex_to = elements[2]
+                    eps_sol[vertex_from, vertex_to] = v.x
+            paths = extract_paths(x_sol, source_node_name, sink_node_name, out_neighbors, num_paths)
             output_data['weights'] = w_sol
             output_data['paths'] = paths
             output_data['r_sol'] = r_sol
