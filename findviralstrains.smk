@@ -31,6 +31,7 @@ CF_FILE = config["cf_file"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
+RUN_LOCATION = config["run_location"]
 ###############
 ##   SETUP   ##
 ############### 
@@ -302,7 +303,7 @@ rule Decompose:
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		flow3 = bd("decomp_results/{sample}_3.paths"),
 	shell:
-		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit 1200"
+		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT}"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 
