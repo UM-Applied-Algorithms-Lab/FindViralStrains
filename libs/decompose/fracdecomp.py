@@ -161,7 +161,6 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     model.addConstr(sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex]) == 1)
                 else:
                     # the flow coming into a node must come out of that node.
-                    # can a single path split on a non-source/sink node?
                     model.addConstr(
                         sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == \
                             sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex])
@@ -169,6 +168,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 
         for (vertex_from, vertex_to) in edges:
             for path_idx in range(0, num_paths):
+                #What's 'W' doing here?
                 # flow over edge for path <= 0 input_wight if edge used in path otherwise 0
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= W * x[vertex_from, vertex_to, path_idx])
                 #total flow over path - (1-input_weight)*W  <=  consumed_edge_weight
