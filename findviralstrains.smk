@@ -15,7 +15,7 @@ print(" |  __| | | '_ \\ / _` | \\ \\/ / | | '__/ _` | |\\___ \\| __| '__/ _` | 
 print(" | |    | | | | | (_| |  \\  /  | | | | (_| | |____) | |_| | | (_| | | | | \\__ \\    \\  /  __/ |  \\__ \\ | (_) | | | | | |_| || || |_| |")
 print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ ")
 
-# Do not put spaces in this file. It breaks snakemake and gives awful errors #
+# DO NOT PUT SPACES IN THIS FILE! It breaks snakemake and gives awful errors - McKayl #
 #################
 ##   GLOBALS   ##
 ################# 
@@ -27,7 +27,6 @@ OUTPUT_DIR = config["output_dir"]
 REF = config["ref_genome"]
 SEQUENCER = config["sequencer"]
 CONTIG_FILE = config["contig_file"]
-CF_FILE = config["cf_file"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
@@ -206,42 +205,39 @@ rule trim_and_merge_raw_reads:
 
 # Unzip fastq files #
 rule Unzip:
-    input:
-        trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-    output:
-        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-    shell:
-        "gunzip {input.trim_merged}"
+	input:
+		trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+	output:
+		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
+	shell:
+		"gunzip {input.trim_merged}"
 
 rule Convert_To_Fasta:
-    input:
-        unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-    output:
-        converted = (bd("processed_reads/trimmed/{sample}.merged.fasta")),
-    shell:
-        "seqtk seq -A {input.unzipped} > {output.converted}"
-
+	input:
+		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
+	output:
+		converted = (bd("processed_reads/trimmed/{sample}.merged.fasta")),
+	shell:
+		"seqtk seq -A {input.unzipped} > {output.converted}"
 
 # Creates De Bruijn Graph #
 rule Cuttlefish:
-    input:
-        trim_merged= expand(bd("processed_reads/trimmed/{sample}.merged.fasta"), sample=fastq_filenames)
-    output:
-        seg=bd("out.cf_seg"),
-        seq=bd("out.cf_seq"),
-        json=bd("out.json")
-    shell:
-        """
-        rm -f {output.json}
-        cuttlefish build -s {input.trim_merged}, -t 1 -o {CF_PREF} -f 3 -m 12
-        """
+	input:
+		trim_merged=bd("processed_reads/trimmed/{sample}.merged.fasta")
+	output:
+		output_dir=bd("cuttlefish/{sample}.cf")
+	shell:
+		"""
+		cuttlefish build -s {input.trim_merged} -t 1 -o {output.output_dir} -f 3 -m 12
+		"""
+
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
 		script = "libs/mer_graph/edgemer.py",
-		seg = bd("out.cf_seg"), 
-		seq = bd("out.cf_seq"), 
+		seg = CF_PREF + ("out.cf_seg"), 
+		seq = CF_PREF + ("out.cf_seq"), 
 	output:
 		file = bd("out.mg"),
 	shell:
