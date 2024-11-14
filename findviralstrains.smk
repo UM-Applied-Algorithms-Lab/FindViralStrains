@@ -231,22 +231,20 @@ rule Cuttlefish:
 		cuttlefish build -s {input.trim_merged} -t 1 -o {output.output_dir} -f 3 -m 12
 		"""
 
-
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
 		script = "libs/mer_graph/edgemer.py",
-		seg = CF_PREF + ("out.cf_seg"), 
-		seq = CF_PREF + ("out.cf_seq"), 
+		cf=bd("cuttlefish/{sample}.cf")
 	output:
-		file = bd("out.mg"),
+		file = bd("{sample}out.mg"),
 	shell:
-		"python3 {input.script} -k 27 -c {CF_PREF} -o {output.file}"
+		"python3 {input.script} -k 27 -c {input.cf} -o {output.file}"
 
 # Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
 	input:
-		infile = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg"), # Broken argument #
+		infile = bd("{sample}out.mg"),
 	output:
 		graph_0 = bd("out.mg_subgraphs/graph_0.mg"),
 		sources = bd("out.mg_subgraphs/graph_0.sinks"),
@@ -305,25 +303,25 @@ rule Decompose:
 
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
-    input:
-        script = "libs/rebuild/rebuild.sh",
-        flow = bd("decomp_results/{sample}_1.paths"),
-        cf_seg = bd("out.cf_seg"),
-    output:
-        genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
-    shell: # We use sed here to filter out the name we give our script, then run it #
-        """
-        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_1//')
-        echo "Trimmed genome: $genome_trimmed"
-        bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
-        """
+	input:
+		script = "libs/rebuild/rebuild.sh",
+		flow = bd("decomp_results/{sample}_1.paths"),
+		cf_seg=bd("cuttlefish/{sample}.cf")
+	output:
+		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
+	shell: # We use sed here to filter out the name we give our script, then run it #
+		"""
+		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_1//')
+		echo "Trimmed genome: $genome_trimmed"
+		bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
+		"""
 
 # This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow2 = bd("decomp_results/{sample}_2.paths"),
-		cf_seg = bd("out.cf_seg"),
+		cf_seg=bd("cuttlefish/{sample}.cf")
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
@@ -336,62 +334,62 @@ rule Rebuild_2:
 
 # Outputs three genomes, one for each path #
 rule Rebuild_3:
-    input:
-        script = "libs/rebuild/rebuild.sh",
-        flow3 = bd("decomp_results/{sample}_3.paths"),
-        cf_seg = bd("out.cf_seg"),
-    output:
-        genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
-        genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
-        genome3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
-    shell:
-        """
-        genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
-        echo "Trimmed genome: $genome_trimmed"
-        bash {input.script} {input.flow3} {input.cf_seg} $genome_trimmed
-        """
+	input:
+		script = "libs/rebuild/rebuild.sh",
+		flow3 = bd("decomp_results/{sample}_3.paths"),
+		cf_seg=bd("cuttlefish/{sample}.cf")
+	output:
+		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
+		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
+		genome3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
+	shell:
+		"""
+		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
+		echo "Trimmed genome: $genome_trimmed"
+		bash {input.script} {input.flow3} {input.cf_seg} $genome_trimmed
+		"""
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
 # A more modern reference could be used, or regional samples as well #
 # There are also better versions of this, and I may make my own #
 rule Compare_1:
-    input:
-        rebuilt_genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
-        origin_covid = ("reference_genomes/covid19ref.fasta")
-    output:
-        compar_file = bd("output_genomes/{sample}/{sample}_1_of_1_vs_ref.txt")
-    shell:
-        "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
+	input:
+		rebuilt_genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
+		origin_covid = ("reference_genomes/covid19ref.fasta")
+	output:
+		compar_file = bd("output_genomes/{sample}/{sample}_1_of_1_vs_ref.txt")
+	shell:
+		"needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
 
 # Compares genomes from the two path result to the reference #
 rule Compare_2:
-    input:
-        rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
-        rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
-        origin_covid = ("reference_genomes/covid19ref.fasta")
-    output:
-        compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_2_vs_ref.txt"),
-        compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_2_vs_ref.txt")
-    shell:
-        """
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
-        """
+	input:
+		rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
+		rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
+		origin_covid = ("reference_genomes/covid19ref.fasta")
+	output:
+		compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_2_vs_ref.txt"),
+		compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_2_vs_ref.txt")
+	shell:
+		"""
+		needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+		needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+		"""
 
 # Compares genomes from the three path result to the reference #
 rule Compare_3:
-    input:
-        rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
-        rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
-        rebuilt_genome_3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
-        origin_covid = ("reference_genomes/covid19ref.fasta")
-    output:
-        compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_3_vs_ref.txt"),
-        compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_3_vs_ref.txt"),
-        compar_file_3 = bd("output_genomes/{sample}/{sample}_3_of_3_vs_ref.txt")
-    shell:
-        """
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_3} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_3}
-        """
+	input:
+		rebuilt_genome_1 = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
+		rebuilt_genome_2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
+		rebuilt_genome_3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
+		origin_covid = ("reference_genomes/covid19ref.fasta")
+	output:
+		compar_file_1 = bd("output_genomes/{sample}/{sample}_1_of_3_vs_ref.txt"),
+		compar_file_2 = bd("output_genomes/{sample}/{sample}_2_of_3_vs_ref.txt"),
+		compar_file_3 = bd("output_genomes/{sample}/{sample}_3_of_3_vs_ref.txt")
+	shell:
+		"""
+		needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+		needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+		needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_3} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_3}
+		"""
