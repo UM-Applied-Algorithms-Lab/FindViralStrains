@@ -182,26 +182,26 @@ onsuccess:
 
 # One rule to rule them all #
 rule all:
-    input:
-        expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
-
+	input:
+		expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
+	
 rule trim_and_merge_raw_reads:
-    input:
-        raw_r1 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R1_001.fastq", # Change back to READ_DIR after testing #
-        raw_r2 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R2_001.fastq"
-    output:
-        trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-        trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
-        trim_r2_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R2.fq.gz")),
-        trim_r1_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R1.fq.gz")),
-        trim_r2_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R2.fq.gz")),
-        rep_html= bd("logs/fastp/{sample}_trim_fastp.html"),
-        rep_json= bd("logs/fastp/{sample}_trim_fastp.json")
-#    threads: trim_threads # Unsure if this is needed #
-    shell:
-        """
-        fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
-        """
+	input:
+		raw_r1 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R1_001.fastq", # Change back to READ_DIR after testing #
+		raw_r2 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R2_001.fastq",
+	output:
+		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
+		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
+		trim_r2_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R2.fq.gz")),
+		trim_r1_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R1.fq.gz")),
+		trim_r2_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R2.fq.gz")),
+		rep_html= bd("logs/fastp/{sample}_trim_fastp.html"),
+		rep_json= bd("logs/fastp/{sample}_trim_fastp.json")
+#	threads: trim_threads # Unsure if this is needed #
+	shell:
+		"""
+		fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
+		"""
 
 # Unzip fastq files #
 rule Unzip:
@@ -220,35 +220,42 @@ rule Convert_To_Fasta:
 	shell:
 		"seqtk seq -A {input.unzipped} > {output.converted}"
 
+# May need to be edited to take into account no merged pairs etc #
 # Creates De Bruijn Graph #
 rule Cuttlefish:
 	input:
-		trim_merged=bd("processed_reads/trimmed/{sample}.merged.fasta")
+		trim_merged=bd("processed_reads/trimmed/{sample}.merged.fasta"),
 	output:
-		output_dir=bd("cuttlefish/{sample}.cf")
+		seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		seq=bd("cuttlefish/{sample}/out.cf_seq"),
+	params:
+		cf_pref=bd("cuttlefish/{sample}/out")
 	shell:
 		"""
-		cuttlefish build -s {input.trim_merged} -t 1 -o {output.output_dir} -f 3 -m 12
+		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12
 		"""
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
 rule Mer_graph: 
 	input:
 		script = "libs/mer_graph/edgemer.py",
-		cf=bd("cuttlefish/{sample}.cf")
+		seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	output:
-		file = bd("{sample}out.mg"),
+		file = bd("mg/{sample}out.mg"),
+	params:
+		cf_pref=bd("cuttlefish/{sample}/out")
 	shell:
-		"python3 {input.script} -k 27 -c {input.cf} -o {output.file}"
+		"python3 {input.script} -k 27 -c {params.cf_pref} -o {output.file}"
 
 # Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
 	input:
-		infile = bd("{sample}out.mg"),
+		infile = bd("mg/{sample}out.mg"),
 	output:
-		graph_0 = bd("out.mg_subgraphs/graph_0.mg"),
-		sources = bd("out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("out.mg_subgraphs/graph_0.sources"),
+		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
+		sources = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sources"),
 	shell:
 		"""
 		cd libs/graph_analyze/src/
@@ -260,10 +267,10 @@ rule Create_subgraphs:
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		graph_0 = bd("out.mg_subgraphs/graph_0.mg"),
+		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
 	output:
-		"/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.wg"),
+		bd("wgs/{sample}.wg"),
 	shell:
 		"""
 		{input.script} {input.reads} {input.graph_0} {output}
@@ -273,12 +280,12 @@ rule Run_jf:
 rule Add_super:
 	input:
 		script = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + "libs/super_source_and_sink/src/main.rs",
-		sources = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sinks"), # To be changed to a config variable later #
-		sinks = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.sources"),
-		graph_0 = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("out.mg_subgraphs/graph_0.mg"),
-		wg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.wg"),
+		sources = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sources"),
+		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
+		wg = bd("wgs/{sample}.wg"),
 	output:
-		swg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.super.wg"),
+		swg = bd("wgs/{sample}_super.wg"),
 	shell:
 		"""
 		cd libs/super_source_and_sink/src/
@@ -290,7 +297,7 @@ rule Add_super:
 rule Decompose:
 	input:
 		script = "libs/decompose/fracdecomp.py",
-		swg = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + bd("wgs/{sample}.super.wg"),
+		swg = bd("wgs/{sample}_super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
@@ -300,13 +307,12 @@ rule Decompose:
 		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT}"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
-
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		cf_seg=bd("cuttlefish/{sample}.cf")
+		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
 	shell: # We use sed here to filter out the name we give our script, then run it #
@@ -321,7 +327,7 @@ rule Rebuild_2:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow2 = bd("decomp_results/{sample}_2.paths"),
-		cf_seg=bd("cuttlefish/{sample}.cf")
+		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
@@ -337,7 +343,7 @@ rule Rebuild_3:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow3 = bd("decomp_results/{sample}_3.paths"),
-		cf_seg=bd("cuttlefish/{sample}.cf")
+		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
