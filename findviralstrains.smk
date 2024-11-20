@@ -229,9 +229,11 @@ rule Cuttlefish:
 		seg=bd("cuttlefish/{sample}/out.cf_seg"),
 		seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	params:
-		cf_pref=bd("cuttlefish/{sample}/out")
+		cf_pref=bd("cuttlefish/{sample}/out"),
+		cf_dir=bd("cuttlefish/{sample}/"),
 	shell:
 		"""
+		mkdir -p {params.cf_dir}
 		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12
 		"""
 
@@ -242,7 +244,7 @@ rule Mer_graph:
 		seg=bd("cuttlefish/{sample}/out.cf_seg"),
 		seq=bd("cuttlefish/{sample}/out.cf_seq"),
 	output:
-		file = bd("mg/{sample}out.mg"),
+		file = bd("mg/{sample}/out.mg"),
 	params:
 		cf_pref=bd("cuttlefish/{sample}/out")
 	shell:
@@ -251,15 +253,16 @@ rule Mer_graph:
 # Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
 	input:
-		infile = bd("mg/{sample}out.mg"),
+		infile = bd("mg/{sample}/out.mg"),
 	output:
 		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sources"),
 	shell:
 		"""
+		current_dir=$(pwd)
 		cd libs/graph_analyze/src/
-		cargo run  --release -- -m {input.infile}
+		cargo run --release -- -m "$current_dir"/{input.infile}
 		cd ../../..
 		"""
 
