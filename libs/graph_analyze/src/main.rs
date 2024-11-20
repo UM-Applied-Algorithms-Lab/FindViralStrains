@@ -18,10 +18,13 @@ struct InputArgs {
     #[arg(short, long, default_value_t = 0.01)]
     node_percent_cutoff: f32,
 
-    //todo: this isn't working correctly
     ///displays all subgraphs, not just those that meet the cutoff node percentage
     #[arg(short, long, default_value_t = false)]
     all_subgraphs_displayed: bool,
+
+    /// the directory that the output will be written to. By default, outputs will be put in the calling_directory/input_name/
+    #[arg(short, long)]
+    output_directory: Option<String>,
 }
 
 //struct to hold the analysis data for a graph or subgraph
@@ -121,6 +124,7 @@ fn main() {
         &args.mg_file_name,
         &graph_label,
         &edge_kmers,
+        args.output_directory,
     );
 }
 
@@ -133,16 +137,20 @@ fn write_subgraph_files(
     base_file_name: &String,
     main_graph_label: &String,
     edge_kmers: &HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    output_dir: Option<String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
-        let subgraph_directory_name = base_file_name.to_string() + "_subgraphs";
-        match std::fs::create_dir_all(&subgraph_directory_name) {
-            Ok(_) => {}
-            Err(error) => panic!(
-                "could not create subgraph directory: {}, error {}",
-                &subgraph_directory_name, error
-            ),
-        }
+        let subgraph_sub_dir = base_file_name.to_string() + "_subgraphs";
+        let subgraph_directory_name = match output_dir {
+            Some(ref dir) => Path::new(dir).join(Path::new(&subgraph_sub_dir)),
+            None => Path::new(&subgraph_sub_dir).to_path_buf(),
+        };
+
+        std::fs::create_dir_all(&subgraph_directory_name).expect(
+            "could not create subgraph directory: {}, error {}",
+            &subgraph_directory_name.to_string_lossy(),
+            error,
+        );
         let subgraph_idx_string = subgraph_idx.to_string();
         // let subgraph_mg_file_src = base_file_name.to_owned() + "." + &subgraph_idx_string;
         let (sources, sinks) = make_source_sink_lists(&subgraph);
