@@ -147,9 +147,7 @@ fn write_subgraph_files(
         };
 
         std::fs::create_dir_all(&subgraph_directory_name).expect(
-            "could not create subgraph directory: {}, error {}",
-            &subgraph_directory_name.to_string_lossy(),
-            error,
+            "could not create subgraph directory"
         );
         let subgraph_idx_string = subgraph_idx.to_string();
         // let subgraph_mg_file_src = base_file_name.to_owned() + "." + &subgraph_idx_string;
