@@ -233,7 +233,7 @@ rule Cuttlefish:
 		cf_dir=bd("cuttlefish/{sample}/"),
 	shell:
 		"""
-		mkdir -p {params.cf_dir}
+		mkdir -p {params.cf_dir} && \
 		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12
 		"""
 
@@ -255,14 +255,16 @@ rule Create_subgraphs:
 	input:
 		infile = bd("mg/{sample}/out.mg"),
 	output:
-		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sources"),
+		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+	params: # Leave and fix later #
+		base_output = bd("subgraphs/{sample}/") # Leave and fix later #
 	shell:
 		"""
 		current_dir=$(pwd)
 		cd libs/graph_analyze/src/
-		cargo run --release -- -m "$current_dir"/{input.infile}
+		cargo run --release -- -m $current_dir/{input.infile} -o $current_dir/{params.base_output}
 		cd ../../..
 		"""
 
@@ -270,7 +272,7 @@ rule Create_subgraphs:
 rule Run_jf:
 	input:
 		script = "libs/runjf/runjf.sh",
-		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
+		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
 	output:
 		bd("wgs/{sample}.wg"),
@@ -283,16 +285,17 @@ rule Run_jf:
 rule Add_super:
 	input:
 		script = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + "libs/super_source_and_sink/src/main.rs",
-		sources = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.sources"),
-		graph_0 = bd("subgraphs/{sample}/out.mg_subgraphs/graph_0.mg"),
+		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
 		wg = bd("wgs/{sample}.wg"),
 	output:
-		swg = bd("wgs/{sample}_super.wg"),
+		swg = bd("wgs/{sample}.super.wg"),
 	shell:
 		"""
+		current_dir=$(pwd)
 		cd libs/super_source_and_sink/src/
-		cargo run --release {input.sinks} {input.graph_0} {input.sources} {input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
+		cargo run --release $current_dir/{input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
 		cd ../../..
 		"""
 
@@ -300,7 +303,7 @@ rule Add_super:
 rule Decompose:
 	input:
 		script = "libs/decompose/fracdecomp.py",
-		swg = bd("wgs/{sample}_super.wg"),
+		swg = bd("wgs/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
