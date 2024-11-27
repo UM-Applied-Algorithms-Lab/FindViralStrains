@@ -16,7 +16,7 @@ def get_extremity(neighbors, extremity_type):
     """
     
     #filter to find any nodes without neighbors 
-    extremity_list = [node for (node, neighbor_nodes) in neighbors.items if len(neighbor_nodes) == 0]
+    extremity_list = [node for (node, neighbor_nodes) in neighbors.items() if len(neighbor_nodes) == 0]
     
     # any number of extremities other than 1 is an error
     if len(extremity_list) == 0:
