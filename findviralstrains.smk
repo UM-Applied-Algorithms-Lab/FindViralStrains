@@ -310,7 +310,7 @@ rule Decompose:
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		flow3 = bd("decomp_results/{sample}_3.paths"),
 	shell:
-		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT}"
+		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
 
 # TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
 # Runs rebuild.sh to create a genome that follows the paths from Gurobi #
