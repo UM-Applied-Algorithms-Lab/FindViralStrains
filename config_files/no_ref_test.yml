@@ -39,13 +39,12 @@ contig_file: all_samples_consensus_contigs.fasta
 
 run_location: /home/mikhail/Code/MFD-ILP/FindViralStrains
 
-decomp_timelimit: 1200
+decomp_time_limit: 1200
 
 read_purge_percent: 5
 # Model Time Limit (in min)
-decomp_time_limit: 5
 # Threads used by solver
-gurobi_threads: 4
+gurobi_threads: 16
 #######################
 ## Optional settings ##
 #######################

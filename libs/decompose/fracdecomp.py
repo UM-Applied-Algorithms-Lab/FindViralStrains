@@ -130,10 +130,10 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
         SC = list(range(0, num_paths))
 
+        print(f"INFO: Setting up model...")
         model = gp.Model("MFD")
         model.Params.LogToConsole = 0
         model.Params.Threads = num_threads
-        print(f"INFO: Trying to decompose into {num_paths} paths...")
 
         #okay, these are the gurobi vars, but what do they mean? why single letter variables?
 #-------------------------------------------------------------------------------------------------
@@ -151,6 +151,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 #-------------------------------------------------------------------------------------------------
 #Constraints
 #-------------------------------------------------------------------------------------------------
+        print(f"Creating {len(vertices) * num_paths} flow conservation constraints")
         for path_idx in range(0, num_paths):
             for vertex in vertices:
                 if vertex == source_node_name:
@@ -165,7 +166,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                         sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == \
                             sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex])
                     )
-
+        print(f"Creating {len(edges) * num_paths} linearization constraints")
         for (vertex_from, vertex_to) in edges:
             for path_idx in range(0, num_paths):
                 #What's 'W' doing here?
@@ -183,6 +184,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             #path flows should be ordered, starting at highest flow
             model.addConstr(w[path_idx] >= w[path_idx + 1])
 
+        print(f"Creating {2 * len(edges)} error constraints")
         for (vertex_from, vertex_to) in edges:
             # These two following constraints, grouped together, say that the error is the difference 
             # between the scaled input edge weights and the flow used over all the edges
@@ -194,19 +196,32 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             # sum of flow used over all edges - scaled input edge weights <= total error 
             model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - \
                 r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
-
-        for (vertex_from_1, vertex_to_1) in edges:
-            for (vertex_from_2, vertex_to_2) in edges:
-                if (vertex_from_1 == vertex_from_2 or vertex_to_1 == vertex_to_2):
-                    # flow going into a node should equal flow going out
-                    model.addConstr(r[vertex_from_1, vertex_to_1] == r[vertex_from_2, vertex_to_2])
+        
+        print("Starting to create flow per read constraints")
+        # Setting flow per read the same for in and out neighbors
+        counter = 0
+        for vertex in vertices:
+            for neighbor_1 in in_neighbors[vertex]:
+                for neighbor_2 in in_neighbors[vertex]:
+                    if neighbor_1 != neighbor_2:
+                        counter += 1
+                        model.addConstr(r[neighbor_1, vertex] == r[neighbor_2, vertex])
                     
-                    
+        for vertex in vertices:
+            for neighbor_1 in out_neighbors[vertex]:
+                for neighbor_2 in out_neighbors[vertex]:
+                    if neighbor_1 != neighbor_2:
+                        counter += 1
+                        model.addConstr(r[vertex, neighbor_1] == r[vertex, neighbor_2])
+                   
+        print(f"Added {counter/2} flow per read constraints")
 #-------------------------------------------------------------------------------------------------
 #OBJECTIVE
 #-------------------------------------------------------------------------------------------------
         model.setObjective(sum(epsilon[from_node, to_node] for (from_node, to_node) in edges), GRB.MINIMIZE)
         model.Params.TimeLimit = time_limit
+        print(model.Params.TimeLimit)
+        print(f"INFO: Trying to decompose into {num_paths} paths...")
         model.optimize()
 
         print("Final MIP gap value: %f" % model.MIPGap)
