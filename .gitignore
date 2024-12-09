@@ -21,3 +21,4 @@ perf*
 target
 .cargo
 .vscode
+summary.txt
