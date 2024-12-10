@@ -233,8 +233,9 @@ rule Cuttlefish:
 		cf_dir=bd("cuttlefish/{sample}/"),
 	shell:
 		"""
-		mkdir -p {params.cf_dir} && \
-		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12
+		rm -rf {params.cf_dir}
+		mkdir -p {params.cf_dir}
+		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12 -w {params.cf_dir}
 		"""
 
 # Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
