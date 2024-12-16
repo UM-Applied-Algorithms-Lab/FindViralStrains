@@ -3,6 +3,7 @@ import matplotlib.ticker as ticker
 import sys
 
 input_file = sys.argv[1]
+output_file = sys.argv[2] if len(sys.argv) > 2 else None
 
 # List to store the third arguments
 graph_weights = []
@@ -52,6 +53,11 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.xticks(rotation=90, fontsize=7)
 plt.yticks(fontsize=12)
 
-# Display the plot
+# Display or save the plot
 plt.tight_layout()
-plt.show()
+
+if output_file:
+    plt.savefig(output_file)
+    print(f"Graph saved to {output_file}")
+else:
+    plt.show()

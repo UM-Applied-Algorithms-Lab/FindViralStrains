@@ -2,33 +2,55 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import sys
 
-input_file = sys.argv[1]
-output_file = sys.argv[2]  # Output file specified by the second argument
+# Input and output file paths from command-line arguments
+wg_file = sys.argv[1]
+mg_file = sys.argv[2]
+output_file = sys.argv[3]  # Output file for filtered wg data
+filtered_mg_file = sys.argv[4]  # Output file for filtered mg data
 
-graph_weights = []
+# Store valid points from wg_file
+valid_points = set()
 
-with open(input_file, 'r') as file:
-    # Open the output file in write mode
+# Process the wg_file
+with open(wg_file, 'r') as file:
     with open(output_file, 'w') as outfile:
-        # Loop through each line in the input file
         for line in file:
-            # Split the line into parts (assuming whitespace as the delimiter)
-            parts = line.split()
+            parts = line.split()  # Split the line into parts
             
             # Check if the line has at least 3 parts
             if len(parts) >= 3:
+                first_argument = parts[0]
+                second_argument = parts[1]
                 third_argument = parts[2]
                 
                 try:
                     # Try to convert the third argument to a float
                     third_value = float(third_argument)
                     
-                    # If the third value is less than 25, skip this line entirely
-                    if third_value < 10:
-                        continue  # Skip writing this line to the output file
+                    # Skip this line if the third value is less than 20
+                    if third_value < 20:
+                        continue
+
+                    # Add valid (first, second) pair to the set
+                    valid_points.add((first_argument, second_argument))
                 except ValueError:
                     # If it's not a number, continue with the line as is
                     pass
-            
-            # If the line passed the check, write it to the output file
+
+            # Write the line to the output file if it passed the check
             outfile.write(line)
+
+# Process the mg_file to match the valid points from wg_file
+with open(mg_file, 'r') as file:
+    with open(filtered_mg_file, 'w') as outfile:
+        for line in file:
+            parts = line.split()  # Split the line into parts
+            
+            # Check if the line has at least 2 parts
+            if len(parts) >= 2:
+                first_argument = parts[0]
+                second_argument = parts[1]
+
+                # Check if the (first, second) pair is in the valid points set
+                if (first_argument, second_argument) in valid_points:
+                    outfile.write(line)
