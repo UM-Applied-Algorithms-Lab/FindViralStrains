@@ -347,7 +347,7 @@ def write_graph_results(data, outputfilename, K, count):
                 outputfile.write(f'x,x,{count[edge[0], edge[1]]}\n')
 
 
-def write_table_line(output_file_src, data):
+def write_table_line(output_file_src, inputfilename, data):
     with open(output_file_src, 'a') as output_file:
         output_file.write(str(data["objval"]) + '\t')
         if data["paths"] == None:

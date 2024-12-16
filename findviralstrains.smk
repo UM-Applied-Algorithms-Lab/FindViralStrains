@@ -220,7 +220,7 @@ rule Convert_To_Fasta:
 	shell:
 		"seqtk seq -A {input.unzipped} > {output.converted}"
 
-# May need to be edited to take into account no merged pairs etc #
+# May need to be edited to take into account things other than merged pairs etc #
 # Creates De Bruijn Graph #
 rule Cuttlefish:
 	input:
@@ -288,7 +288,7 @@ rule Add_super:
 		script = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + "libs/super_source_and_sink/src/main.rs",
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flip these, they were wrong
 		wg = bd("wgs/{sample}.wg"),
 	output:
 		swg = bd("wgs/{sample}.super.wg"),
