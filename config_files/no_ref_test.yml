@@ -10,7 +10,7 @@ analysis_ID: NoRefTest
 
 # Input read directory
 # Folder where where reads are stored.
-read_dir: /home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/Genomes/
+read_dir: /projects/mb163954/MFD-ILP/brendans_data_and_code/data/BaseCalls/Genomes
 #/home/example_reads/
 
 # Input consensus sequence directory
