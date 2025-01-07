@@ -19,9 +19,9 @@ https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
 First, run the build script that compiles all of the needed rust code. 
 
-'''
+```
 bash build.sh
-'''
+```
 
 Then set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
 command below. As written, this will create an environment called `your_env_name`---you can change this by editing
