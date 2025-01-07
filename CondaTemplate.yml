@@ -1,7 +1,0 @@
-name: your_env_name
-channels:
-  - https://conda.anaconda.org/gurobi
-  - conda-forge
-  - bioconda
-  - defaults
-prefix: /hellgate/home/mb163954/.conda/envs/your_env_name
