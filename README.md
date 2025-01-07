@@ -23,7 +23,8 @@ bash build.sh
 '''
 
 Then set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
-command below.
+command below. As written, this will create an environment called `your_env_name`---you can change this by editing
+the first line of `CondaTemplate.yml`.
 
 ```
 conda env create -f CondaTemplate.yml
