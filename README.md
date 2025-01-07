@@ -18,6 +18,7 @@ https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
 First, run the build script that compiles all of the needed rust code. 
+
 '''
 bash build.sh
 '''
