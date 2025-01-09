@@ -303,7 +303,7 @@ rule Add_super:
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		script = "libs/decompose/fracdecomp.py",
+		script = "libs/decompose/safe_seq.py", # Temp change for testing
 		swg = bd("wgs/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
