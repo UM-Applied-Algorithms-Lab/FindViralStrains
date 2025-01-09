@@ -167,13 +167,13 @@ onstart:
         writer.writerow(["Consensus File used:", CONSENSUS_FILE])
         writer.writerow(["Reference genome used:", REF])
         writer.writerow(["Start time:", start_time.strftime("%B %d, %Y: %H:%M:%S")])
-        
+
 
 onsuccess:
     smk_copy_command = 'cp findviralstrains.smk ' + str(bd("snakefile_used_copy.smk"))
     end_time = datetime.now()
     elapsed_time = end_time - start_time
-    os.popen(smk_copy_command) 
+    os.popen(smk_copy_command)
     with open(pipeline_log_file, 'a') as tsvfile:
         writer = csv.writer(tsvfile, delimiter='\t')
         writer.writerow(["End time:", end_time.strftime("%B %d, %Y: %H:%M:%S")])
@@ -184,11 +184,11 @@ onsuccess:
 rule all:
 	input:
 		expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
-	
+
 rule trim_and_merge_raw_reads:
 	input:
-		raw_r1 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R1_001.fastq", # Change back to READ_DIR after testing #
-		raw_r2 = "/home/mikhail/Code/MFD-ILP/brendans_data_and_code/data/BaseCalls/{sample}_R2_001.fastq",
+		raw_r1 = READ_DIR,
+		raw_r2 = READ_DIR,
 	output:
 		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
 		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
@@ -285,7 +285,7 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = "/home/mikhail/Code/MFD-ILP/FindViralStrains/" + "libs/super_source_and_sink/src/main.rs",
+		script = "/projects/mb163954/MFD-ILP/FindViralStrains" + "libs/super_source_and_sink/src/main.rs",
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flip these, they were wrong
