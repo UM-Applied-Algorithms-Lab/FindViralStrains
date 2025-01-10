@@ -187,8 +187,8 @@ rule all:
 
 rule trim_and_merge_raw_reads:
 	input:
-		raw_r1 = READ_DIR,
-		raw_r2 = READ_DIR,
+		raw_r1 = READ_DIR + "/{sample}_R1_001.fastq",
+		raw_r2 = READ_DIR + "/{sample}_R2_001.fastq",
 	output:
 		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
 		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
@@ -288,7 +288,7 @@ rule Add_super:
 		script = "/projects/mb163954/MFD-ILP/FindViralStrains" + "libs/super_source_and_sink/src/main.rs",
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flip these, they were wrong
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
 		wg = bd("wgs/{sample}.wg"),
 	output:
 		swg = bd("wgs/{sample}.super.wg"),
