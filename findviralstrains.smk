@@ -285,7 +285,7 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = "/projects/mb163954/MFD-ILP/FindViralStrains" + "libs/super_source_and_sink/src/main.rs",
+		script = RUN_LOCATION + "libs/super_source_and_sink/src/main.rs",
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
