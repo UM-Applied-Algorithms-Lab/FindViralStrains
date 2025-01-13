@@ -285,7 +285,7 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = RUN_LOCATION + "libs/super_source_and_sink/src/main.rs",
+		script = RUN_LOCATION + "libs/super_source_and_sink/src/main.rs", # Test if this recompiles by itself #
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
@@ -303,7 +303,7 @@ rule Add_super:
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		script = "libs/decompose/safe_seq.py", # Temp change for testing
+		script = "libs/decompose/fracdecomp.py", # Temp change for testing
 		swg = bd("wgs/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
