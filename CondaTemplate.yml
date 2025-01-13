@@ -1,4 +1,4 @@
-name: FindViralStrains
+name: Test
 channels:
   - gurobi
   - bioconda
