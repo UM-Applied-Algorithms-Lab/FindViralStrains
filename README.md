@@ -18,15 +18,17 @@ https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
 First, run the build script that compiles all of the needed rust code. 
-'''
-bash build.sh
-'''
-
-Then set up your own working enviroment, I would use our CondaTemplate.yml file, along with the
-command below.
 
 ```
-conda env create -f CondaTemplate.yml
+bash build.sh
+```
+
+Then set up your own working enviroment, I would use our environment.yml file, along with the
+command below. As written, this will create an environment called `FindViralStrains`---you can change this by editing
+the first line of `environment.yml`.
+
+```
+conda env create -f environment.yml
 ```
 
 Once you have build list and verified that all packages are successfully installed you can move on to
