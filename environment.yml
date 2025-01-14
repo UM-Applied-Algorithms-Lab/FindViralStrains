@@ -1,4 +1,4 @@
-name: FindViralStrains
+name: Test
 channels:
   - gurobi
   - https://conda.anaconda.org/gurobi

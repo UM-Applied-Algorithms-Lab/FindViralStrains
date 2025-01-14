@@ -122,9 +122,9 @@ def read_input_counts(graph_file_src, min_edge_weight):
 def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_name, sink_node_name, \
     max_count, num_paths, num_threads, time_limit, output_file_name):
     
-    edges = set(count.keys())    # this needs a better input that set(counts.keys())
-    output_data = dict()    #this still needs a better name
-    W = 1                   #WTF is W? I think it's "is_node_used_in_path"
+    edges = set(count.keys())
+    output_data = dict()
+    W = 1
 
     try:
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
@@ -135,7 +135,6 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         model.Params.LogToConsole = 0
         model.Params.Threads = num_threads
 
-        #okay, these are the gurobi vars, but what do they mean? why single letter variables?
 #-------------------------------------------------------------------------------------------------
 # VARS
 #-------------------------------------------------------------------------------------------------
@@ -169,12 +168,8 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         print(f"Creating {len(edges) * num_paths} linearization constraints")
         for (vertex_from, vertex_to) in edges:
             for path_idx in range(0, num_paths):
-                #What's 'W' doing here?
-                # flow over edge for path <= 0 input_wight if edge used in path otherwise 0
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= W * x[vertex_from, vertex_to, path_idx])
-                #total flow over path - (1-input_weight)*W  <=  consumed_edge_weight
                 model.addConstr(w[path_idx] - (1 - x[vertex_from, vertex_to, path_idx]) * W <= z[vertex_from, vertex_to, path_idx])
-                # flow over edge for path <= total flow for that path
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
         # sum of fractional path flows should equal 1
