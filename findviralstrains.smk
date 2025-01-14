@@ -183,7 +183,7 @@ onsuccess:
 # One rule to rule them all #
 rule all:
 	input:
-		expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_1_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_2_vs_ref.txt"), input_list=fastq_filenames) + expand(("output/NoRefTest/output_genomes/{input_list}/{input_list}_1_of_3_vs_ref.txt"), input_list=fastq_filenames)
+		[bd(x) for x in expand("output_genomes/{input_list}/{input_list}_1_of_{numpaths}_vs_ref.txt", input_list=fastq_filenames, numpaths=["1", "2", "3"])]
 
 rule trim_and_merge_raw_reads:
 	input:
