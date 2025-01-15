@@ -321,7 +321,7 @@ rule Rebuild_1:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
+		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
 	shell: # We use sed here to filter out the name we give our script, then run it #
@@ -336,7 +336,7 @@ rule Rebuild_2:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow2 = bd("decomp_results/{sample}_2.paths"),
-		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
+		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
@@ -352,7 +352,7 @@ rule Rebuild_3:
 	input:
 		script = "libs/rebuild/rebuild.sh",
 		flow3 = bd("decomp_results/{sample}_3.paths"),
-		cf_seq=bd("cuttlefish/{sample}/out.cf_seq"),
+		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
