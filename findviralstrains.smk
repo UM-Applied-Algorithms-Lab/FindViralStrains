@@ -276,7 +276,7 @@ rule Run_jf:
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
 	output:
-		bd("wgs/{sample}.wg"),
+		bd("wgs/original/{sample}.wg"),
 	shell:
 		"""
 		{input.script} {input.reads} {input.graph_0} {output}
@@ -285,18 +285,20 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = RUN_LOCATION + "libs/super_source_and_sink/src/main.rs", # Test if this recompiles by itself #
+		script = RUN_LOCATION + "/libs/super_source_and_sink/src/main.rs", # Test if this recompiles by itself #
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
-		wg = bd("wgs/{sample}.wg"),
+		wg = bd("wgs/original/{sample}.wg"),
 	output:
-		swg = bd("wgs/{sample}.super.wg"),
+		swg = bd("wgs/super/{sample}.super.wg"),
+	params:
+		out_location = RUN_LOCATION + "/" + OUTPUT_DIR + ANALYSIS + "/wgs/super/",
 	shell:
 		"""
 		current_dir=$(pwd)
 		cd libs/super_source_and_sink/src/
-		cargo run --release $current_dir/{input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "/home/mikhail/Code/MFD-ILP/FindViralStrains/output/NoRefTest/wgs/" 
+		cargo run --release $current_dir/{input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "{params.out_location}"
 		cd ../../..
 		"""
 
@@ -304,7 +306,7 @@ rule Add_super:
 rule Decompose:
 	input:
 		script = "libs/decompose/fracdecomp.py", # Temp change for testing
-		swg = bd("wgs/{sample}.super.wg"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
