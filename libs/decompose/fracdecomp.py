@@ -122,9 +122,9 @@ def read_input_counts(graph_file_src, min_edge_weight):
 def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_name, sink_node_name, \
     max_count, num_paths, num_threads, time_limit, output_file_name):
     
-    edges = set(count.keys())
+    edges = set(count.keys()) # Pull edge weights #
     output_data = dict()
-    W = 1
+    W = 1 # Max flow?
 
     try:
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
@@ -138,13 +138,12 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 #-------------------------------------------------------------------------------------------------
 # VARS
 #-------------------------------------------------------------------------------------------------
-        x = model.addVars(T, vtype=GRB.BINARY, name="x")                    # all vertices used in any path (bool if used in any path)
-        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0)         # path idxes 
-        z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0)          # again, all vertices used in any path (weights?)
-        # r = inverse coverage ("flow per read"), or coverage scaling factor, brings weights into range [0-1]
-        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0)      # list of all edges in graph
+        x = model.addVars(T, vtype=GRB.BINARY, name="x") # x ijk ?
+        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0) # Fractional flow of path k 
+        z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0) # Fractional flow of path k carried on edge
+        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0) # Fractional Flow carried on edge ij
         # epsilon: error across the model
-        epsilon = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0)  # list of all edges in path
+        epsilon = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0) # Min error
 
 
 #-------------------------------------------------------------------------------------------------
