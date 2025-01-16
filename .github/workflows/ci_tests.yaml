@@ -64,6 +64,7 @@ jobs:
       # Activate Conda environment (assumes it was created in the build step)
       - run: |
           conda init
+          source ~/.bashrc
           conda activate Test
       
       # Run Snakemake tests
