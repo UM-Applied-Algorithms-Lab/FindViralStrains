@@ -43,42 +43,27 @@ jobs:
       # Create Conda environment
       - run: conda env create -f environment.yml
       
-      # Save build artifact (optional)
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+
+  test:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # Add other OS options if needed
+    steps:
+      - uses: actions/checkout@v2
+      
+      
+      # Set up Miniconda
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          name: binary-${{ matrix.os }}
-          path: libs/rustAnalyze/target/release/
-
-      - run: conda activate Test
+          auto-update-conda: true
+          python-version: 3.9  # Specify your Python version
+      
+      # Activate Conda environment (assumes it was created in the build step)
+      - run: conda activate myenv  # Replace 'myenv' with your environment name
+      
+      # Run Snakemake tests
+      - name: Run Snakemake pipeline
         run: snakemake -s findviralstrains.smk --configfile config_files/built_test.yaml --until Add_super --cores 1
-
-  # test:
-  #   needs: build
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest] # Add other OS options if needed
-  #   steps:
-  #     - uses: actions/checkout@v2
-      
-  #     # Download build artifact
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: binary-${{ matrix.os }}
-  #         path: libs/rustAnalyze/target/release/  # Adjust as needed
-      
-  #     # Set up Miniconda
-  #     - name: Set up Miniconda
-  #       uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         auto-update-conda: true
-  #         python-version: 3.9  # Specify your Python version
-      
-  #     # Activate Conda environment (assumes it was created in the build step)
-  #     - run: conda activate myenv  # Replace 'myenv' with your environment name
-      
-  #     # Run Snakemake tests
-  #     - name: Run Snakemake pipeline
-  #       run: snakemake -s findviralstrains.smk --configfile config_files/built_test.yaml --until Add_super --cores 1
