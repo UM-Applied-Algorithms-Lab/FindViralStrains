@@ -65,6 +65,7 @@ jobs:
       - run: |
           conda init
           source ~/.bashrc
+          conda env create -f environment.yml
           conda activate Test
       
       # Run Snakemake tests
