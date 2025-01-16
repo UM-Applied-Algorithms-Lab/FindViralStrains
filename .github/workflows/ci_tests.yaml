@@ -31,7 +31,7 @@ jobs:
           override: true
       
       # Run build script
-      - run: bash libs/rustAnalyze/build.sh
+      - run: bash build.sh
       
       # Install Miniconda
       - name: Set up Miniconda
