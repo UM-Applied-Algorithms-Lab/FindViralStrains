@@ -64,7 +64,7 @@ jobs:
       # Activate Conda environment (assumes it was created in the build step)
       - run: |
           eval "$(conda shell.bash hook)"
-          conda activate myenv
+          conda activate Test
       
       # Run Snakemake tests
       - name: Run Snakemake pipeline
