@@ -67,6 +67,7 @@ jobs:
           source ~/.bashrc
           conda env create -f environment.yml
           conda activate Test
+          conda list
       
       # Run Snakemake tests
       - name: Run Snakemake pipeline
