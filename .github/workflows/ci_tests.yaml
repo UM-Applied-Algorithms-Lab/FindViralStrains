@@ -51,12 +51,6 @@ jobs:
       - run: |
           eval "$(conda shell.bash hook)"
           conda env create -f environment.yml
-
-      - run: conda env list
-
-
-      # Run Snakemake pipeline
-      - name: Run Snakemake pipeline
-        run: |
+          conda env list
           conda activate Test
           snakemake -s findviralstrains.smk --configfile config_files/built_test.yaml --until Add_super --cores 1
