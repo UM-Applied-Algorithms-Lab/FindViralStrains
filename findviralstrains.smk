@@ -30,7 +30,7 @@ CONTIG_FILE = config["contig_file"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
-RUN_LOCATION = config["run_location"]
+RUN_LOCATION = os.getcwd if config["run_location"] == "." else config["run_location"] 
 ###############
 ##   SETUP   ##
 ############### 
