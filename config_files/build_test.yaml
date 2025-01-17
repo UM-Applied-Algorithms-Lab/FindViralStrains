@@ -10,7 +10,7 @@ analysis_ID: NoRefTest
 
 # Input read directory
 # Folder where where reads are stored.
-read_dir: test/data/
+read_dir: test/data
 #/home/example_reads/
 
 # Input consensus sequence directory
@@ -21,7 +21,7 @@ consensus_file: unused.txt
 # Directory where you would like the ouput files
 # for this analysis batch to be placed.
 # The pipeline will create a folder, analysis_ID, within this output directory.
-output_dir: test/data/
+output_dir: test/data
 
 # Sequencer type
 # This determines the number of input files the pipeline will look for
