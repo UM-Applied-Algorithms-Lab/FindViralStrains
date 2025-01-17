@@ -293,7 +293,7 @@ rule Add_super:
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	params:
-		out_location = RUN_LOCATION + "/" + OUTPUT_DIR + ANALYSIS + "/wgs/super/",
+		out_location = os.path.join(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/"),
 	shell:
 		"""
 		current_dir=$(pwd)
