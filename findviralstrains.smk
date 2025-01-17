@@ -187,8 +187,8 @@ rule all:
 
 rule trim_and_merge_raw_reads:
 	input:
-		raw_r1 = READ_DIR + "/{sample}_R1_001.fastq",
-		raw_r2 = READ_DIR + "/{sample}_R2_001.fastq",
+		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"), 
+		raw_r2 = os.path.join(READ_DIR, "{sample}_R2_001.fastq"),
 	output:
 		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
 		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
