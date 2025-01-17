@@ -6,14 +6,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest] # Add other OS options if needed
+        os: [ubuntu-latest]  # Add other OS options if needed
     steps:
       - uses: actions/checkout@v2
-      
+
       # Cache Rust dependencies
       - uses: actions/cache@v3
         with:
@@ -23,51 +23,29 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('libs/**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
-      
+
       # Set up Rust toolchain
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-      
+
       # Run build script
       - run: bash build.sh
-      
+
       # Install Miniconda
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: 3.9  # Specify your Python version
-      
-      # Create Conda environment
-      - run: conda env create -f environment.yml
-      
+          python-version: 3.9
 
-  test:
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest] # Add other OS options if needed
-    steps:
-      - uses: actions/checkout@v2
-      
-      
-      # Set up Miniconda
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          python-version: 3.9  # Specify your Python version
-      
-      # Activate Conda environment (assumes it was created in the build step)
+      # Create Conda environment
       - run: |
-        eval "$(conda shell.bash hook)"
-        conda env create -f environment.yml
-        conda activate Test  # Activate the environment
-        conda list
-      
-      # Run Snakemake tests
+          eval "$(conda shell.bash hook)"
+          conda env create -f environment.yml
+          conda list
+
+      # Run Snakemake pipeline
       - name: Run Snakemake pipeline
         run: snakemake -s findviralstrains.smk --configfile config_files/built_test.yaml --until Add_super --cores 1
