@@ -63,11 +63,10 @@ jobs:
       
       # Activate Conda environment (assumes it was created in the build step)
       - run: |
-          conda init
-          source ~/.bashrc
-          conda env create -f environment.yml
-          conda activate Test
-          conda list
+        eval "$(conda shell.bash hook)"
+        conda env create -f environment.yml
+        conda activate Test  # Activate the environment
+        conda list
       
       # Run Snakemake tests
       - name: Run Snakemake pipeline
