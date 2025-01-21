@@ -285,7 +285,7 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = os.path.normpath(RUN_LOCATION, "libs/super_source_and_sink/src/main.rs"), # Test if this recompiles by itself #
+		script = os.path.normpath(so.path.join(RUN_LOCATION, "libs/super_source_and_sink/src/main.rs")), # Test if this recompiles by itself #  
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
@@ -293,7 +293,7 @@ rule Add_super:
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	params:
-		out_location = os.path.normpath(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/"),
+		out_location = os.path.normpath(os.path.join(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/")),
 	shell:
 		"""
 		current_dir=$(pwd)
