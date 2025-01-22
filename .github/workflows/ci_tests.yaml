@@ -50,8 +50,8 @@ jobs:
       # Create Conda environment
       - run: |
           eval "$(conda shell.bash hook)"
-          eval "$bash build.sh"
           conda env create -f environment.yml
           conda env list
           conda activate Test
+          cargo build --release
           snakemake -s findviralstrains.smk --configfile config_files/build_test.yaml --until Add_super --cores 1 --debug-dag --latency-wait 30
