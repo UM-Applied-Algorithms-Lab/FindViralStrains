@@ -282,7 +282,7 @@ rule Run_jf:
 		{input.script} {input.reads} {input.graph_0} {output}
 		"""
 
-# Prune jellyfish edges with counts less than user arg
+# Prune graph edges with counts less than user arg
 rule Prune:
 	input:
 		script = "libs/prune/filter_reads.py",
