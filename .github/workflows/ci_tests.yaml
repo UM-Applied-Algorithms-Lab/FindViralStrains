@@ -50,6 +50,7 @@ jobs:
       # Create Conda environment
       - run: |
           eval "$(conda shell.bash hook)"
+          eval "$bash build.sh"
           conda env create -f environment.yml
           conda env list
           conda activate Test
