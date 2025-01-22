@@ -37,9 +37,6 @@ jobs:
           toolchain: stable
           override: true
 
-      # Run build script
-      - run: bash build.sh
-
       # Install Miniconda
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v2
@@ -49,7 +46,7 @@ jobs:
 
       # Create Conda environment
       - run: |
-          eval "$(conda shell.bash hook)"
+          # eval "$(conda shell.bash hook)"
           conda env create -f environment.yml
           conda env list
           conda activate Test
