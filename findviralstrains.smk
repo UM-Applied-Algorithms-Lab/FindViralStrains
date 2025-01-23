@@ -260,9 +260,9 @@ rule Create_subgraphs:
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
 	params:
-		base_output = bd("mg/{sample}/")
+		base_output = bd("mg/{sample}")
 	shell:
-		"target/release/graph_analyzer -m {input.infile} -o {params.base_output}"
+		"target/release/graph_analyzer -m {input.infile}"
 
 # Runs Jellyfish to build weighted graph file #
 rule Run_jf:
