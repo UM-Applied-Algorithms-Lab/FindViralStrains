@@ -297,6 +297,7 @@ rule Add_super:
 	shell:
 		"""
 		libs/super_source_and_sink/target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}
+		"""
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
