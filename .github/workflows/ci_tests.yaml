@@ -21,21 +21,31 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Cache Rust dependencies
+      # Cache Rust dependencies and toolchain
       - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-${{ hashFiles('libs/**/Cargo.lock') }}
+            ~/.rustup
+          key: ${{ runner.os }}-rust-${{ hashFiles('libs/**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-rust-
 
       # Set up Rust toolchain
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
+
+      # Cache Conda environment
+      - name: Cache Conda environment
+        uses: actions/cache@v3
+        with:
+          path: ~/.conda/envs/Test
+          key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
 
       # Install Miniconda
       - name: Set up Miniconda
@@ -44,12 +54,20 @@ jobs:
           auto-update-conda: true
           python-version: 3.9
 
-      # Create Conda environment
-      - run: |
-          # eval "$(conda shell.bash hook)"
-          conda env create -f environment.yml
-          conda env list
-          conda init
+
+      # Create and activate Conda environment
+      - name: Create and activate Conda environment
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda env create --file environment.yml --name Test || conda env update --file environment.yml --name Test
+          conda init bash
+          eval "$(conda shell.bash hook)"
           conda activate Test
+
+      - name: Build with Cargo
+        run: |
           cargo build --release
+        
+      - name: run snakemake
+        run: |
           snakemake -s findviralstrains.smk --configfile config_files/build_test.yaml --until Add_super --cores 1 --debug-dag --latency-wait 30
