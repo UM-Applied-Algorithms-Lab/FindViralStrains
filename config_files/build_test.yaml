@@ -1,0 +1,50 @@
+#####################################
+## Required configuration settings ##
+#####################################
+
+# Analysis ID
+# Give a name/ID that is unique to a given analysis
+# This will be the name of the folder into which all files are placed
+# So don't make it too long or unwieldy.
+analysis_ID: NoRefTest
+
+# Input read directory
+# Folder where where reads are stored.
+read_dir: test/data
+#/home/example_reads/
+
+# Input consensus sequence directory
+# Folder where where consensus sequences are stored.
+consensus_file: unused.txt
+
+# Output directory
+# Directory where you would like the ouput files
+# for this analysis batch to be placed.
+# The pipeline will create a folder, analysis_ID, within this output directory.
+output_dir: test/data
+
+# Sequencer type
+# This determines the number of input files the pipeline will look for
+# the pipeline will print a warning for samples
+# which do not have the appropriate number
+# Current options are: MiSeq, NextSeq
+sequencer: MiSeq
+
+# Reference genome
+# Give the path to the reference genome file for including in the Debruijn graph
+ref_genome: deprecated.txt
+
+# Contig file output name
+contig_file: unused_also.txt
+
+run_location: .
+
+decomp_time_limit: 1200
+
+read_purge_percent: 5
+# Model Time Limit (in min)
+# Threads used by solver
+gurobi_threads: 8
+#######################
+## Optional settings ##
+#######################

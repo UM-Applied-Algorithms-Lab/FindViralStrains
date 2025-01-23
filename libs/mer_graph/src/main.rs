@@ -13,7 +13,7 @@ fn read_seq(file: &str) -> Vec<[String; 2]> {
         if let Ok(line) = line {
             let mut parts: Vec<_> = line.split_whitespace().collect();
             parts.remove(0); // Remove the name
-            let (mut nlist, mut slist): (Vec<String>, Vec<String>) = parts
+            let (nlist, slist): (Vec<String>, Vec<String>) = parts
                 .iter()
                 .map(|&j| {
                     let len = j.len();
@@ -48,7 +48,7 @@ fn revcomp(seq: &str) -> String {
     rcseq
 }
 
-fn read_seg(file: &str, edges: Vec<[String; 2]>, k: usize) -> HashMap<String, String> {
+fn read_seg(file: &str, edges: &Vec<[String; 2]>, k: usize) -> HashMap<String, String> {
     let mut node_seg = HashMap::new();
     if let Ok(lines) = read_lines(file) {
         for line in lines {
@@ -111,7 +111,7 @@ fn main() {
     println!("reading seq");
     let edges = read_seq(&(cuttlefish_prefix.clone() + ".cf_seq"));
     println!("reading seg");
-    let edge_mers = read_seg(&(cuttlefish_prefix.clone() + ".cf_seg"), edges, kvalue);
+    let edge_mers = read_seg(&(cuttlefish_prefix.clone() + ".cf_seg"), &edges, kvalue);
     println!("writing graph");
     write_graph(output_file, edges, edge_mers);
 }

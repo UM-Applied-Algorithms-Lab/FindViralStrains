@@ -30,7 +30,7 @@ CONTIG_FILE = config["contig_file"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
-RUN_LOCATION = config["run_location"]
+RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"] 
 ###############
 ##   SETUP   ##
 ############### 
@@ -187,8 +187,8 @@ rule all:
 
 rule trim_and_merge_raw_reads:
 	input:
-		raw_r1 = READ_DIR + "/{sample}_R1_001.fastq",
-		raw_r2 = READ_DIR + "/{sample}_R2_001.fastq",
+		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"), 
+		raw_r2 = os.path.join(READ_DIR, "{sample}_R2_001.fastq"),
 	output:
 		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
 		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
@@ -259,15 +259,10 @@ rule Create_subgraphs:
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-	params: # Leave and fix later #
-		base_output = bd("subgraphs/{sample}/") # Leave and fix later #
+	params:
+		base_output = bd("mg/{sample}")
 	shell:
-		"""
-		current_dir=$(pwd)
-		cd libs/graph_analyze/src/
-		cargo run --release -- -m $current_dir/{input.infile} -o $current_dir/{params.base_output}
-		cd ../../..
-		"""
+		"target/release/graph_analyzer -m {input.infile}"
 
 # Runs Jellyfish to build weighted graph file #
 rule Run_jf:
@@ -278,14 +273,11 @@ rule Run_jf:
 	output:
 		bd("wgs/original/{sample}.wg"),
 	shell:
-		"""
-		{input.script} {input.reads} {input.graph_0} {output}
-		"""
+		"{input.script} {input.reads} {input.graph_0} {output}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = RUN_LOCATION + "/libs/super_source_and_sink/src/main.rs", # Test if this recompiles by itself #
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
@@ -293,14 +285,9 @@ rule Add_super:
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	params:
-		out_location = RUN_LOCATION + "/" + OUTPUT_DIR + ANALYSIS + "/wgs/super/",
+		out_location = os.path.normpath(os.path.join(RUN_LOCATION, OUTPUT_DIR, ANALYSIS, "wgs","super")),  
 	shell:
-		"""
-		current_dir=$(pwd)
-		cd libs/super_source_and_sink/src/
-		cargo run --release $current_dir/{input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "{params.out_location}"
-		cd ../../..
-		"""
+		"target/release/super_source_and_sink {input.sinks} {input.graph_0} {input.sources} {input.wg} {params.out_location}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
