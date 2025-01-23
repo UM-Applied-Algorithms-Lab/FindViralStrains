@@ -167,7 +167,6 @@ fn write_subgraph_files(
         let subgraph_file_path =
             Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
 
-        println!("writing subgraph file to {}", subgraph_file_path.display());
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
         let mut subgraph_mg_file = std::fs::OpenOptions::new()
