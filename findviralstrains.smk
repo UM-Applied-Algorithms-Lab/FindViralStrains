@@ -260,7 +260,7 @@ rule Create_subgraphs:
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
 	params: # Leave and fix later #
-		base_output = bd("subgraphs/{sample}/") # Leave and fix later #
+		base_output = bd("mg/{sample}/out.mg_subgraphs/) # Leave and fix later #
 	shell:
 		"target/release/graph_analyzer -m {input.infile} -o {params.base_output}"
 
