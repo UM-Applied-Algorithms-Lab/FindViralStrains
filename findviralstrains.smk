@@ -263,10 +263,7 @@ rule Create_subgraphs:
 		base_output = bd("subgraphs/{sample}/") # Leave and fix later #
 	shell:
 		"""
-		current_dir=$(pwd)
-		cd libs/graph_analyze/src/
-		cargo run --release -- -m $current_dir/{input.infile} -o $current_dir/{params.base_output}
-		cd ../../..
+		target/release/graph_analyzer -m $current_dir/{input.infile} -o $current_dir/{params.base_output}
 		"""
 
 # Runs Jellyfish to build weighted graph file #
@@ -296,7 +293,7 @@ rule Add_super:
 		out_location = os.path.normpath(os.path.join(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/")),
 	shell:
 		"""
-		libs/super_source_and_sink/target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}
+		target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}
 		"""
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
