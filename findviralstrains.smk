@@ -259,8 +259,8 @@ rule Create_subgraphs:
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-	params: # Leave and fix later #
-		base_output = bd("mg/{sample}/out.mg_subgraphs/") # Leave and fix later #
+	params:
+		base_output = bd("mg/{sample}/")
 	shell:
 		"target/release/graph_analyzer -m {input.infile} -o {params.base_output}"
 
@@ -278,7 +278,6 @@ rule Run_jf:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = os.path.normpath(os.path.join(RUN_LOCATION, "libs/super_source_and_sink/src/main.rs")), # Test if this recompiles by itself #  
 		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
