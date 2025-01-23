@@ -297,13 +297,6 @@ rule Add_super:
 	shell:
 		"""
 		libs/super_source_and_sink/target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}
-		
-		# current_dir=$(pwd)
-		# cd libs/super_source_and_sink/src/
-		# cargo run --release $current_dir/{input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "{params.out_location}"
-		# cargo run --release {input.sinks} $current_dir/{input.graph_0} $current_dir/{input.sources} $current_dir/{input.wg} "{params.out_location}"
-		# cd ../../..
-		# """
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
