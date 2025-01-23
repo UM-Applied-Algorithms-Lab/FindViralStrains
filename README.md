@@ -17,10 +17,10 @@ administrators for help/training if you are setting this up on any sort of HPC e
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
-First, run the build script that compiles all of the needed rust code. 
+First, compile the rust libraries that we use.
 
 ```
-bash build.sh
+cargo build --release
 ```
 
 Then set up your own working enviroment, I would use our environment.yml file, along with the
