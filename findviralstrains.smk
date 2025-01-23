@@ -287,7 +287,7 @@ rule Add_super:
 	params:
 		out_location = os.path.normpath(os.path.join(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/")),
 	shell:
-		"target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}"
+		"target/release/super_source_and_sink {input.sinks} {input.graph_0} {input.sources} {input.wg} {params.out_location}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
