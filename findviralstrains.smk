@@ -262,9 +262,7 @@ rule Create_subgraphs:
 	params: # Leave and fix later #
 		base_output = bd("subgraphs/{sample}/") # Leave and fix later #
 	shell:
-		"""
-		target/release/graph_analyzer -m $current_dir/{input.infile} -o $current_dir/{params.base_output}
-		"""
+		"target/release/graph_analyzer -m {input.infile} -o {params.base_output}"
 
 # Runs Jellyfish to build weighted graph file #
 rule Run_jf:
@@ -275,9 +273,7 @@ rule Run_jf:
 	output:
 		bd("wgs/original/{sample}.wg"),
 	shell:
-		"""
-		{input.script} {input.reads} {input.graph_0} {output}
-		"""
+		"{input.script} {input.reads} {input.graph_0} {output}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
@@ -292,9 +288,7 @@ rule Add_super:
 	params:
 		out_location = os.path.normpath(os.path.join(RUN_LOCATION, "{}{}".format(OUTPUT_DIR, ANALYSIS), "wgs/super/")),
 	shell:
-		"""
-		target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}
-		"""
+		"target/release/super_source_and_sink {input.graph_0} {input.sources} {input.wg} {params.out_location}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
