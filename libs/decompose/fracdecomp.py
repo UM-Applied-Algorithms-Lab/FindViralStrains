@@ -141,13 +141,13 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 #-------------------------------------------------------------------------------------------------
 # lb is lower bound for a variable
         x = model.addVars(T, vtype=GRB.BINARY, name="x") # x ijk ?
-        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0) # Fractional flow of path k 
+        w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0) # Fractional flow of path k
         z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0) # Fractional flow of path k carried on edge
         r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="r", lb=0) # Fractional Flow carried on edge ij
-
+        
         # New variable for path flow error
         path_flow_error = model.addVars(edges, num_paths, vtype=GRB.CONTINUOUS, name="path_flow_error", lb=0)
-
+        epsilon = model.addVars(edges, vtype=GRB.CONTINUOUS, name="eps", lb=0) # Min error
 #-------------------------------------------------------------------------------------------------
 # Constraints
 #-------------------------------------------------------------------------------------------------
@@ -183,6 +183,17 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 
         print(f"Creating {2 * len(edges) * num_paths} path flow error constraints")
         for (vertex_from, vertex_to) in edges:
+             # These two following constraints, grouped together, say that the error is the difference 
+            # between the scaled input edge weights and the flow used over all the edges
+            
+            # scaled input edge weights - flow used per edge <= the total error (epsilon)
+            model.addConstr(r[vertex_from, vertex_to] * count[vertex_from, vertex_to] - \
+                sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= epsilon[vertex_from, vertex_to])
+            
+            # sum of flow used over all edges - scaled input edge weights <= total error 
+            model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - \
+                r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
+            
             for path_idx in range(0, num_paths):
                 # Actual flow - expected flow <= path flow error
                 model.addConstr(
@@ -219,9 +230,11 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         model.setObjective(
             quicksum(path_flow_error[vertex_from, vertex_to, path_idx] 
                      for (vertex_from, vertex_to) in edges
-                     for path_idx in range(num_paths)), 
+                     for path_idx in range(num_paths))+ quicksum(epsilon[vertex_from, vertex_to] 
+             for (vertex_from, vertex_to) in edges), 
             GRB.MINIMIZE
         )
+        
         model.Params.TimeLimit = time_limit
         print(model.Params.TimeLimit)
         print(f"INFO: Trying to decompose into {num_paths} paths...")
@@ -243,16 +256,21 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             output_data['objval'] = model.ObjVal
 
             for model_var in model.getVars():
-                if 'w' in model_var.VarName:
+                if model_var.VarName.startswith('w'):
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
-                    path_idx = int(elements[1])
-                    w_sol[path_idx] = model_var.x
+                    try:
+                        path_idx = int(elements[1])
+                        w_sol[path_idx] = model_var.x
+                    except ValueError as e:
+                        print(f"W - Error converting path_idx to int: {e}, elements: {elements}")
+
                 if 'x' in model_var.VarName:
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
                     vertex_to = elements[2]
                     path_idx = int(elements[3])
                     x_sol[vertex_from, vertex_to, path_idx] = model_var.x
+            
                 if 'r' in model_var.VarName:
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
@@ -263,6 +281,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     vertex_from = elements[1]
                     vertex_to = elements[2]
                     eps_sol[vertex_from, vertex_to] = model_var.x
+                
             paths = extract_paths(x_sol, source_node_name, sink_node_name, out_neighbors, num_paths)
             output_data['weights'] = w_sol
             output_data['paths'] = paths
