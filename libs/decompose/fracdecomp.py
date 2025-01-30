@@ -143,7 +143,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         x = model.addVars(T, vtype=GRB.BINARY, name="x") # binary variable to show if path k uses edge ij
         w = model.addVars(SC, vtype=GRB.CONTINUOUS, name="w", lb=0) # Fractional flow of path k
         z = model.addVars(T, vtype=GRB.CONTINUOUS, name="z", lb=0) # Fractional flow of path k carried on edge
-        r = model.addVars(edges, vtype=GRB.CONTINUOUS, name="f", lb=0) # Fit flow on edge ij
+        f = model.addVars(edges, vtype=GRB.CONTINUOUS, name="f", lb=0) # Fit flow on edge ij
         
         # New variable for path flow error
         path_error = model.addVars(edges, num_paths, vtype=GRB.CONTINUOUS, name="path_error", lb=0)
@@ -187,22 +187,22 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             # between the scaled input edge weights and the flow used over all the edges
             
             # scaled input edge weights - flow used per edge <= the total error (epsilon)
-            model.addConstr(r[vertex_from, vertex_to] * count[vertex_from, vertex_to] - \
+            model.addConstr(f[vertex_from, vertex_to] * count[vertex_from, vertex_to] - \
                 sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= epsilon[vertex_from, vertex_to])
             
             # sum of flow used over all edges - scaled input edge weights <= total error 
             model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - \
-                r[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
+                f[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
             
             for path_idx in range(0, num_paths):
                 # Actual flow - expected flow <= path flow error
                 model.addConstr(
-                    z[vertex_from, vertex_to, path_idx] - r[vertex_from, vertex_to] <= path_error[vertex_from, vertex_to, path_idx],
+                    z[vertex_from, vertex_to, path_idx] - f[vertex_from, vertex_to] <= path_error[vertex_from, vertex_to, path_idx],
                     name=f"path_error_pos_{vertex_from}_{vertex_to}_{path_idx}"
                 )
                 # Expected flow - actual flow <= path flow error
                 model.addConstr(
-                    r[vertex_from, vertex_to] - z[vertex_from, vertex_to, path_idx] <= path_error[vertex_from, vertex_to, path_idx],
+                    f[vertex_from, vertex_to] - z[vertex_from, vertex_to, path_idx] <= path_error[vertex_from, vertex_to, path_idx],
                     name=f"path_error_neg_{vertex_from}_{vertex_to}_{path_idx}"
                 )
 
@@ -213,14 +213,14 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 for neighbor_2 in in_neighbors[vertex]:
                     if neighbor_1 != neighbor_2:
                         counter += 1
-                        model.addConstr(r[neighbor_1, vertex] == r[neighbor_2, vertex])
+                        model.addConstr(f[neighbor_1, vertex] == f[neighbor_2, vertex])
 
         for vertex in vertices:
             for neighbor_1 in out_neighbors[vertex]:
                 for neighbor_2 in out_neighbors[vertex]:
                     if neighbor_1 != neighbor_2:
                         counter += 1
-                        model.addConstr(r[vertex, neighbor_1] == r[vertex, neighbor_2])
+                        model.addConstr(f[vertex, neighbor_1] == f[vertex, neighbor_2])
 
         print(f"Added {counter/2} flow per read constraints")
 
