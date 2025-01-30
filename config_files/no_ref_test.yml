@@ -10,7 +10,7 @@ analysis_ID: NoRefTest
 
 # Input read directory
 # Folder where where reads are stored.
-read_dir: /projects/mb163954/MFD-ILP/brendans_data_and_code/data/BaseCalls/Genomes
+read_dir: /home/mikhailu/Projects/FindViralStrains/test/data
 #/home/example_reads/
 
 # Input consensus sequence directory
@@ -37,7 +37,7 @@ ref_genome: /home/mikhail/Code/MDF-ILP/brendans_data_and_code/flow/GCF_009858895
 # Contig file output name
 contig_file: all_samples_consensus_contigs.fasta
 
-run_location: /home/mikhail/Code/MFD-ILP/FindViralStrains
+run_location: /home/mikhailu/Projects/FindViralStrains
 
 decomp_time_limit: 1200
 

@@ -22,3 +22,5 @@ target
 .cargo
 .vscode
 summary.txt
+Cargo.lock
+config_files/test.yml
