@@ -289,7 +289,7 @@ rule Prune:
 		wg = bd("wgs/original/{sample}.wg"),
 		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 	output:
-		wg_out = bd("wgs/original/{sample}graph_0_pruned.wg"),
+		wg_out = (bd("wgs/pruned/{sample}.pruned.wg")),
 		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
 	shell:
 		"""
@@ -299,8 +299,7 @@ rule Prune:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		script = RUN_LOCATION + "/libs/super_source_and_sink/src/main.rs", # Test if this recompiles by itself #
-		graph_0 = bd("wgs/original/{sample}graph_0_pruned.wg"),
+		graph_0 = bd("wgs/pruned/{sample}.pruned.wg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
 		wg = bd("wgs/original/{sample}.wg"),
