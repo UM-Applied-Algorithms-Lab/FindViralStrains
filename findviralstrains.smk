@@ -275,6 +275,34 @@ rule Run_jf:
 	shell:
 		"{input.script} {input.reads} {input.graph_0} {output}"
 
+# Prune graph edges with counts less than user arg
+rule Prune:
+	input:
+		script = "libs/prune/filter_reads.py",
+		wg = bd("wgs/original/{sample}.wg"),
+		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+	output:
+		wg_out = (bd("wgs/pruned/{sample}.pruned.wg")),
+		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
+	shell:
+		"""
+		{input.script} {input.reads} {input.graph_0} {output}
+		"""
+
+# Prune graph edges with counts less than user arg
+rule Prune:
+	input:
+		script = "libs/prune/filter_reads.py",
+		wg = bd("wgs/original/{sample}.wg"),
+		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+	output:
+		wg_out = (bd("wgs/pruned/{sample}.pruned.wg")),
+		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
+	shell:
+		"""
+		python3 {input.script} {input.wg} {input.mg} {output.wg_out} {output.mg_out}
+		"""
+
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
