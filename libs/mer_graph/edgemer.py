@@ -1,78 +1,68 @@
-from itertools import groupby
 import argparse
 
-
 def read_seq(file):
+    """Reads the sequence file and yields edges one at a time."""
     with open(file, 'r') as f:
-        lines = f.readlines()
-    edges = []
-    for i in lines:
-        l = i.split()
-        l.pop(0) # remove name
-        nlist = []
-        slist = []
-        for j in l:
-            nlist.append(j[:len(j)-1])
-            slist.append(j[len(j)-1:])
-        pcount = 0
-        for k in range(0, len(nlist)-1):
-            if pcount >= 0: # vote is for primary strand
-                edge = [nlist[k] + slist[k], nlist[k+1] + slist[k+1]]
-            else:
-                edge = [nlist[k+1] + ('+' if slist[k+1] == '-' else '-'), nlist[k] + ('+' if slist[k] == '-' else '-')]
-            edges.append(edge)
-    return edges
+        for line in f:
+            parts = line.split()
+            parts.pop(0)  # remove name
+            nlist = [j[:len(j)-1] for j in parts]
+            slist = [j[len(j)-1:] for j in parts]
+            pcount = 0
+            for k in range(len(nlist) - 1):
+                if pcount >= 0:  # vote is for primary strand
+                    yield [nlist[k] + slist[k], nlist[k+1] + slist[k+1]]
+                else:
+                    yield [nlist[k+1] + ('+' if slist[k+1] == '-' else '-'), 
+                           nlist[k] + ('+' if slist[k] == '-' else '-')]
 
 def revcomp(seq):
-    # complement strand
-    rcseq = seq.replace("A", "t").replace("C", "g").replace("T", "a").replace("G", "c")
-    rcseq = rcseq.upper()
-    # reverse strand
-    rcseq = rcseq[::-1]
-    return rcseq
+    """Computes the reverse complement of a DNA sequence."""
+    complement = str.maketrans("ACGT", "TGCA")
+    return seq.translate(complement)[::-1]
 
 def read_seg(file, edges, K):
-    nodeSeg = dict()
+    """Reads the segment file and yields edge-mer pairs one at a time."""
+    nodeSeg = {}
     with open(file, 'r') as f:
         for line in f:
             l = line.split()
             nodeSeg[l[0] + '+'] = l[1]
             nodeSeg[l[0] + '-'] = revcomp(l[1])
-    edgeMers = dict()
+    
     for edge in edges:
-        mer = nodeSeg[edge[0]][len(nodeSeg[edge[0]]) - K] + nodeSeg[edge[1]][:K]
-        edgeMers[edge[0] + ' ' + edge[1]] = mer
-    return edgeMers
+        mer = nodeSeg[edge[0]][-K] + nodeSeg[edge[1]][:K]
+        yield edge[0] + ' ' + edge[1], mer
 
-def write_graph(file, edges, edgeMers):
+def write_graph(file, edges_func, edgeMers):
+    """Writes the graph to the output file, processing data on-the-fly."""
     nodes = set()
-    for e in edges: # only consider nodes that belong to edges
-        nodes.add(e[0])
-        nodes.add(e[1])
     with open(file, 'w') as f:
         f.write('#graph 1\n')
+        # First pass: count unique nodes
+        for edge in edges_func():  # Call the generator function again
+            nodes.add(edge[0])
+            nodes.add(edge[1])
         f.write(str(len(nodes)) + '\n')
-        for e,m in edgeMers.items():
-            # f.write(e + ' ' + '1' + '\n')
+        # Second pass: write edge-mer pairs
+        for e, m in edgeMers:
             f.write(e + ' ' + m + '\n')
 
 def main():
     parser = argparse.ArgumentParser(prog='edgecnt',
                                      description='creates a count graph based on cuttlefish output and fasta')
-    parser.add_argument('-k', '--kvalue', required=True)
-    parser.add_argument('-c', '--cuttlefishprefix', required=True)
-    #parser.add_argument('-f', '--fasta', required=True)
-    parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-k', '--kvalue', required=True, type=int, help='k-mer size')
+    parser.add_argument('-c', '--cuttlefishprefix', required=True, help='prefix for cuttlefish output files')
+    parser.add_argument('-o', '--output', required=True, help='output graph file')
     args = parser.parse_args()
 
     print("reading seq")
-    edges = read_seq(args.cuttlefishprefix + '.cf_seq')
+    edges_func = lambda: read_seq(args.cuttlefishprefix + '.cf_seq')  # Store generator function
+    edges = edges_func()  # Create generator for the first iteration
     print("reading seg")
-    edgeMers = read_seg(args.cuttlefishprefix + '.cf_seg', edges, int(args.kvalue))
-    print("reading fasta, counting edgemers")
-    #edgeCounts = read_fa(args.fasta, edgeMers)
+    edgeMers = read_seg(args.cuttlefishprefix + '.cf_seg', edges, args.kvalue)  # Generator for edge-mer pairs
     print("writing graph")
-    write_graph(args.output, edges, edgeMers)
+    write_graph(args.output, edges_func, edgeMers)  # Pass the generator function
 
 if __name__ == '__main__':
     main()
