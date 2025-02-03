@@ -151,7 +151,9 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
 #-------------------------------------------------------------------------------------------------
 # Constraints
 #-------------------------------------------------------------------------------------------------
+       
         print(f"Creating {len(vertices) * num_paths} flow conservation constraints")
+        #constraints 7,8
         for path_idx in range(0, num_paths):
             for vertex in vertices:
                 if vertex == source_node_name:
@@ -161,52 +163,66 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     # the edge weights incoming to a sink node must equal 1 (can't take multiple edges into the sink on a single path)
                     model.addConstr(sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex]) == 1)
                 else:
-                    # the flow coming into a node must come out of that node.
+                    # the path coming into a node must come out of that node.
                     model.addConstr(
                         sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == \
                             sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex])
                     )
 
+        
         print(f"Creating {len(edges) * num_paths} linearization constraints")
+        #constraints 9,10,11
         for (vertex_from, vertex_to) in edges:
             for path_idx in range(0, num_paths):
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= W * x[vertex_from, vertex_to, path_idx])
                 model.addConstr(w[path_idx] - (1 - x[vertex_from, vertex_to, path_idx]) * W <= z[vertex_from, vertex_to, path_idx])
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
-        # sum of fractional path flows should equal 1
+
+        #to be made into constraint 1
         model.addConstr(sum(w[path_idx] for path_idx in range(0, num_paths)) == 1.0)
 
+
+        #not really a constraint, just a sort 
         for path_idx in range(0, num_paths - 1):
             # path flows should be ordered, starting at highest flow
             model.addConstr(w[path_idx] >= w[path_idx + 1])
 
         print(f"Creating {2 * len(edges) * num_paths} path flow error constraints")
+        
+        
+        #constraints 3,4,5,6,12,13
         for (vertex_from, vertex_to) in edges:
-             # These two following constraints, grouped together, say that the error is the difference 
-            # between the scaled input edge weights and the flow used over all the edges
             
-            # scaled input edge weights - flow used per edge <= the total error (epsilon)
-            model.addConstr(f[vertex_from, vertex_to] * count[vertex_from, vertex_to] - \
-                sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) <= epsilon[vertex_from, vertex_to])
+            total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
+            total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
+
+            #constraint 3
+            model.addConstr(count[vertex_from, vertex_to] - f[vertex_from, vertex_to] * total_incoming_count  <= total_incoming_count * epsilon[vertex_from, vertex_to])
+        
+            #constraint 4
+            model.addConstr(f[vertex_from, vertex_to] * total_incoming_count - count[vertex_from, vertex_to] <= total_incoming_count * epsilon[vertex_from, vertex_to])
             
-            # sum of flow used over all edges - scaled input edge weights <= total error 
-            model.addConstr(sum(z[vertex_from, vertex_to, path_idx] for path_idx in range(0, num_paths)) - \
-                f[vertex_from, vertex_to] * count[vertex_from, vertex_to] <= epsilon[vertex_from, vertex_to])
-            
-            for path_idx in range(0, num_paths):
-                # Actual flow - expected flow <= path flow error
-                model.addConstr(
-                    z[vertex_from, vertex_to, path_idx] - f[vertex_from, vertex_to] <= path_error[vertex_from, vertex_to, path_idx],
+            #constraint 5
+            model.addConstr(f[vertex_from, vertex_to] * total_outgoing_count - count[vertex_from, vertex_to] <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+
+            #constraint 6
+            model.addConstr(count[vertex_from, vertex_to] - f[vertex_from, vertex_to] * total_outgoing_count <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+        
+
+            #13 Actual flow - expected flow <= path flow error
+            model.addConstr(
+                    sum(z[vertex_from, vertex_to, path_idx] for path_idx in range (0, num_paths)) - f[vertex_from, vertex_to] <= path_error[vertex_from, vertex_to, path_idx],
                     name=f"path_error_pos_{vertex_from}_{vertex_to}_{path_idx}"
                 )
-                # Expected flow - actual flow <= path flow error
-                model.addConstr(
-                    f[vertex_from, vertex_to] - z[vertex_from, vertex_to, path_idx] <= path_error[vertex_from, vertex_to, path_idx],
-                    name=f"path_error_neg_{vertex_from}_{vertex_to}_{path_idx}"
+            #12 Actual flow - expected flow <= path flow error
+            model.addConstr(
+                    sum(f[vertex_from, vertex_to] -z[vertex_from, vertex_to, path_idx] for path_idx in range (0, num_paths)) <= path_error[vertex_from, vertex_to, path_idx],
+                    name=f"path_error_pos_{vertex_from}_{vertex_to}_{path_idx}"
                 )
 
         print("Starting to create flow per read constraints")
+        #constraint 2
         counter = 0
         for vertex in vertices:
             for neighbor_1 in in_neighbors[vertex]:
