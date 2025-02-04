@@ -179,10 +179,6 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
 
-        #to be made into constraint 1
-        model.addConstr(sum(w[path_idx] for path_idx in range(0, num_paths)) == 1.0)
-
-
         #not really a constraint, just a sort 
         for path_idx in range(0, num_paths - 1):
             # path flows should be ordered, starting at highest flow
@@ -196,18 +192,20 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             
             total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
             total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
-
+            total_flow_in = sum(f[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
+            total_flow_out = sum(f[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
+            
             #constraint 3
-            model.addConstr(count[vertex_from, vertex_to] - f[vertex_from, vertex_to] * total_incoming_count  <= total_incoming_count * epsilon[vertex_from, vertex_to])
+            model.addConstr(total_incoming_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_out  <= total_incoming_count * epsilon[vertex_from, vertex_to])
         
             #constraint 4
-            model.addConstr(f[vertex_from, vertex_to] * total_incoming_count - count[vertex_from, vertex_to] <= total_incoming_count * epsilon[vertex_from, vertex_to])
+            model.addConstr(count[vertex_from, vertex_to]*total_flow_out - total_incoming_count*f[vertex_from, vertex_to]  <= total_incoming_count * epsilon[vertex_from, vertex_to])
             
             #constraint 5
-            model.addConstr(f[vertex_from, vertex_to] * total_outgoing_count - count[vertex_from, vertex_to] <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+            model.addConstr(total_outgoing_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_in <= total_outgoing_count * epsilon[vertex_from, vertex_to])
 
             #constraint 6
-            model.addConstr(count[vertex_from, vertex_to] - f[vertex_from, vertex_to] * total_outgoing_count <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+            model.addConstr(count[vertex_from, vertex_to]*total_flow_in - total_outgoing_count*f[vertex_from, vertex_to]  <= total_outgoing_count * epsilon[vertex_from, vertex_to])
         
 
             #13 Actual flow - expected flow <= path flow error
@@ -217,7 +215,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 )
             #12 Actual flow - expected flow <= path flow error
             model.addConstr(
-                    sum(f[vertex_from, vertex_to] -z[vertex_from, vertex_to, path_idx] for path_idx in range (0, num_paths)) <= path_error[vertex_from, vertex_to, path_idx],
+                    f[vertex_from, vertex_to] - sum(z[vertex_from, vertex_to, path_idx] for path_idx in range (0, num_paths)) <= path_error[vertex_from, vertex_to, path_idx],
                     name=f"path_error_pos_{vertex_from}_{vertex_to}_{path_idx}"
                 )
 
@@ -238,6 +236,12 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                         counter += 1
                         model.addConstr(f[vertex, neighbor_1] == f[vertex, neighbor_2])
 
+        
+        #Constraint 1
+        model.addConstr(sum(f["0", neighbor_1] for neighbor_1 in out_neighbors["0"]) == 1)
+        model.addConstr(sum(f[neighbor_2, "1"] for neighbor_2 in in_neighbors["1"]) == 1)
+        
+        
         print(f"Added {counter/2} flow per read constraints")
 
 #-------------------------------------------------------------------------------------------------
@@ -250,12 +254,13 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
              for (vertex_from, vertex_to) in edges), 
             GRB.MINIMIZE
         )
+
         
         model.Params.TimeLimit = time_limit
         print(model.Params.TimeLimit)
         print(f"INFO: Trying to decompose into {num_paths} paths...")
         model.optimize()
-
+       
         print("Final MIP gap value: %f" % model.MIPGap)
         print('Obj: %g' % model.ObjVal)
 
