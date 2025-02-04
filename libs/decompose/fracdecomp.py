@@ -168,7 +168,6 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                         sum(x[vertex, neighbor_node, path_idx] for neighbor_node in out_neighbors[vertex]) == \
                             sum(x[neighbor_node, vertex, path_idx] for neighbor_node in in_neighbors[vertex])
                     )
-
         
         print(f"Creating {len(edges) * num_paths} linearization constraints")
         #constraints 9,10,11
@@ -219,30 +218,19 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     name=f"path_error_pos_{vertex_from}_{vertex_to}_{path_idx}"
                 )
 
-        print("Starting to create flow per read constraints")
+        print("Starting to create learned flow constraints")
         #constraint 2
-        counter = 0
         for vertex in vertices:
-            for neighbor_1 in in_neighbors[vertex]:
-                for neighbor_2 in in_neighbors[vertex]:
-                    if neighbor_1 != neighbor_2:
-                        counter += 1
-                        model.addConstr(f[neighbor_1, vertex] == f[neighbor_2, vertex])
-
-        for vertex in vertices:
-            for neighbor_1 in out_neighbors[vertex]:
-                for neighbor_2 in out_neighbors[vertex]:
-                    if neighbor_1 != neighbor_2:
-                        counter += 1
-                        model.addConstr(f[vertex, neighbor_1] == f[vertex, neighbor_2])
-
-        
+            if (vertex != "0") and (vertex != "1"):
+                model.addConstr(sum(f[vertex, neighbor_1] for neighbor_1 in out_neighbors[vertex]) == 
+                            sum(f[neighbor_2, vertex] for neighbor_2 in in_neighbors[vertex]) )
+           
         #Constraint 1
         model.addConstr(sum(f["0", neighbor_1] for neighbor_1 in out_neighbors["0"]) == 1)
         model.addConstr(sum(f[neighbor_2, "1"] for neighbor_2 in in_neighbors["1"]) == 1)
         
         
-        print(f"Added {counter/2} flow per read constraints")
+        print(f"Added flow per read constraints")
 
 #-------------------------------------------------------------------------------------------------
 # OBJECTIVE
@@ -277,14 +265,11 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             output_data['objval'] = model.ObjVal
 
             for model_var in model.getVars():
-                if model_var.VarName.startswith('w'):
+                if "w" in model_var.VarName:
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
-                    try:
-                        path_idx = int(elements[1])
-                        w_sol[path_idx] = model_var.x
-                    except ValueError as e:
-                        print(f"W - Error converting path_idx to int: {e}, elements: {elements}")
-
+                    path_idx = int(elements[1])
+                    w_sol[path_idx] = model_var.x
+                    
                 if 'x' in model_var.VarName:
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
@@ -292,7 +277,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     path_idx = int(elements[3])
                     x_sol[vertex_from, vertex_to, path_idx] = model_var.x
             
-                if 'r' in model_var.VarName:
+                if 'f' in model_var.VarName:
                     elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
                     vertex_from = elements[1]
                     vertex_to = elements[2]
