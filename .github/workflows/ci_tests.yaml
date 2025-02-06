@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]  # Add other OS options if needed
+        os: [ubuntu-22.04]  # Add other OS options if needed
     steps:
       - uses: actions/checkout@v2
 
