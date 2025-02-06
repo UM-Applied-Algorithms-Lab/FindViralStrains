@@ -27,7 +27,6 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ~/.rustup
           key: ${{ runner.os }}-rust-${{ hashFiles('libs/**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-rust-
