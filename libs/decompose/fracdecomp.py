@@ -123,7 +123,9 @@ def read_input_counts(graph_file_src, min_edge_weight):
 def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_name, sink_node_name, \
     max_count, num_paths, num_threads, time_limit, output_file_name):
     
-    edges = set(count.keys()) # Pull edge weights, TODO check if this is ok #
+    edges = list(set(count)) # Pull edge weights, TODO check if this is ok #
+    out_neighbors = {k: list(set(v)) for k, v in out_neighbors.items()}
+    in_neighbors = {k: list(set(v)) for k, v in in_neighbors.items()}
     output_data = dict()
     W = 1 # Max flow?
 
@@ -194,17 +196,17 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             total_flow_in = sum(f[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
             total_flow_out = sum(f[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
             
-            #constraint 3
-            model.addConstr(total_incoming_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_out  <= total_incoming_count * epsilon[vertex_from, vertex_to])
-        
-            #constraint 4
-            model.addConstr(count[vertex_from, vertex_to]*total_flow_out - total_incoming_count*f[vertex_from, vertex_to]  <= total_incoming_count * epsilon[vertex_from, vertex_to])
-            
             #constraint 5
-            model.addConstr(total_outgoing_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_in <= total_outgoing_count * epsilon[vertex_from, vertex_to])
-
+            model.addConstr(total_incoming_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_in  <= total_incoming_count * epsilon[vertex_from, vertex_to])
+           
             #constraint 6
-            model.addConstr(count[vertex_from, vertex_to]*total_flow_in - total_outgoing_count*f[vertex_from, vertex_to]  <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+            model.addConstr(count[vertex_from, vertex_to]*total_flow_in - total_incoming_count*f[vertex_from, vertex_to]  <= total_incoming_count * epsilon[vertex_from, vertex_to])
+            
+            #constraint 3
+            model.addConstr(total_outgoing_count*f[vertex_from, vertex_to] - count[vertex_from, vertex_to]*total_flow_out <= total_outgoing_count * epsilon[vertex_from, vertex_to])
+
+            #constraint 4
+            model.addConstr(count[vertex_from, vertex_to]*total_flow_out - total_outgoing_count*f[vertex_from, vertex_to]  <= total_outgoing_count * epsilon[vertex_from, vertex_to])
         
 
             #13 Actual flow - expected flow <= path flow error
@@ -219,6 +221,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 )
 
         print("Starting to create learned flow constraints")
+        
         #constraint 2
         for vertex in vertices:
             if (vertex != "0") and (vertex != "1"):
@@ -228,7 +231,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         #Constraint 1
         model.addConstr(sum(f["0", neighbor_1] for neighbor_1 in out_neighbors["0"]) == 1)
         model.addConstr(sum(f[neighbor_2, "1"] for neighbor_2 in in_neighbors["1"]) == 1)
-        
+
         
         print(f"Added flow per read constraints")
 
@@ -239,7 +242,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
             quicksum(path_error[vertex_from, vertex_to, path_idx] 
                      for (vertex_from, vertex_to) in edges
                      for path_idx in range(num_paths))+ quicksum(epsilon[vertex_from, vertex_to] 
-             for (vertex_from, vertex_to) in edges), 
+             for (vertex_from, vertex_to) in edges) , 
             GRB.MINIMIZE
         )
 
@@ -248,7 +251,34 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         print(model.Params.TimeLimit)
         print(f"INFO: Trying to decompose into {num_paths} paths...")
         model.optimize()
-       
+
+    # Debugging statements after optimization
+        for (vertex_from, vertex_to) in edges:
+            total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
+            print([(vertex_from, neighbor )for neighbor in out_neighbors[vertex_from]])
+            total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
+            total_flow_in = sum(f[neighbor, vertex_to].x for neighbor in in_neighbors[vertex_to])
+            total_flow_out = sum(f[vertex_from, neighbor].x for neighbor in out_neighbors[vertex_from])
+
+            # Debugging statements to check the values after optimization
+            print(f"vertex_from: {vertex_from}, vertex_to: {vertex_to}")
+            print(f"total_outgoing_count: {total_outgoing_count}, total_incoming_count: {total_incoming_count}")
+            print(f"total_flow_in: {total_flow_in}, total_flow_out: {total_flow_out}")
+            print(f"count[vertex_from, vertex_to]: {count[vertex_from, vertex_to]}")
+            print(f"epsilon[vertex_from, vertex_to]: {epsilon[vertex_from, vertex_to].x}")
+
+            # Print the errors for each edge
+            print(f"Edge {vertex_from} to {vertex_to} has error {epsilon[vertex_from, vertex_to].x}")
+
+            # Print the actual flow for each edge
+            print(f"Edge {vertex_from} to {vertex_to} has actual flow {f[vertex_from, vertex_to].x}")
+
+            # Print the expected flow for each edge
+            expected_flow = sum(z[vertex_from, vertex_to, path_idx].x for path_idx in range(num_paths))
+            print(f"Edge {vertex_from} to {vertex_to} has expected flow {expected_flow}")
+
+            
+        
         print("Final MIP gap value: %f" % model.MIPGap)
         print('Obj: %g' % model.ObjVal)
 
@@ -256,6 +286,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         x_sol = {}
         r_sol = {}
         eps_sol = {}
+        path_flow = {}
         print("Model status: ", model.status)
 
         if model.status == GRB.OPTIMAL or model.status == GRB.TIME_LIMIT:
@@ -287,12 +318,20 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                     vertex_from = elements[1]
                     vertex_to = elements[2]
                     eps_sol[vertex_from, vertex_to] = model_var.x
+                if 'path_error' in model_var.VarName:
+                    elements = model_var.VarName.replace('[', ',').replace(']', ',').split(',')
+                    vertex_from = elements[1]
+                    vertex_to = elements[2]
+                    path_flow[vertex_from, vertex_to] = model_var.x
                 
+          
+        
             paths = extract_paths(x_sol, source_node_name, sink_node_name, out_neighbors, num_paths)
             output_data['weights'] = w_sol
             output_data['paths'] = paths
             output_data['r_sol'] = r_sol
             output_data['eps_sol'] = eps_sol
+            output_data['path_flow'] = path_flow
         if model.status == GRB.INFEASIBLE:
             output_data['message'] = 'unsolved'
 
@@ -370,7 +409,7 @@ def write_graph_results(data, outputfilename, K, count):
         for edge in count:
             outputfile.write(f"{edge[0]}\t{edge[1]}\t")
             try:
-                outputfile.write(f'{data["r_sol"][edge]:.4f},{data["eps_sol"][edge]:.4f},{count[edge[0], edge[1]]}\n')
+                outputfile.write(f'{data["r_sol"][edge]:.4f},{data["path_flow"][edge]:.4f},{data["eps_sol"][edge]:.4f},{count[edge[0], edge[1]]}\n')
             except KeyError:
                 outputfile.write(f'x,x,{count[edge[0], edge[1]]}\n')
 
