@@ -1,0 +1,3 @@
+[submodule "libs/FmAssemblyGraph"]
+	path = libs/FmAssemblyGraph
+	url = https://github.com/UM-Applied-Algorithms-Lab/FmAssemblyGraph
