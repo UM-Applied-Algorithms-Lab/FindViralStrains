@@ -20,6 +20,8 @@ jobs:
         os: [ubuntu-22.04]  # Add other OS options if needed
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'  # This ensures submodules are initialized and updated
 
       # Cache Rust dependencies and toolchain
       - uses: actions/cache@v3
@@ -53,7 +55,6 @@ jobs:
           auto-update-conda: true
           python-version: 3.9
 
-
       # Create and activate Conda environment
       - name: Create and activate Conda environment
         run: |
@@ -66,7 +67,7 @@ jobs:
       - name: Build with Cargo
         run: |
           cargo build --release
-        
+
       - name: run snakemake
         run: |
           eval "$(conda shell.bash hook)"
