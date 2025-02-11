@@ -46,3 +46,5 @@ to allow your system to create so many files. If not, you will get this error in
 ```
 Error: Cannot open temporary file output/Test1/kmc_01021.bin:
 ```
+# How to contribute to this repository
+Todo, but generally: make a branch for your new feature, make changes, commit them, merge into main, then make a pull request.
