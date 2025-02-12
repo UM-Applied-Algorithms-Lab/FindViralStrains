@@ -12,8 +12,12 @@ McKayl, Lucy, & Tim
 Please note that everything below assumes that you already have copied our code into a working
 directory, and have some variation of Conda installed on your device. If you need help doing any of
 this below i've linked some very informative guides. I would suggest reaching out to your system
-administrators for help/training if you are setting this up on any sort of HPC enviroment.
+administrators for help/training if you are setting this up on any sort of HPC enviroment. The
+command to download our repository is below. 
 
+```
+git clone --recurse-submodules https:/github.com/UM-Applied-Algorithms-Lab/FindViralStrains
+```
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
