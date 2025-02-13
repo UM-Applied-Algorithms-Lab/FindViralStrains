@@ -16,7 +16,7 @@ administrators for help/training if you are setting this up on any sort of HPC e
 command to download our repository is below. 
 
 ```
-git clone --recurse-submodules https:/github.com/UM-Applied-Algorithms-Lab/FindViralStrains
+git clone --recurse-submodules https://github.com/UM-Applied-Algorithms-Lab/FindViralStrains
 ```
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
