@@ -5,6 +5,7 @@ import sys
 import warnings
 import resource
 from datetime import datetime
+from glob import glob
 
 start_time = datetime.now()
 
@@ -148,6 +149,14 @@ def find_R2_files(wildcards):
     R2_files = find_read_files(wildcards)[1]
     return R2_files
 
+# Function to group files into pairs
+def get_file_pairs(directory):
+    files = sorted(glob(os.path.join(directory, "*.merged.fq")))
+    return [(files[i], files[i+1]) for i in range(0, len(files), 2)]
+
+# Get the list of file pairs
+file_pairs = get_file_pairs("processed_reads/trimmed")
+
 ####################
 ## PIPELINE START ##
 ####################
@@ -203,77 +212,36 @@ rule trim_and_merge_raw_reads:
 		fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
 		"""
 
-# Unzip fastq files #
+# Unzip fastq files
 rule Unzip:
-	input:
-		trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-	output:
-		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	shell:
-		"gunzip {input.trim_merged}"
+    input:
+        trim_merged = "processed_reads/trimmed/{sample}.merged.fq.gz",
+    output:
+        unzipped = "processed_reads/trimmed/{sample}.merged.fq",
+    shell:
+        "gunzip -c {input.trim_merged} > {output.unzipped}"
 
-rule Convert_To_Fasta:
-	input:
-		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	output:
-		converted = (bd("processed_reads/trimmed/{sample}.merged.fasta")),
-	shell:
-		"seqtk seq -A {input.unzipped} > {output.converted}"
+# Create Fm Index for pairs of files
+rule Create_Fm_Index:
+    input:
+        unzipped = lambda wildcards: file_pairs[int(wildcards.pair_index)],
+    output:
+        mg = "mg/pair_{pair_index}/out.mg",
+    shell:
+        "./target/release/assembly_graph_generator --input-dir {input.unzipped[0]} {input.unzipped[1]} --output-path {output.mg} --kmer-len 27"
 
-# May need to be edited to take into account things other than merged pairs etc #
-# Creates De Bruijn Graph #
-rule Cuttlefish:
-	input:
-		trim_merged=bd("processed_reads/trimmed/{sample}.merged.fasta"),
-	output:
-		seg=bd("cuttlefish/{sample}/out.cf_seg"),
-		seq=bd("cuttlefish/{sample}/out.cf_seq"),
-	params:
-		cf_pref=bd("cuttlefish/{sample}/out"),
-		cf_dir=bd("cuttlefish/{sample}/"),
-	shell:
-		"""
-		rm -rf {params.cf_dir}
-		mkdir -p {params.cf_dir}
-		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12 -w {params.cf_dir}
-		"""
-
-# Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
-rule Mer_graph: 
-	input:
-		script = "libs/mer_graph/edgemer.py",
-		seg=bd("cuttlefish/{sample}/out.cf_seg"),
-		seq=bd("cuttlefish/{sample}/out.cf_seq"),
-	output:
-		file = bd("mg/{sample}/out.mg"),
-	params:
-		cf_pref=bd("cuttlefish/{sample}/out")
-	shell:
-		"python3 {input.script} -k 27 -c {params.cf_pref} -o {output.file}"
-
-# Returns arguments on various subgraphs in the provided data #
+# Returns arguments on various subgraphs in the provided data
 rule Create_subgraphs:
-	input:
-		infile = bd("mg/{sample}/out.mg"),
-	output:
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-	params:
-		base_output = bd("mg/{sample}")
-	shell:
-		"target/release/graph_analyzer -m {input.infile}"
-
-# Runs Jellyfish to build weighted graph file #
-rule Run_jf:
-	input:
-		script = "libs/runjf/runjf.sh",
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	output:
-		bd("wgs/original/{sample}.wg"),
-	shell:
-		"{input.script} {input.reads} {input.graph_0} {output}"
+    input:
+        infile = "mg/pair_{pair_index}/out.mg",
+    output:
+        graph_0 = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.mg",
+        sources = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.sinks",
+        sinks = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.sources",
+    params:
+        base_output = "mg/pair_{pair_index}",
+    shell:
+        "target/release/graph_analyzer -m {input.infile}"
 
 # Prune graph edges with counts less than user arg
 rule Prune:
