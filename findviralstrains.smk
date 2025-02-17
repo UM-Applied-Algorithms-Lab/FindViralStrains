@@ -149,14 +149,6 @@ def find_R2_files(wildcards):
     R2_files = find_read_files(wildcards)[1]
     return R2_files
 
-# Function to group files into pairs
-def get_file_pairs(directory):
-    files = sorted(glob(os.path.join(directory, "*.merged.fq")))
-    return [(files[i], files[i+1]) for i in range(0, len(files), 2)]
-
-# Get the list of file pairs
-file_pairs = get_file_pairs("processed_reads/trimmed")
-
 ####################
 ## PIPELINE START ##
 ####################
@@ -215,61 +207,58 @@ rule trim_and_merge_raw_reads:
 # Unzip fastq files
 rule Unzip:
     input:
-        trim_merged = "processed_reads/trimmed/{sample}.merged.fq.gz",
+        trim_merged = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq.gz"),
     output:
-        unzipped = "processed_reads/trimmed/{sample}.merged.fq",
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
+import os
 
 # Create Fm Index for pairs of files
 rule Create_Fm_Index:
     input:
-        unzipped = lambda wildcards: file_pairs[int(wildcards.pair_index)],
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     output:
-        mg = "mg/pair_{pair_index}/out.mg",
-    shell:
-        "./target/release/assembly_graph_generator --input-dir {input.unzipped[0]} {input.unzipped[1]} --output-path {output.mg} --kmer-len 27"
-
-# Returns arguments on various subgraphs in the provided data
-rule Create_subgraphs:
-    input:
-        infile = "mg/pair_{pair_index}/out.mg",
-    output:
-        graph_0 = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.mg",
-        sources = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.sinks",
-        sinks = "mg/pair_{pair_index}/out.mg_subgraphs/graph_0.sources",
+        mg = bd("mg/{sample}/out.mg"),
     params:
-        base_output = "mg/pair_{pair_index}",
+        input_dir = lambda wildcards: os.path.dirname(input.unzipped)
     shell:
-        "target/release/graph_analyzer -m {input.infile}"
+        "./target/release/assembly_graph_generator --input-dir {params.input_dir} --output-path {output.mg} --kmer-len 27"
 
 # Prune graph edges with counts less than user arg
 rule Prune:
 	input:
+		mg = bd("mg/{sample}/out.mg"), # Dont need pair index files, just one for every sample
 		script = "libs/prune/filter_reads.py",
-		wg = bd("wgs/original/{sample}.wg"),
-		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 	output:
-		wg_out = (bd("wgs/pruned/{sample}.pruned.wg")),
 		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
 	shell:
 		"""
-		python3 {input.script} {input.wg} {input.mg} {output.wg_out} {output.mg_out}
+		python3 {input.script} {input.mg} {output.mg_out}
 		"""
+
+rule Create_subgraphs:
+    input:
+        mg = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
+    output:
+        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+    shell:
+        "target/release/graph_analyzer -m {input.mg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
 		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
-		wg = bd("wgs/original/{sample}.wg"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped :(
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	params:
 		out_location = os.path.normpath(os.path.join(RUN_LOCATION, OUTPUT_DIR, ANALYSIS, "wgs","super")),  
 	shell:
-		"target/release/super_source_and_sink {input.sinks} {input.graph_0} {input.sources} {input.wg} {params.out_location}"
+		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {params.out_location}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
