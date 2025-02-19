@@ -8,18 +8,18 @@ def reverse_complement(seq):
     return ''.join([complement.get(base, base) for base in reversed(seq)])
 
 def main(path_file, edge_file, bd_outfile):
-    # Step 1: Read sequences into a dictionary
+    # Read sequences into a dictionary
     sequences = defaultdict(dict)
     with open(edge_file, 'r') as f:
         for line in f:
             node1, node2, occurrence, sequence = line.strip().split('\t')
             sequences[node1][node2] = sequence
 
-    # Step 2: Count total number of alignments
+    # Count total number of alignments
     with open(path_file, 'r') as f:
         total_alignments = sum(1 for line in f if line.strip() and line[0].isdigit())
 
-    # Step 3: Process the paths and reconstruct genomes
+    # Process the paths and reconstruct genomes
     counter = 1
     with open(path_file, 'r') as f:
         for line in f:
