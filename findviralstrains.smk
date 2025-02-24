@@ -212,7 +212,6 @@ rule Unzip:
         unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
-import os
 
 # Create Fm Index for pairs of files
 rule Create_Fm_Index:
@@ -221,9 +220,9 @@ rule Create_Fm_Index:
     output:
         mg = bd("mg/{sample}/out.mg"),
     params:
-        input_dir = lambda wildcards: os.path.dirname(input.unzipped)
+        pairdir = bd("processed_reads/trimmed/{sample}/"),
     shell:
-        "./target/release/assembly_graph_generator --input-dir {params.input_dir} --output-path {output.mg} --kmer-len 27"
+        "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.mg} --kmer-len 27"
 
 # Prune graph edges with counts less than user arg
 rule Prune:
