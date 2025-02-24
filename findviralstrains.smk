@@ -273,53 +273,50 @@ rule Decompose:
 	shell:
 		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
 
-# TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
-# Runs rebuild.sh to create a genome that follows the paths from Gurobi #
+# Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
 	input:
-		script = "libs/rebuild/rebuild.sh",
+		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
-	shell: # We use sed here to filter out the name we give our script, then run it #
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
+	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_1//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
-# This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
 	input:
-		script = "libs/rebuild/rebuild.sh",
-		flow2 = bd("decomp_results/{sample}_2.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		script = "libs/rebuild/rebuild.py",
+		flow = bd("decomp_results/{sample}_2.paths"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
 	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
-# Outputs three genomes, one for each path #
 rule Rebuild_3:
 	input:
-		script = "libs/rebuild/rebuild.sh",
-		flow3 = bd("decomp_results/{sample}_3.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		script = "libs/rebuild/rebuild.py",
+		flow = bd("decomp_results/{sample}_3.paths"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
 		genome3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
 	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow3} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
