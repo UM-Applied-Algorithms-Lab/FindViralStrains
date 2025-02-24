@@ -207,16 +207,16 @@ rule trim_and_merge_raw_reads:
 # Unzip fastq files
 rule Unzip:
     input:
-        trim_merged = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq.gz"),
+        trim_merged = bd("processed_reads/trimmed/{sample}.merged.fq.gz"),
     output:
-        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+        unzipped = bd("processed_reads/trimmed/{sample}.merged.fq"),
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
 
 # Create Fm Index for pairs of files
 rule Create_Fm_Index:
     input:
-        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+        unzipped = bd("processed_reads/trimmed/{sample}.merged.fq"),
     output:
         mg = bd("mg/{sample}/out.mg"),
     params:
