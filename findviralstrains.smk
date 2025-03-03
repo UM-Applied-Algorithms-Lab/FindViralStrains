@@ -240,18 +240,18 @@ rule Create_subgraphs:
     input:
         mg = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
     output:
-        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.mg"),
+        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sinks"),
+        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sources"),
     shell:
         "target/release/graph_analyzer -m {input.mg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped :(
+		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.mg"),
+		sources= bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sources"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	params:
