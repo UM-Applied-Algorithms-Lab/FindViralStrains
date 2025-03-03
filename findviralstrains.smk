@@ -209,14 +209,14 @@ rule Unzip:
     input:
         trim_merged = bd("processed_reads/trimmed/{sample}.merged.fq.gz"),
     output:
-        unzipped = bd("processed_reads/trimmed/{sample}.merged.fq"),
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
 
 # Create Fm Index for pairs of files
 rule Create_Fm_Index:
     input:
-        unzipped = bd("processed_reads/trimmed/{sample}.merged.fq"),
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     output:
         mg = bd("mg/{sample}/out.mg"),
     params:
@@ -262,7 +262,7 @@ rule Add_super:
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		script = "libs/decompose/fracdecomp.py", # Temp change for testing
+		script = "libs/decompose/fracdecomp.py",
 		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
