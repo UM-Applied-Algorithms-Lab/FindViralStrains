@@ -254,10 +254,8 @@ rule Add_super:
 		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sources"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
-	params:
-		out_location = os.path.normpath(os.path.join(RUN_LOCATION, OUTPUT_DIR, ANALYSIS, "wgs","super")),  
 	shell:
-		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {params.out_location}"
+		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {output.swg}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
