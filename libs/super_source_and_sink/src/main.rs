@@ -17,7 +17,6 @@ fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
 // Helper function to read edges with weights and k-mers from a file
 fn read_edges_with_weights(
     filename: &str,
-    output_file: &mut File,
 ) -> io::Result<(HashSet<String>, Vec<(String, String, i32, String)>)> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
@@ -28,18 +27,11 @@ fn read_edges_with_weights(
     for line in reader.lines() {
         line_count += 1;
 
-        if line_count == 2 {
-            // Write the second line (summary line) to the output file
-            if let Ok(summary_line) = line {
-                // Ensure line is Ok before parsing
-                // Parse the line directly to a u32
-                let new_summary_line = summary_line.parse::<u32>().unwrap() + 2; // Add two for the super source and sink nodes
-                writeln!(output_file, "# Counts indicate weights on edges")?;
-                writeln!(output_file, "{}", new_summary_line)?;
-            }
+        // Skip the first line (header) and process the rest
+        if line_count == 1 {
             continue;
         }
-        // Further processing for other lines can go here if needed
+
         if let Ok(line) = line {
             let parts: Vec<&str> = line.split_whitespace().collect();
             if parts.len() == 4 {
@@ -68,36 +60,45 @@ fn create_super_sources_and_sinks(
     sinks_file: &str,
     edge_file: &str,
     output_file: &mut File,
-) -> io::Result<(HashSet<String>, Vec<(String, String, i32, String)>)> {
+) -> io::Result<()> {
     // Read the node lists from the files
     let sinks = read_nodes_from_file(sinks_file)?;
     let sources = read_nodes_from_file(sources_file)?;
 
     // Read edges and derive full nodes from the edge file
-    let (full_nodes, mut edges) = read_edges_with_weights(edge_file, output_file)?;
+    let (mut full_nodes, edges) = read_edges_with_weights(edge_file)?;
+
+    // Add super source ("0") and super sink ("1") to the full node list
+    full_nodes.insert("0".to_string());
+    full_nodes.insert("1".to_string());
+
+    // Write the header to the output file
+    writeln!(output_file, "# Counts indicate weights on edges")?;
+
+    // Write all original edges to the output file
+    for (from, to, weight, kmer) in &edges {
+        writeln!(output_file, "{} {} {} {}", from, to, weight, kmer)?;
+    }
 
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
     let super_source = "0".to_string();
     for source in &sources {
-        edges.push((super_source.clone(), source.clone(), 0, "".to_string()));
+        writeln!(output_file, "{} {} 0", super_source, source)?;
     }
 
     // Add edges from each sink node to the "super sink" (node "1") with weight 0
     let super_sink = "1".to_string();
     for sink in &sinks {
-        edges.push((sink.clone(), super_sink.clone(), 0, "".to_string()));
+        writeln!(output_file, "{} {} 0", sink, super_sink)?;
     }
 
-    Ok((full_nodes, edges))
-}
+    // Calculate the total number of edges (original edges + super source/sink edges)
+    let total_edges = edges.len() + sources.len() + sinks.len();
 
-// Helper function to extract sample name from file path
-fn extract_sample_name(file_path: &str) -> String {
-    Path::new(file_path)
-        .file_stem()
-        .and_then(|stem| stem.to_str())
-        .unwrap_or("sample")
-        .to_string()
+    // Write the total number of edges to the output file
+    writeln!(output_file, "{}", total_edges)?;
+
+    Ok(())
 }
 
 fn main() {
@@ -105,7 +106,7 @@ fn main() {
 
     if args.len() != 5 {
         eprintln!(
-            "Usage: {} <sources_file> <sinks_file> <edge_file> <output_directory>",
+            "Usage: {} <sources_file> <sinks_file> <edge_file> <output_file>",
             args[0]
         );
         std::process::exit(1);
@@ -115,16 +116,14 @@ fn main() {
     let sources_file = &args[1];
     let sinks_file = &args[2];
     let edge_file = &args[3];
-    let output_directory = Path::new(&args[4]);
+    let output_file_path = Path::new(&args[4]);
 
     // Ensure the output directory exists or create it
-    if !output_directory.exists() {
-        fs::create_dir_all(output_directory).expect("unable to generate out directories");
+    if let Some(parent) = output_file_path.parent() {
+        if !parent.exists() {
+            fs::create_dir_all(parent).expect("unable to generate output directories");
+        }
     }
-
-    // Extract sample name from edge file
-    let sample_name = extract_sample_name(edge_file);
-    let output_file_path = output_directory.join(format!("{}.super.wg", sample_name));
 
     // Open the output file for writing
     let mut output_file = File::create(&output_file_path).expect(&format!(
@@ -132,22 +131,18 @@ fn main() {
         output_file_path.display()
     ));
 
-    // Create super sources and sinks, and retrieve the updated nodes and edges list
-    let (_full_nodes, edges_with_supers) = create_super_sources_and_sinks(
+    // Copy the entire content of the edge file to the output file
+    let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
+    writeln!(output_file, "{}", edge_file_content).expect("unable to write edge file content");
+
+    // Create super sources and sinks, and write all edges to the output file
+    create_super_sources_and_sinks(
         sources_file,
         sinks_file,
         edge_file,
         &mut output_file,
     )
     .expect("unable to create super sources and sinks");
-
-    // Append the super nodes and updated edges to the output file
-    for (from, to, weight, kmer) in &edges_with_supers {
-        writeln!(output_file, "{} {} {} {}", from, to, weight, kmer).expect(&format!(
-            "failure in writing edge data to output file at location {}",
-            output_file_path.display()
-        ));
-    }
 
     println!(
         "New nodes and edges with weights written to: {}",
