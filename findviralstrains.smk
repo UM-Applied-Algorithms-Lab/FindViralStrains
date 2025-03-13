@@ -224,34 +224,22 @@ rule Create_Fm_Index:
     shell:
         "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.mg} --kmer-len 27"
 
-# Prune graph edges with counts less than user arg
-rule Prune:
-	input:
-		mg = bd("mg/{sample}/out.mg"), # Dont need pair index files, just one for every sample
-		script = "libs/prune/filter_reads.py",
-	output:
-		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
-	shell:
-		"""
-		python3 {input.script} {input.mg} {output.mg_out}
-		"""
-
 rule Create_subgraphs:
     input:
-        mg = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
+        mg = bd("mg/{sample}/out.mg"),
     output:
-        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.mg"),
-        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sinks"),
-        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sources"),
+        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
     shell:
         "target/release/graph_analyzer -m {input.mg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.mg"),
-		sources= bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg_subgraphs/graph_0.sources"),
+		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
+		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
