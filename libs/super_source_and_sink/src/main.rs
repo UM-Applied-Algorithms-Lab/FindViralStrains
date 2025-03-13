@@ -17,7 +17,7 @@ fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
 // Helper function to read edges with weights and k-mers from a file
 fn read_edges_with_weights(
     filename: &str,
-) -> io::Result<(HashSet<String>, Vec<(String, String, i32, String)>)> {
+) -> io::Result<(HashSet<String>, Vec<(String, String, i32)>)> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
     let mut edges = Vec::new();
@@ -34,7 +34,7 @@ fn read_edges_with_weights(
 
         if let Ok(line) = line {
             let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() == 4 {
+            if parts.len() >= 3 {
                 let from = parts[0].to_string();
                 let to = parts[1].to_string();
 
@@ -44,8 +44,7 @@ fn read_edges_with_weights(
 
                 // Attempt to parse the weight as an integer
                 if let Ok(weight) = parts[2].parse::<i32>() {
-                    let kmer = parts[3].to_string();
-                    edges.push((from, to, weight, kmer));
+                    edges.push((from, to, weight));
                 }
             }
         }
@@ -60,7 +59,11 @@ fn create_super_sources_and_sinks(
     sinks_file: &str,
     edge_file: &str,
     output_file: &mut File,
+    graph_name: &str,
 ) -> io::Result<()> {
+    // Write the graph name as a comment at the top of the output file
+    writeln!(output_file, "# {}", graph_name)?;
+
     // Read the node lists from the files
     let sinks = read_nodes_from_file(sinks_file)?;
     let sources = read_nodes_from_file(sources_file)?;
@@ -72,9 +75,13 @@ fn create_super_sources_and_sinks(
     full_nodes.insert("0".to_string());
     full_nodes.insert("1".to_string());
 
-    // Write all original edges to the output file
-    for (from, to, weight, kmer) in &edges {
-        writeln!(output_file, "{} {} {} {}", from, to, weight, kmer)?;
+    // Write all original edges to the output file (skip the first line of the edge file)
+    let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
+    let mut edge_lines = edge_file_content.lines();
+    edge_lines.next(); // Skip the first line
+
+    for line in edge_lines {
+        writeln!(output_file, "{}", line)?;
     }
 
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
@@ -95,9 +102,9 @@ fn create_super_sources_and_sinks(
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 5 {
+    if args.len() != 6 {
         eprintln!(
-            "Usage: {} <sources_file> <sinks_file> <edge_file> <output_file>",
+            "Usage: {} <sources_file> <sinks_file> <edge_file> <output_file> <graph_name>",
             args[0]
         );
         std::process::exit(1);
@@ -108,6 +115,7 @@ fn main() {
     let sinks_file = &args[2];
     let edge_file = &args[3];
     let output_file_path = Path::new(&args[4]);
+    let graph_name = &args[5];
 
     // Ensure the output directory exists or create it
     if let Some(parent) = output_file_path.parent() {
@@ -122,16 +130,13 @@ fn main() {
         output_file_path.display()
     ));
 
-    // Copy the entire content of the edge file to the output file
-    let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
-    write!(output_file, "{}", edge_file_content).expect("unable to write edge file content");
-
     // Create super sources and sinks, and write all edges to the output file
     create_super_sources_and_sinks(
         sources_file,
         sinks_file,
         edge_file,
         &mut output_file,
+        graph_name,
     )
     .expect("unable to create super sources and sinks");
 

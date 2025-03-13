@@ -243,7 +243,7 @@ rule Add_super:
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
-		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {output.swg}"
+		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:

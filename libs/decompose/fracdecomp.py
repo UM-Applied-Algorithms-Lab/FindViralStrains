@@ -7,7 +7,6 @@ import time
 import os
 import math
 
-# TODO: change code to use source/sink files, instead of parsing them from input.
 
 def get_extremity(neighbors, extremity_type):
     """TODO: deprecate this function, and use super-source and super-sink files 
