@@ -72,9 +72,6 @@ fn create_super_sources_and_sinks(
     full_nodes.insert("0".to_string());
     full_nodes.insert("1".to_string());
 
-    // Write the header to the output file
-    writeln!(output_file, "# Counts indicate weights on edges")?;
-
     // Write all original edges to the output file
     for (from, to, weight, kmer) in &edges {
         writeln!(output_file, "{} {} {} {}", from, to, weight, kmer)?;
@@ -91,12 +88,6 @@ fn create_super_sources_and_sinks(
     for sink in &sinks {
         writeln!(output_file, "{} {} 0", sink, super_sink)?;
     }
-
-    // Calculate the total number of edges (original edges + super source/sink edges)
-    let total_edges = edges.len() + sources.len() + sinks.len();
-
-    // Write the total number of edges to the output file
-    writeln!(output_file, "{}", total_edges)?;
 
     Ok(())
 }
@@ -133,7 +124,7 @@ fn main() {
 
     // Copy the entire content of the edge file to the output file
     let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
-    writeln!(output_file, "{}", edge_file_content).expect("unable to write edge file content");
+    write!(output_file, "{}", edge_file_content).expect("unable to write edge file content");
 
     // Create super sources and sinks, and write all edges to the output file
     create_super_sources_and_sinks(
