@@ -229,8 +229,8 @@ rule Create_subgraphs:
         mg = bd("mg/{sample}/out.mg"),
     output:
         graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
     shell:
         "target/release/graph_analyzer -m {input.mg}"
 
@@ -238,12 +238,12 @@ rule Create_subgraphs:
 rule Add_super:
 	input:
 		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
+		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
-		"target/release/super_source_and_sink {input.sinks} {input.sources} {input.mg} {output.swg} graph_0"
+		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.mg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
