@@ -7,7 +7,6 @@ import time
 import os
 import math
 
-# TODO: change code to use source/sink files, instead of parsing them from input.
 
 def get_extremity(neighbors, extremity_type):
     """TODO: deprecate this function, and use super-source and super-sink files 
@@ -102,7 +101,7 @@ def read_input_counts(graph_file_src, min_edge_weight):
                 else:
                     sys.exit("ERROR: input file contains an ill-formatted line")
 
-            if num_edges != len(in_neighbors):
+            if num_edges != len(in_neighbors) - 2:
                 sys.exit(f"ERROR: expecting {num_edges} edges, the input graph has {len(in_neighbors)} edges")
 
             source = get_extremity(in_neighbors, 'source')

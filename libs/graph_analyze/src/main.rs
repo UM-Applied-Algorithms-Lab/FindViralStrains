@@ -10,9 +10,9 @@ use std::rc::Rc;
 //This pulls help text from the comments, and compiler flags/options from the variable names
 #[derive(Parser, Debug)]
 struct InputArgs {
-    ///file src for the mer graph file to parse
+    ///file src for the dbg graph file to parse
     #[arg(short, long)]
-    mg_file_name: String,
+    dbg_file_name: String,
 
     ///percentage of nodes required in a subgraph to be reported, e.g., 0.05 requires 5% of total nodes in a subgraph to be reported.
     #[arg(short, long, default_value_t = 0.01)]
@@ -94,7 +94,7 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.mg_file_name))
+    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
     {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
@@ -121,9 +121,9 @@ fn main() {
     //writes the subgraphs over the node % cutoff to individual files for further processing
     write_subgraph_files(
         significant_subgraph_list,
-        &args.mg_file_name,
+        &args.dbg_file_name,
         &graph_label,
-        &edge_kmers,
+        &edge_info,
         args.output_directory,
     );
 }
@@ -136,7 +136,7 @@ fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
     main_graph_label: &String,
-    edge_kmers: &HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
     output_dir: Option<String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -165,7 +165,7 @@ fn write_subgraph_files(
         );
 
         let subgraph_file_path =
-            Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
+            Path::new(&subgraph_directory_name).join(format!("graph_{}.dbg", &subgraph_idx_string));
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
         let mut subgraph_mg_file = std::fs::OpenOptions::new()
@@ -191,16 +191,23 @@ fn write_subgraph_files(
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                subgraph_mg_file
-                    .write_fmt(format_args!(
-                        "{}\t{}\t{}\n",
-                        from_node,
-                        to_node,
-                        edge_kmers
-                            .get(&(from_node.clone(), to_node.clone()))
-                            .unwrap()
-                    ))
-                    .expect("unable to write graph line to subgraph file");
+                match edge_info.get(&(from_node.clone(), to_node.clone())) {
+                    Some(result) => {
+                        let (count, kmer) = result;
+                        subgraph_mg_file
+                            .write_fmt(format_args!(
+                                "{}\t{}\t{}\t{}\n",
+                                from_node,
+                                to_node,
+                                count,
+                                kmer
+                            ))
+                            .expect("unable to write graph line to subgraph file");
+                    }
+                    None => {
+                        println!("No count or kmer stored ")
+                    }
+                }
             }
         }
     }
@@ -312,21 +319,17 @@ fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
     HashMap<Rc<str>, NodeEdges>,
-    HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
     String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
-    let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), Rc<str>> = HashMap::new();
+    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)> = HashMap::new();
     let mut lines = file_reader.lines();
-    let graph_label = lines
-        .next()
-        .expect("could not read any lines from graph file")
-        .expect("unable to read from graph file.");
-    //skip the line containing the number of nodes
-    let _ = lines.next();
+    // decompose needs a graph label, but assembly graph generator does not make one //
+    let graph_label = "# fake label".to_string();
 
     for line in lines {
         let line = line.expect("unable to read line in input file");
@@ -341,6 +344,12 @@ fn make_main_graph(
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
         ));
+
+        let count: Rc<str> = Rc::from(split_line.next().expect( // TODO change to int
+            "encountered incorrectly formatted line in input file: \
+            could not parse second node name",
+        ));
+
         let edge_kmer: Rc<str> = Rc::from(split_line.next().expect(
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
@@ -357,10 +366,10 @@ fn make_main_graph(
             .in_edges
             .push(from_node.clone());
 
-        edge_kmers.insert((from_node, to_node), edge_kmer);
+        edge_info.insert((from_node, to_node), (count, edge_kmer));
     }
 
-    return Ok((main_graph, edge_kmers, graph_label));
+    return Ok((main_graph, edge_info, graph_label));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph

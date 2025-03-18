@@ -5,6 +5,7 @@ import sys
 import warnings
 import resource
 from datetime import datetime
+from glob import glob
 
 start_time = datetime.now()
 
@@ -203,110 +204,55 @@ rule trim_and_merge_raw_reads:
 		fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2
 		"""
 
-# Unzip fastq files #
+# Unzip fastq files
 rule Unzip:
-	input:
-		trim_merged = (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-	output:
-		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	shell:
-		"gunzip {input.trim_merged}"
+    input:
+        trim_merged = bd("processed_reads/trimmed/{sample}.merged.fq.gz"),
+    output:
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+    shell:
+        "gunzip -c {input.trim_merged} > {output.unzipped}"
 
-rule Convert_To_Fasta:
-	input:
-		unzipped = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	output:
-		converted = (bd("processed_reads/trimmed/{sample}.merged.fasta")),
-	shell:
-		"seqtk seq -A {input.unzipped} > {output.converted}"
+# Make graph using BWT and our fm-index program
+rule Create_graph:
+    input:
+        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+    output:
+        dbg = bd("dbg/{sample}/out.dbg"),
+    params:
+        pairdir = bd("processed_reads/trimmed/{sample}/"),
+    shell:
+        "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
 
-# May need to be edited to take into account things other than merged pairs etc #
-# Creates De Bruijn Graph #
-rule Cuttlefish:
-	input:
-		trim_merged=bd("processed_reads/trimmed/{sample}.merged.fasta"),
-	output:
-		seg=bd("cuttlefish/{sample}/out.cf_seg"),
-		seq=bd("cuttlefish/{sample}/out.cf_seq"),
-	params:
-		cf_pref=bd("cuttlefish/{sample}/out"),
-		cf_dir=bd("cuttlefish/{sample}/"),
-	shell:
-		"""
-		rm -rf {params.cf_dir}
-		mkdir -p {params.cf_dir}
-		cuttlefish build -s {input.trim_merged} -t 1 -o {params.cf_pref} -f 3 -m 12 -w {params.cf_dir}
-		"""
-
-# Runs edgemer.py to build kmer index file (Used later in rebuild steps) #
-rule Mer_graph: 
-	input:
-		script = "libs/mer_graph/edgemer.py",
-		seg=bd("cuttlefish/{sample}/out.cf_seg"),
-		seq=bd("cuttlefish/{sample}/out.cf_seq"),
-	output:
-		file = bd("mg/{sample}/out.mg"),
-	params:
-		cf_pref=bd("cuttlefish/{sample}/out")
-	shell:
-		"python3 {input.script} -k 27 -c {params.cf_pref} -o {output.file}"
-
-# Returns arguments on various subgraphs in the provided data #
 rule Create_subgraphs:
-	input:
-		infile = bd("mg/{sample}/out.mg"),
-	output:
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-	params:
-		base_output = bd("mg/{sample}")
-	shell:
-		"target/release/graph_analyzer -m {input.infile}"
+    input:
+        dbg = bd("dbg/{sample}/out.dbg"),
+    output:
+        graph_0 = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
+        sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
+        sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
+    shell:
+        "target/release/graph_analyzer --dbg-file-name {input.dbg}"
 
-# Runs Jellyfish to build weighted graph file #
-rule Run_jf:
-	input:
-		script = "libs/runjf/runjf.sh",
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		reads = (bd("processed_reads/trimmed/{sample}.merged.fq")),
-	output:
-		bd("wgs/original/{sample}.wg"),
-	shell:
-		"{input.script} {input.reads} {input.graph_0} {output}"
+# Rule Prune here
 
-# Prune graph edges with counts less than user arg
-rule Prune:
-	input:
-		script = "libs/prune/filter_reads.py",
-		wg = bd("wgs/original/{sample}.wg"),
-		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-	output:
-		wg_out = (bd("wgs/pruned/{sample}.pruned.wg")),
-		mg_out = bd("mg/{sample}/out.mg_subgraphs/graph_0_pruned.mg"),
-	shell:
-		"""
-		python3 {input.script} {input.wg} {input.mg} {output.wg_out} {output.mg_out}
-		"""
+# Rule Compress graph here
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"), # Flipped these, they were backwards
-		wg = bd("wgs/original/{sample}.wg"),
+		dbg = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
+		sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
+		sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
-	params:
-		out_location = os.path.normpath(os.path.join(RUN_LOCATION, OUTPUT_DIR, ANALYSIS, "wgs","super")),  
 	shell:
-		"target/release/super_source_and_sink {input.sinks} {input.graph_0} {input.sources} {input.wg} {params.out_location}"
+		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.dbg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
 	input:
-		script = "libs/decompose/fracdecomp.py", # Temp change for testing
+		script = "libs/decompose/fracdecomp.py",
 		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		decomp = bd("decomp_results/{sample}.txt"),
@@ -316,53 +262,50 @@ rule Decompose:
 	shell:
 		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
 
-# TODO Future rule to be added to use format_to_graph that will create graphs showing each path #
-# Runs rebuild.sh to create a genome that follows the paths from Gurobi #
+# Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
 	input:
-		script = "libs/rebuild/rebuild.sh",
+		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
-	shell: # We use sed here to filter out the name we give our script, then run it #
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
+	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_1//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
-# This also follows paths from Gurobi(decompose), however, this outputs two genomes #
 rule Rebuild_2:
 	input:
-		script = "libs/rebuild/rebuild.sh",
-		flow2 = bd("decomp_results/{sample}_2.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		script = "libs/rebuild/rebuild.py",
+		flow = bd("decomp_results/{sample}_2.paths"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
 	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_2//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow2} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
-# Outputs three genomes, one for each path #
 rule Rebuild_3:
 	input:
-		script = "libs/rebuild/rebuild.sh",
-		flow3 = bd("decomp_results/{sample}_3.paths"),
-		cf_seg=bd("cuttlefish/{sample}/out.cf_seg"),
+		script = "libs/rebuild/rebuild.py",
+		flow = bd("decomp_results/{sample}_3.paths"),
+		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
 		genome3 = bd("output_genomes/{sample}/{sample}_3_of_3.fasta"),
+	params:
+		outtemp = bd("output_genomes/{sample}/{sample}.fasta")
 	shell:
 		"""
-		genome_trimmed=$(echo "{output.genome}" | sed 's/_1_of_3//')
-		echo "Trimmed genome: $genome_trimmed"
-		bash {input.script} {input.flow3} {input.cf_seg} $genome_trimmed
+		python3 {input.script} {input.flow} {input.swg} {params.outtemp}
 		"""
 
 # Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
