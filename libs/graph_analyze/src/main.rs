@@ -321,12 +321,7 @@ fn make_main_graph(
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
     let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), Rc<str>> = HashMap::new();
     let mut lines = file_reader.lines();
-    let graph_label = lines
-        .next()
-        .expect("could not read any lines from graph file")
-        .expect("unable to read from graph file.");
-    //skip the line containing the number of nodes
-    let _ = lines.next();
+    let graph_label = "# fake label".to_string();
 
     for line in lines {
         let line = line.expect("unable to read line in input file");
