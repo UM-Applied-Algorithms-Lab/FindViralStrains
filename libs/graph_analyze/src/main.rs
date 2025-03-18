@@ -205,7 +205,7 @@ fn write_subgraph_files(
                             .expect("unable to write graph line to subgraph file");
                     }
                     None => {
-                        println!("No count or kmer stored for from_node to_node")
+                        println!("No count or kmer stored ")
                     }
                 }
             }
