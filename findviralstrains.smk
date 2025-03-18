@@ -213,37 +213,41 @@ rule Unzip:
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
 
-# Create Fm Index for pairs of files
-rule Create_Fm_Index:
+# Make graph using BWT and our fm-index program
+rule Create_graph:
     input:
         unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
     output:
-        mg = bd("mg/{sample}/out.mg"),
+        dbg = bd("dbg/{sample}/out.dbg"),
     params:
         pairdir = bd("processed_reads/trimmed/{sample}/"),
     shell:
-        "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.mg} --kmer-len 27"
+        "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
 
 rule Create_subgraphs:
     input:
-        mg = bd("mg/{sample}/out.mg"),
+        dbg = bd("dbg/{sample}/out.dbg"),
     output:
-        graph_0 = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-        sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-        sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+        graph_0 = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
+        sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
+        sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
     shell:
-        "target/release/graph_analyzer -m {input.mg}"
+        "target/release/graph_analyzer -m {input.dbg}"
+
+# Rule Prune here
+
+# Rule Compress graph here
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		mg = bd("mg/{sample}/out.mg_subgraphs/graph_0.mg"),
-		sources = bd("mg/{sample}/out.mg_subgraphs/graph_0.sources"),
-		sinks = bd("mg/{sample}/out.mg_subgraphs/graph_0.sinks"),
+		dbg = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
+		sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
+		sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
-		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.mg} {output.swg} graph_0"
+		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.dbg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
