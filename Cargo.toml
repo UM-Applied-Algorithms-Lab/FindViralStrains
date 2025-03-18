@@ -1,2 +1,2 @@
 [workspace]
-members = ["libs/graph_analyze", "libs/mer_graph", "libs/super_source_and_sink","libs/FmAssemblyGraph"]
+members = ["libs/graph_analyze", "libs/mer_graph", "libs/super_source_and_sink","libs/FmAssemblyGraph", "libs/compress_graph"]
