@@ -232,7 +232,7 @@ rule Create_subgraphs:
         sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
         sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
     shell:
-        "target/release/graph_analyzer -m {input.dbg}"
+        "target/release/graph_analyzer --dbg-file-name {input.dbg}"
 
 # Rule Prune here
 
