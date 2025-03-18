@@ -94,7 +94,7 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
+    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
     {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
@@ -123,7 +123,7 @@ fn main() {
         significant_subgraph_list,
         &args.dbg_file_name,
         &graph_label,
-        &edge_kmers,
+        &edge_info,
         args.output_directory,
     );
 }
@@ -136,7 +136,7 @@ fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
     main_graph_label: &String,
-    edge_kmers: &HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
     output_dir: Option<String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -191,7 +191,7 @@ fn write_subgraph_files(
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                match edge_kmers.get(&(from_node.clone(), to_node.clone())) {
+                match edge_info.get(&(from_node.clone(), to_node.clone())) {
                     Some(result) => {
                         let (count, kmer) = result;
                         subgraph_mg_file
@@ -326,7 +326,7 @@ fn make_main_graph(
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
-    let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)> = HashMap::new();
+    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)> = HashMap::new();
     let mut lines = file_reader.lines();
     // decompose needs a graph label, but assembly graph generator does not make one //
     let graph_label = "# fake label".to_string();
@@ -366,10 +366,10 @@ fn make_main_graph(
             .in_edges
             .push(from_node.clone());
 
-        edge_kmers.insert((from_node, to_node), (count, edge_kmer));
+        edge_info.insert((from_node, to_node), (count, edge_kmer));
     }
 
-    return Ok((main_graph, edge_kmers, graph_label));
+    return Ok((main_graph, edge_info, graph_label));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph
