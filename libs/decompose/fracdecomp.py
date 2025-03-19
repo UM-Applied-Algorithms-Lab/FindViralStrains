@@ -84,9 +84,9 @@ def read_input_counts(graph_file_src, min_edge_weight):
                 elements = line.split()
                 if len(elements) == 1:
                     num_edges = int(elements[0])
-                elif len(elements) == 3:
+                elif len(elements) == 3 or len(elements) == 4:  # accepts lines with 3 or 4 elements
                     edge_weight_value = int(elements[2])
-                    edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0 tho
+                    edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0, TODO
                     max_edge_weight = max(max_edge_weight, edge_weight_value) #just used for a global max edges
                     if elements[0] not in out_neighbors:
                         out_neighbors[elements[0]] = []
