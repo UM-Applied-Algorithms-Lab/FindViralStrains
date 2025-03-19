@@ -12,10 +12,13 @@ def main(path_file, edge_file, bd_outfile):
     sequences = defaultdict(dict)
     with open(edge_file, 'r') as f:
         for line in f:
-            node1, node2, occurrence, sequence = line.strip().split('\t')
+            elements = line.strip().split('\t')
+            if len(elements) != 4:
+                continue  # Skip lines without kmers (super source and sink)
+            node1, node2, occurrence, sequence = elements
             sequences[node1][node2] = sequence
 
-    # Count total number of alignments
+       # Count total number of alignments
     with open(path_file, 'r') as f:
         total_alignments = sum(1 for line in f if line.strip() and line[0].isdigit())
 
@@ -29,30 +32,37 @@ def main(path_file, edge_file, bd_outfile):
                 weight = parts[0]
                 path = parts[1:]
 
-                print("Read Seg")
+                print(f"Processing path: {path}")
                 genome = ""
                 is_first_node = True
 
                 # Process each node in the path
                 for i in range(len(path)):
                     node = path[i]
+                    print(f"Current node: {node}")
                     if node.endswith('-'):
                         clean_node = node.rstrip('-')
                         next_node = path[i+1] if i+1 < len(path) else None
+                        print(f"Looking for edge: {clean_node} -> {next_node}")
                         if next_node and next_node.rstrip('+-') in sequences[clean_node]:
                             sequence = sequences[clean_node][next_node.rstrip('+-')]
-                            if not is_first_node:
+                            print(f"Found sequence: {sequence}")
+                            if not is_first_node and len(sequence) > 27:
                                 sequence = sequence[27:]  # Handle overlap
+                                print(f"Trimmed sequence: {sequence}")
                             genome += reverse_complement(sequence)
                         else:
                             print(f"Warning: Edge {clean_node} -> {next_node} not found in sequences.")
                     else:
                         clean_node = node.rstrip('+')
                         next_node = path[i+1] if i+1 < len(path) else None
+                        print(f"Looking for edge: {clean_node} -> {next_node}")
                         if next_node and next_node.rstrip('+-') in sequences[clean_node]:
                             sequence = sequences[clean_node][next_node.rstrip('+-')]
-                            if not is_first_node:
+                            print(f"Found sequence: {sequence}")
+                            if not is_first_node and len(sequence) > 27:
                                 sequence = sequence[27:]  # Handle overlap
+                                print(f"Trimmed sequence: {sequence}")
                             genome += sequence
                         else:
                             print(f"Warning: Edge {clean_node} -> {next_node} not found in sequences.")
