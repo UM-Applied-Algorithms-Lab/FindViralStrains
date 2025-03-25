@@ -10,7 +10,7 @@ analysis_ID: NoRefTest
 
 # Input read directory
 # Folder where where reads are stored.
-read_dir: test/data
+read_dir: test/data/testdata_L001/
 #/home/example_reads/
 
 # Input consensus sequence directory
