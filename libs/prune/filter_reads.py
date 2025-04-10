@@ -1,12 +1,13 @@
 import sys
 
 # Input and output file paths from command-line arguments
-mg_file = sys.argv[1]
-filtered_mg_file = sys.argv[2]  # Output file for filtered mg data
+dbg_file = sys.argv[1]
+filtered_dbg_file = sys.argv[2]  # Output file for filtered mg data
+#num_prune = sys.argv[3] --temp for testing purposes
 
 # Process the mg_file to filter based on the count (third number)
-with open(mg_file, 'r') as file:
-    with open(filtered_mg_file, 'w') as outfile:
+with open(dbg_file, 'r') as file:
+    with open(filtered_dbg_file, 'w') as outfile:
         for line in file:
             parts = line.split()  # Split the line into parts
             

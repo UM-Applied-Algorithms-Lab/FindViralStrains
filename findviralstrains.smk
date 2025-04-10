@@ -222,15 +222,24 @@ rule Create_graph:
     params:
         pairdir = bd("processed_reads/trimmed/{sample}/"),
     shell:
-        "./target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
+        "target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
+
+#Prune edges with small counts
+rule Prune:
+	input:
+		dbg = bd("dbg/{sample}/out.dbg"),
+	output:
+		pruned_dbg = bd("dbg/{sample}/pruned/out.dbg"),
+	shell:
+		"python3 libs/prune/filter_reads.py  {input.dbg} {output.pruned_dbg} "
 
 rule Create_subgraphs:
     input:
-        dbg = bd("dbg/{sample}/out.dbg"),
+        dbg = bd("dbg/{sample}/pruned/out.dbg"),
     output:
-        graph_0 = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
-        sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
-        sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
+        graph_0 = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+        sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
+        sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
     shell:
         "target/release/graph_analyzer --dbg-file-name {input.dbg}"
 
@@ -241,9 +250,9 @@ rule Create_subgraphs:
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		dbg = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.dbg"),
-		sources = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sources"),
-		sinks = bd("dbg/{sample}/out.dbg_subgraphs/graph_0.sinks"),
+		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+		sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
+		sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:

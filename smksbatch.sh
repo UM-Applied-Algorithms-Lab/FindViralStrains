@@ -21,5 +21,6 @@
 
 # Your job commands go below this line
 
-#ulimit -n 2048
-snakemake -s findviralstrains.smk --configfile config_files/no_ref_test.yml --cores 1 --rerun-incomplete
+ulimit -n 2048
+
+apptainer run --bind /mnt/beegfs/projects/tb208541/FindViralStrains --bind /mnt/beegfs/projects/tb208541/brendans_data_and_code/data/BaseCalls:/data ../findviralstrains.sif snakemake -s findviralstrains.smk --configfile config_files/build_test.yaml --cores 2 --rerun-incomplete
