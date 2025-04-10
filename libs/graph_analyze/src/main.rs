@@ -25,6 +25,10 @@ struct InputArgs {
     /// the directory that the output will be written to. By default, outputs will be put in the calling_directory/input_name/
     #[arg(short, long)]
     output_directory: Option<String>,
+
+    /// file to save statistics output (in addition to terminal display)
+    #[arg(short, long)]
+    stats_output_file: Option<String>,
 }
 
 //struct to hold the analysis data for a graph or subgraph
@@ -105,18 +109,19 @@ fn main() {
     let significant_subgraph_list =
         make_significant_subgraph_list(&subgraph_list, args.node_percent_cutoff);
 
-    //displays the stats from the main graph and any subgraphs that match the display criteri
-    // (currently, only displays subgraphs with a large enough % of total nodes)
+    //displays the stats from the main graph and any subgraphs that match the display criteria
     let display_type = match args.all_subgraphs_displayed {
         true => SubgraphDisplayType::All,
         false => SubgraphDisplayType::OnlySignificant(args.node_percent_cutoff),
     };
-    display_graph_stats(
+    if let Err(e) = display_graph_stats(
         &main_graph,
         &subgraph_list,
-        // &significant_subgraph_list,
         display_type,
-    );
+        &args.stats_output_file,
+    ) {
+        eprintln!("Warning: Failed to write statistics to file: {}", e);
+    }
 
     //writes the subgraphs over the node % cutoff to individual files for further processing
     write_subgraph_files(
@@ -218,34 +223,47 @@ fn display_graph_stats(
     main_graph: &HashMap<Rc<str>, NodeEdges>,
     subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
     subgraph_display_type: SubgraphDisplayType,
-) {
-    println!(
-        "Main Graph Stats:\n{}",
+    stats_output_file: &Option<String>,
+) -> std::io::Result<()> {
+    let mut output = String::new();
+    
+    output.push_str(&format!(
+        "Main Graph Stats:\n{}\n",
         make_graph_stats(main_graph, subgraph_list.len())
-    );
+    ));
 
     match subgraph_display_type {
         SubgraphDisplayType::All => {
             for (subgraph_idx, subgraph) in subgraph_list.iter().enumerate() {
-                println!(
-                    "Subgraph {}:\n{}",
+                output.push_str(&format!(
+                    "Subgraph {}:\n{}\n",
                     subgraph_idx,
                     make_graph_stats(subgraph, 0)
-                );
+                ));
             }
         }
 
         SubgraphDisplayType::OnlySignificant(cutoff) => {
             let significant_subgraph_list = make_significant_subgraph_list(&subgraph_list, cutoff);
             for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
-                println!(
-                    "Subgraph {}:\n{}",
+                output.push_str(&format!(
+                    "Subgraph {}:\n{}\n",
                     subgraph_idx,
                     make_graph_stats(subgraph, 0)
-                );
+                ));
             }
         }
     }
+
+    // Print to terminal (original functionality)
+    print!("{}", output);
+
+    // Write to file if specified
+    if let Some(file_path) = stats_output_file {
+        std::fs::write(file_path, output)?;
+    }
+
+    Ok(())
 }
 
 /// generates the stats for a graph (or subgraph)
