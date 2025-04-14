@@ -3,7 +3,7 @@ import sys
 # Input and output file paths from command-line arguments
 dbg_file = sys.argv[1]
 filtered_dbg_file = sys.argv[2]  # Output file for filtered mg data
-#num_prune = sys.argv[3] --temp for testing purposes
+num_prune = sys.argv[3] 
 
 # Process the mg_file to filter based on the count (third number)
 with open(dbg_file, 'r') as file:
@@ -22,7 +22,7 @@ with open(dbg_file, 'r') as file:
                     count_value = float(count_argument)
                     
                     # Skip this line if the count value is less than 25
-                    if count_value < 15:
+                    if count_value < float(num_prune):
                         continue
 
                 except ValueError:
