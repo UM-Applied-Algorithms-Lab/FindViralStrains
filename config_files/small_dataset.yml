@@ -12,13 +12,6 @@ analysis_ID: SmallDataTest
 # Folder where where reads are stored.
 read_dir: /projects/lw226023e/temp/FindViralStrains/test/data
 
-#/home/example_reads/
-
-# Input consensus sequence directory
-# Folder where where consensus sequences are stored.
-# lucy note: assuming this is not needed
-consensus_file: /home/mikahil/Code/MFD-ILP/brendans_data_and_code/UM-CoV-Seq/output/FlowRNA_run4/results/ivar/all_samples_consensus.fasta
-
 # Output directory
 # Directory where you would like the ouput files
 # for this analysis batch to be placed.
@@ -36,19 +29,16 @@ sequencer: MiSeq
 # Give the path to the reference genome file for including in the Debruijn graph
 ref_genome: /projects/lw226023e/brendans_data_and_code/flow/GCF_009858895.2_ASM985889v3_genomic_notail.fna
 
-# Contig file output name
 # lucy note: assuming this is not needed
-contig_file: all_samples_consensus_contigs.fasta
-
-# lucy note: assuming this is not needed
-run_location: /projects/lw226023e/temp/FindViralStrains
-
+run_location: .
 decomp_time_limit: 1200
 
 read_purge_percent: 5
 # Model Time Limit (in min)
 # Threads used by solver
 gurobi_threads: 16
+#Prune edges with weights lower than or equal to this amount.
+prune: 0
 #######################
 ## Optional settings ##
 #######################

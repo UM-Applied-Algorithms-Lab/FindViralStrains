@@ -21,11 +21,8 @@
 
 # Your job commands go below this line
 
-ulimit -n 2048
 
-## Enable Conda environment
-source /hellgate/home/$USER/.bashrc
-conda activate Test
 
 ## Run pipeline
-snakemake -s findviralstrains.smk --configfile config_files/one_sample.yml --cores 2 --rerun-incomplete
+
+apptainer run ../findviralstrains.sif bash loop.sh
