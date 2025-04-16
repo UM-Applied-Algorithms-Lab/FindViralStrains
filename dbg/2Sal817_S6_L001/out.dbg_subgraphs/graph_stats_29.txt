@@ -3,7 +3,7 @@ nodes		edges		subgraphs	sources		sinks		acyclic?
 57586		57628		12		49		36		no
 Subgraph 0:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-43228		43265		0		30		22		no
+12686		12701		0		7		3		no
 Subgraph 1:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-12686		12701		0		7		3		no
+43228		43265		0		30		22		no

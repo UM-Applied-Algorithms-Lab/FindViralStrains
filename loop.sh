@@ -5,7 +5,7 @@ for sample_dir in test/data/NoRefTest/dbg/*/; do
     sample=$(basename "$sample_dir")
     input_file="test/data/NoRefTest/dbg/$sample/out.dbg"
 
-    for i in {1..30}; do
+    for i in {0..30}; do
         # Paths for pruning
         pruned_dir="test/data/NoRefTest/dbg/$sample/pruned_$i"
         pruned_file="$pruned_dir/out.dbg"

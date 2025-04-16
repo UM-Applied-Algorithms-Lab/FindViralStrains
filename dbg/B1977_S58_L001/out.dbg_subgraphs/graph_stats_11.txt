@@ -3,13 +3,13 @@ nodes		edges		subgraphs	sources		sinks		acyclic?
 60362		60401		14		36		44		yes
 Subgraph 0:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-1285		1284		0		1		1		yes
+28923		28951		0		9		15		yes
 Subgraph 1:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-28832		28855		0		15		17		yes
+1285		1284		0		1		1		yes
 Subgraph 2:
 nodes		edges		subgraphs	sources		sinks		acyclic?
 1285		1284		0		1		1		yes
 Subgraph 3:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-28923		28951		0		9		15		yes
+28832		28855		0		15		17		yes

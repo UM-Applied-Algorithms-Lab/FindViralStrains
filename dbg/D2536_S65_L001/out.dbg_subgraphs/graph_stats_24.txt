@@ -6,10 +6,10 @@ nodes		edges		subgraphs	sources		sinks		acyclic?
 681		680		0		1		1		yes
 Subgraph 1:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-681		680		0		1		1		yes
+29187		29201		0		8		5		yes
 Subgraph 2:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-29073		29081		0		7		11		yes
+681		680		0		1		1		yes
 Subgraph 3:
 nodes		edges		subgraphs	sources		sinks		acyclic?
-29187		29201		0		8		5		yes
+29073		29081		0		7		11		yes
