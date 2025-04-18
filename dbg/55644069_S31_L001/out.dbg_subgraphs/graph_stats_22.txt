@@ -1,15 +1,15 @@
 Main Graph Stats:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-59266		59282		9		25		25		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+59266		59282		61339089		9		25		25		yes
 Subgraph 0:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-16815		16827		0		5		5		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+12597		12598		11655174		0		3		4		yes
 Subgraph 1:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-16861		16868		0		8		6		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+12252		12253		11501157		0		4		5		yes
 Subgraph 2:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-12597		12598		0		3		4		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+16815		16827		18924420		0		5		5		yes
 Subgraph 3:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-12252		12253		0		4		5		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+16861		16868		18829291		0		8		6		yes

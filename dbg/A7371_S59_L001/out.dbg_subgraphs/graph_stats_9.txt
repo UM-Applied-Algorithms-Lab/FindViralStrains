@@ -1,9 +1,9 @@
 Main Graph Stats:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-61158		61213		8		35		37		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+61158		61213		44104539		8		35		37		yes
 Subgraph 0:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-30508		30536		0		19		18		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+30606		30638		21712019		0		11		14		yes
 Subgraph 1:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-30606		30638		0		11		14		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+30508		30536		22392150		0		19		18		yes

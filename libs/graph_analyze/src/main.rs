@@ -35,6 +35,7 @@ struct InputArgs {
 struct GraphAnalysisData {
     num_nodes: usize,
     num_edges: usize,
+    total_edge_weight: usize,
     num_disconnected_subgraphs: usize,
     sources: Vec<Rc<str>>,
     sinks: Vec<Rc<str>>,
@@ -50,15 +51,17 @@ impl std::fmt::Display for GraphAnalysisData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}\t\t{}\t\t{}\t{}\t\t{}\t\t{}\n{}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{}",
+            "{:<12}{:<12}{:<18}{:<14}{:<12}{:<12}{:<10}\n{:<12}{:<12}{:<18}{:<14}{:<12}{:<12}{:<10}",
             "nodes".blue(),
             "edges".blue(),
+            "total_weight".blue(),
             "subgraphs".blue(),
             "sources".blue(),
             "sinks".blue(),
             "acyclic?".blue(),
             self.num_nodes,
             self.num_edges,
+            self.total_edge_weight,
             self.num_disconnected_subgraphs,
             self.sources.len(),
             self.sinks.len(),
@@ -117,6 +120,7 @@ fn main() {
     if let Err(e) = display_graph_stats(
         &main_graph,
         &subgraph_list,
+        &edge_info,
         display_type,
         &args.stats_output_file,
     ) {
@@ -141,7 +145,7 @@ fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
     main_graph_label: &String,
-    edge_info: &HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     output_dir: Option<String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -222,6 +226,7 @@ fn write_subgraph_files(
 fn display_graph_stats(
     main_graph: &HashMap<Rc<str>, NodeEdges>,
     subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     subgraph_display_type: SubgraphDisplayType,
     stats_output_file: &Option<String>,
 ) -> std::io::Result<()> {
@@ -229,7 +234,7 @@ fn display_graph_stats(
     
     output.push_str(&format!(
         "Main Graph Stats:\n{}\n",
-        make_graph_stats(main_graph, subgraph_list.len())
+        make_graph_stats(main_graph,&edge_info, subgraph_list.len())
     ));
 
     match subgraph_display_type {
@@ -238,7 +243,7 @@ fn display_graph_stats(
                 output.push_str(&format!(
                     "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph, 0)
+                    make_graph_stats(subgraph,&edge_info, 0)
                 ));
             }
         }
@@ -249,7 +254,7 @@ fn display_graph_stats(
                 output.push_str(&format!(
                     "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph, 0)
+                    make_graph_stats(subgraph,&edge_info, 0)
                 ));
             }
         }
@@ -270,12 +275,20 @@ fn display_graph_stats(
 /// If using for the full graph, give the num_subgraphs, for a subgraph just give zero, I guess...
 fn make_graph_stats(
     graph: &HashMap<Rc<str>, NodeEdges>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     num_subgraphs: usize,
 ) -> GraphAnalysisData {
     let (sources, sinks) = make_source_sink_lists(&graph);
+    let total_edge_weight = graph.iter().flat_map(|(from, edges)| {
+        edges.out_edges.iter().filter_map(move |to| {
+             edge_info.get(&(from.clone(), to.clone())).map(|(count, _)| count)
+        })
+    }).sum();
+
     GraphAnalysisData {
         num_nodes: graph.len(),
         num_edges: graph.iter().map(|(_, edges)| edges.out_edges.len()).sum(),
+        total_edge_weight,
         num_disconnected_subgraphs: num_subgraphs,
         sources,
         sinks,
@@ -337,15 +350,15 @@ fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
     HashMap<Rc<str>, NodeEdges>,
-    HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)>,
+    HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
-    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (Rc<str>, Rc<str>)> = HashMap::new();
-    let mut lines = file_reader.lines();
+    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)> = HashMap::new();
+    let lines = file_reader.lines();
     // decompose needs a graph label, but assembly graph generator does not make one //
     let graph_label = "# fake label".to_string();
 
@@ -363,10 +376,10 @@ fn make_main_graph(
             could not parse second node name",
         ));
 
-        let count: Rc<str> = Rc::from(split_line.next().expect( // TODO change to int
+        let count: usize = split_line.next().unwrap().parse().expect( // TODO change to int
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
-        ));
+        );
 
         let edge_kmer: Rc<str> = Rc::from(split_line.next().expect(
             "encountered incorrectly formatted line in input file: \

@@ -1,33 +1,33 @@
 Main Graph Stats:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-57777		57782		18		36		35		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+57777		57782		63151599		18		36		35		yes
 Subgraph 0:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-7075		7078		0		2		5		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+3849		3849		4126047		0		3		3		yes
 Subgraph 1:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-10637		10637		0		4		2		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+9227		9231		12217207		0		8		3		yes
 Subgraph 2:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-4678		4678		0		2		4		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+9301		9309		12326795		0		4		6		yes
 Subgraph 3:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-9227		9231		0		8		3		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+3399		3398		3528729		0		1		1		yes
 Subgraph 4:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-2814		2813		0		2		1		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+1813		1812		2136952		0		1		1		yes
 Subgraph 5:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-1813		1812		0		1		1		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+4678		4678		4829313		0		2		4		yes
 Subgraph 6:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-9301		9309		0		4		6		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+7075		7078		6483241		0		2		5		yes
 Subgraph 7:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-3399		3398		0		1		1		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+10637		10637		10151141		0		4		2		yes
 Subgraph 8:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-3399		3398		0		1		1		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+3399		3398		3424056		0		1		1		yes
 Subgraph 9:
-nodes		edges		subgraphs	sources		sinks		acyclic?
-3849		3849		0		3		3		yes
+nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
+2814		2813		2763442		0		2		1		yes
