@@ -25,3 +25,4 @@ summary.txt
 Cargo.lock
 config_files/*
 test/*
+dbg/

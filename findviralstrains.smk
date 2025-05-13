@@ -22,16 +22,15 @@ print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_
 ################# 
 # Main config settings
 ANALYSIS = config["analysis_ID"]
-CONSENSUS_FILE = config["consensus_file"]
 READ_DIR = config["read_dir"]
 OUTPUT_DIR = config["output_dir"]
 REF = config["ref_genome"]
 SEQUENCER = config["sequencer"]
-CONTIG_FILE = config["contig_file"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
 RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"] 
+PRUNE_COUNT = config["prune"]
 ###############
 ##   SETUP   ##
 ############### 
@@ -50,8 +49,6 @@ else:
 if os.path.isdir(READ_DIR) == False:
     raise OSError("\nRead directory " + READ_DIR + " not found\n")
 
-if os.path.isdir(READ_DIR) == False:
-    raise OSError("\nConsensus file " + CONSENSUS_FILE + " not found\n")
 
 samples = []
 fastq_fullpath = []
@@ -165,8 +162,6 @@ onstart:
     with open(pipeline_log_file, 'w') as tsvfile:
         writer = csv.writer(tsvfile, delimiter='\t')
         writer.writerow(["Raw data folder used:", READ_DIR])
-        writer.writerow(["Consensus File used:", CONSENSUS_FILE])
-        writer.writerow(["Reference genome used:", REF])
         writer.writerow(["Start time:", start_time.strftime("%B %d, %Y: %H:%M:%S")])
 
 
@@ -231,7 +226,7 @@ rule Prune:
 	output:
 		pruned_dbg = bd("dbg/{sample}/pruned/out.dbg"),
 	shell:
-		"python3 libs/prune/filter_reads.py  {input.dbg} {output.pruned_dbg} "
+		"python3 libs/prune/filter_reads.py  {input.dbg} {output.pruned_dbg} PRUNE_COUNT"
 
 rule Create_subgraphs:
     input:

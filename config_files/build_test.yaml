@@ -13,9 +13,6 @@ analysis_ID: NoRefTest
 read_dir: test/data/testdata_L001/
 #/home/example_reads/
 
-# Input consensus sequence directory
-# Folder where where consensus sequences are stored.
-consensus_file: unused.txt
 
 # Output directory
 # Directory where you would like the ouput files
@@ -45,6 +42,8 @@ read_purge_percent: 5
 # Model Time Limit (in min)
 # Threads used by solver
 gurobi_threads: 8
+#Prune edges with weights lower than or equal to this amount.
+prune: 0
 #######################
 ## Optional settings ##
 #######################
