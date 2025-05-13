@@ -21,18 +21,18 @@ git clone --recurse-submodules https://github.com/UM-Applied-Algorithms-Lab/Find
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
-First, compile the rust libraries that we use.
-
-```
-cargo build --release
-```
-
-Then set up your own working enviroment, I would use our environment.yml file, along with the
+Set up your own working enviroment, I would use our environment.yml file, along with the
 command below. As written, this will create an environment called `FindViralStrains`---you can change this by editing
 the first line of `environment.yml`.
 
 ```
 conda env create -f environment.yml
+```
+
+Now, compile the rust libraries that we use.
+
+```
+cargo build --release
 ```
 
 Once you have build list and verified that all packages are successfully installed you can move on to
