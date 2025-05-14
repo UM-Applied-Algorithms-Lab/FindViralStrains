@@ -66,11 +66,17 @@ def load_graph_from_file(filename):
                 weight = int(parts[2])
                 sequence = parts[3]
                 graph.add_edge(from_node, to_node, weight, sequence)
+            elif len(parts) == 3:
+                from_node = int(parts[0])
+                to_node = int(parts[1])
+                weight = int(parts[2])
+                sequence = None
+                graph.add_edge(from_node, to_node, weight, sequence)
     
     return graph
 
 if __name__ == "__main__":
-    graph = load_graph_from_file('/home/mikhailu/Projects/FindViralStrains/output/FakeDataTest/dbg/testdata_L001/out.dbg')
+    graph = load_graph_from_file('/Users/joserodriguez/54840891_S15_L001.super.wg')
     
     for int in range(0, 400):
         print(f"\nNeighbors of node {int}:", graph.get_neighbors(int))
