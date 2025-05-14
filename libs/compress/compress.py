@@ -59,20 +59,20 @@ def load_graph_from_file(filename):
     
     with open(filename, 'r') as file:
         for line in file:
-            parts = line.strip().split(' ')
-            parts_2 = line.strip().split('\t')
-            if len(parts_2) >= 4:
+            parts = line.strip().split(' ')               # Split by space for super source 
+            parts_2 = line.strip().split('\t')            # Split by tab for all inner nodes
+            if len(parts_2) >= 4:      
                 from_node = int(parts_2[0])
                 to_node = int(parts_2[1])
                 weight = int(parts_2[2])
                 sequence = parts_2[3]
-                graph.add_edge(from_node, to_node, weight, sequence)
-            elif len(parts) == 3:
+                graph.add_edge(from_node, to_node, weight, sequence)    
+            elif len(parts) == 3:                                       # length of super source is 3
                 from_node = int(parts[0])
                 to_node = int(parts[1])
                 weight = int(parts[2])
-                sequence = None
-                graph.add_edge(from_node, to_node, weight, sequence)
+                sequence = None          
+                graph.add_edge(from_node, to_node, weight, sequence) . 
                
     
     return graph
