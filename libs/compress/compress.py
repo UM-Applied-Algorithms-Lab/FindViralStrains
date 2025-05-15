@@ -1,85 +1,118 @@
-from collections import defaultdict, deque
+import sys
+import re
+from collections import defaultdict
 
-class Graph:
-    def __init__(self):
-        self.nodes = set()
-        self.edges = defaultdict(list)  # Adjacency list
-        self.edge_data = {}  # Stores weight and sequence for each edge
-    
-    def add_edge(self, from_node, to_node, weight, sequence):
-        self.nodes.add(from_node)
-        self.nodes.add(to_node)
-        self.edges[from_node].append(to_node)
-        self.edge_data[(from_node, to_node)] = {
-            'weight': weight,
-            'sequence': sequence
-        }
-    
-    def get_neighbors(self, node):
-        return self.edges.get(node, [])
-    
-    def get_edge_data(self, from_node, to_node):
-        return self.edge_data.get((from_node, to_node))
-    
-    def bfs(self, start_node):
-        """Breadth-First Search traversal"""
-        visited = set()
-        queue = deque([start_node])
-        traversal_order = []
-        
-        while queue:
-            node = queue.popleft()
-            if node not in visited:
-                visited.add(node)
-                traversal_order.append(node)
-                for neighbor in self.get_neighbors(node):
-                    if neighbor not in visited:
-                        queue.append(neighbor)
-        return traversal_order
-    
-    def dfs(self, start_node):
-        """Depth-First Search traversal"""
-        visited = set()
-        stack = [start_node]
-        traversal_order = []
-        
-        while stack:
-            node = stack.pop()
-            if node not in visited:
-                visited.add(node)
-                traversal_order.append(node)
-                # Push neighbors in reverse order to visit them in order
-                for neighbor in reversed(self.get_neighbors(node)):
-                    if neighbor not in visited:
-                        stack.append(neighbor)
-        return traversal_order
-
-def load_graph_from_file(filename):
-    graph = Graph()
-    
-    with open(filename, 'r') as file:
-        for line in file:
-            parts = line.strip().split(' ')               # Split by space for super source 
-            parts_2 = line.strip().split('\t')            # Split by tab for all inner nodes
-            if len(parts_2) >= 4:      
-                from_node = int(parts_2[0])
-                to_node = int(parts_2[1])
-                weight = int(parts_2[2])
-                sequence = parts_2[3]
-                graph.add_edge(from_node, to_node, weight, sequence)    
-            elif len(parts) == 3:                                       # length of super source is 3
+def read_graph(filename):
+    edges = defaultdict(list)
+    node_seqs = {}
+    with open(filename, 'r') as f:
+        for line in f:
+            # Skip empty lines or comment lines
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            # Split on any whitespace (tabs or multiple spaces)
+            parts = re.split(r'\s+', line)
+            if len(parts) < 4:
+                continue
+                
+            try:
                 from_node = int(parts[0])
                 to_node = int(parts[1])
                 weight = int(parts[2])
-                sequence = None          
-                graph.add_edge(from_node, to_node, weight, sequence) . 
-               
-    
-    return graph
+                seq = ' '.join(parts[3:])  # Join remaining parts
+                edges[from_node].append((to_node, weight, seq))
+                node_seqs[from_node] = seq
+                if to_node not in node_seqs:
+                    node_seqs[to_node] = ""
+            except (ValueError, IndexError) as e:
+                print(f"Warning: Skipping malformed line: {line} (Error: {e})")
+                continue
+    return edges, node_seqs
+
+def compress_unitigs(edges, node_seqs, exclude_nodes={0, 1}):
+    visited = set()
+    unitigs = []
+    total_compressed = 0
+
+    for node in list(edges.keys()):
+        if node in visited or node in exclude_nodes:
+            continue
+
+        # Start new unitig
+        current_node = node
+        unitig_nodes = [current_node]
+        unitig_seqs = [node_seqs.get(current_node, "")]
+        visited.add(current_node)
+
+        # Extend forward
+        while True:
+            neighbors = edges.get(current_node, [])
+            if len(neighbors) != 1:
+                break
+            next_node, weight, seq = neighbors[0]
+            if next_node in exclude_nodes or next_node in visited:
+                break
+            # Check incoming edges
+            incoming = sum(1 for n in edges if any(to == next_node for to, _, _ in edges[n]))
+            if incoming != 1:
+                break
+            unitig_nodes.append(next_node)
+            unitig_seqs.append(seq)
+            visited.add(next_node)
+            current_node = next_node
+
+        # Combine sequences
+        if len(unitig_nodes) == 1:
+            unitig_seq = node_seqs.get(unitig_nodes[0], "")
+        else:
+            unitig_seq = unitig_seqs[0]
+            for seq in unitig_seqs[1:]:
+                if seq:
+                    unitig_seq += seq[-1]
+
+        if len(unitig_nodes) > 1:
+            total_compressed += len(unitig_nodes) - 1
+
+        unitigs.append((unitig_nodes[0], unitig_nodes[-1], len(unitig_nodes), unitig_seq))
+
+    # Handle isolated nodes
+    all_nodes = set(edges.keys())
+    all_nodes.update(to for neighbors in edges.values() for to, _, _ in neighbors)
+    for node in all_nodes:
+        if node not in visited and node not in exclude_nodes:
+            unitigs.append((node, node, 1, node_seqs.get(node, "")))
+        elif node in exclude_nodes and node in node_seqs:
+            unitigs.append((node, node, 1, node_seqs[node]))
+
+    return unitigs, total_compressed
+
+def write_unitigs(unitigs, output_filename, total_compressed):
+    with open(output_filename, 'w') as f:
+        f.write(f"# Total nodes compressed: {total_compressed}\n")
+        for start, end, length, seq in sorted(unitigs, key=lambda x: x[0]):
+            f.write(f"{start}\t{end}\t{length}\t{seq}\n")
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python compress_unitigs.py <input_file> <output_file>")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+
+    try:
+        print(f"Processing {input_file}...")
+        edges, node_seqs = read_graph(input_file)
+        print(f"Graph loaded with {len(edges)} nodes")
+        unitigs, total_compressed = compress_unitigs(edges, node_seqs)
+        write_unitigs(unitigs, output_file, total_compressed)
+        print(f"Success! Compressed {total_compressed} nodes into {len(unitigs)} unitigs.")
+        print(f"Results written to {output_file}")
+    except Exception as e:
+        print(f"Error processing file: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    graph = load_graph_from_file('/Users/joserodriguez/54840891_S15_L001.super.wg')
-    
-    for int in range(0, 400):
-       print(f"\nNeighbors of node {int}:", graph.get_neighbors(int))
-   
+    main()
