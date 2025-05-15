@@ -1,99 +1,102 @@
 Main Graph Stats:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-1093574     1129364     75909446          32            4428        2052        no        
+1123445     1159235     75909446          33            4429        2052        no        
 Subgraph 0:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-55          54          54                0             1           1           yes       
+17          16          16                0             1           1           yes       
 Subgraph 1:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-49          48          48                0             1           1           yes       
+329         328         328               0             1           1           yes       
 Subgraph 2:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-144         143         143               0             1           1           yes       
+107         106         106               0             1           1           yes       
 Subgraph 3:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-128         127         127               0             1           1           yes       
+18          17          17                0             1           1           yes       
 Subgraph 4:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-19          18          18                0             1           1           yes       
+215         214         214               0             1           1           yes       
 Subgraph 5:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-285         284         284               0             1           1           yes       
+42          41          41                0             1           1           yes       
 Subgraph 6:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+28          27          27                0             1           1           yes       
 Subgraph 7:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-12          11          11                0             1           1           yes       
+29871       29871       0                 0             1           0           no        
 Subgraph 8:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-81          80          80                0             1           1           yes       
+55          54          54                0             1           1           yes       
 Subgraph 9:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-17          16          16                0             1           1           yes       
+101         100         100               0             1           1           yes       
 Subgraph 10:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-150         149         149               0             1           1           yes       
+38          37          37                0             1           1           yes       
 Subgraph 11:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-42          41          41                0             1           1           yes       
+13          12          12                0             1           1           yes       
 Subgraph 12:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-181         180         180               0             1           1           yes       
+317         316         316               0             1           1           yes       
 Subgraph 13:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-292         291         291               0             1           1           yes       
+12          11          11                0             1           1           yes       
 Subgraph 14:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+285         284         284               0             1           1           yes       
 Subgraph 15:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
 234         233         233               0             1           1           yes       
 Subgraph 16:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-38          37          37                0             1           1           yes       
+18          17          17                0             1           1           yes       
 Subgraph 17:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+55          54          54                0             1           1           yes       
 Subgraph 18:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-55          54          54                0             1           1           yes       
+144         143         143               0             1           1           yes       
 Subgraph 19:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-329         328         328               0             1           1           yes       
+264         263         263               0             1           1           yes       
 Subgraph 20:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-13          12          12                0             1           1           yes       
+49          48          48                0             1           1           yes       
 Subgraph 21:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-17          16          16                0             1           1           yes       
+19          18          18                0             1           1           yes       
 Subgraph 22:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-317         316         316               0             1           1           yes       
+49          48          48                0             1           1           yes       
 Subgraph 23:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-101         100         100               0             1           1           yes       
+19          18          18                0             1           1           yes       
 Subgraph 24:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-19          18          18                0             1           1           yes       
+18          17          17                0             1           1           yes       
 Subgraph 25:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-215         214         214               0             1           1           yes       
+81          80          80                0             1           1           yes       
 Subgraph 26:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-28          27          27                0             1           1           yes       
+292         291         291               0             1           1           yes       
 Subgraph 27:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-1090261     1126082     75906164          0             4397        2021        no        
+18          17          17                0             1           1           yes       
 Subgraph 28:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+150         149         149               0             1           1           yes       
 Subgraph 29:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-49          48          48                0             1           1           yes       
+1090261     1126082     75906164          0             4397        2021        no        
 Subgraph 30:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-264         263         263               0             1           1           yes       
+17          16          16                0             1           1           yes       
 Subgraph 31:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-107         106         106               0             1           1           yes       
+128         127         127               0             1           1           yes       
+Subgraph 32:
+nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
+181         180         180               0             1           1           yes       

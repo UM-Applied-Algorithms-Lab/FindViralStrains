@@ -14,7 +14,7 @@ for sample_dir in test/data/NoRefTest/dbg/*/; do
 
         # Run pruning
         echo "[$sample] Pruning with num_prune=$i"
-	python3 libs/prune/add_reference.py "$pruned_file" "/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna" "$pruned_ref_file"
+	python3 libs/prune/add_reference.py "$pruned_file" "reference_genomes/covid19ref.fasta" "$pruned_ref_file"
 
         # Paths for subgraph analysis
         subgraph_dir="$pruned_dir/out.dbg_subgraphs"

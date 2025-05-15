@@ -1,42 +1,45 @@
 Main Graph Stats:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-1229592     1270974     100358649         13            3982        2620        no        
+1259463     1300845     100358649         14            3983        2620        no        
 Subgraph 0:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-49          48          48                0             1           1           yes       
+29871       29871       0                 0             1           0           no        
 Subgraph 1:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-1228929     1270322     100357959         0             3970        2608        no        
+17          16          16                0             1           1           yes       
 Subgraph 2:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-17          16          16                0             1           1           yes       
+88          87          87                0             1           1           yes       
 Subgraph 3:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-11          10          10                0             1           1           yes       
+247         246         246               0             1           1           yes       
 Subgraph 4:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-144         144         182               0             1           1           no        
+28          27          27                0             1           1           yes       
 Subgraph 5:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-247         246         246               0             1           1           yes       
+18          17          17                0             1           1           yes       
 Subgraph 6:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-19          18          18                0             1           1           yes       
+18          17          17                0             1           1           yes       
 Subgraph 7:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-7           6           6                 0             1           1           yes       
+49          48          48                0             1           1           yes       
 Subgraph 8:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-88          87          87                0             1           1           yes       
+19          18          18                0             1           1           yes       
 Subgraph 9:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-28          27          27                0             1           1           yes       
+1228929     1270322     100357959         0             3970        2608        no        
 Subgraph 10:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+7           6           6                 0             1           1           yes       
 Subgraph 11:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
-18          17          17                0             1           1           yes       
+11          10          10                0             1           1           yes       
 Subgraph 12:
+nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
+144         144         182               0             1           1           no        
+Subgraph 13:
 nodes       edges       total_weight      subgraphs     sources     sinks       acyclic?  
 17          16          16                0             1           1           yes       
