@@ -58,39 +58,34 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
         candidates = find_merge_candidates(forward_edges, reverse_edges)
         
         for source, node, target in candidates:
-            # Verify the nodes still meet the merge conditions (might have changed)
-            if (len(reverse_edges.get(node, [])) == 1 and 
-                len(forward_edges.get(node, [])) == 1 and
-                reverse_edges[node][0] == source and
-                forward_edges[node][0].to == target):
-                
-                # Get the edge weights
-                edge1_weight = next(e.weight for e in forward_edges[source] if e.to == node)
-                edge2_weight = forward_edges[node][0].weight
-                
-                # Calculate new average weight
-                new_weight = (edge1_weight + edge2_weight) // 2
-                
-                # Combine sequences
-                new_seq = node_seqs[source] + node_seqs[node][-1:]  # sequences overlap by k-1
-                print(node_seqs[node][-1:])
-                
-                # Remove old edges
-                forward_edges[source] = [e for e in forward_edges[source] if e.to != node]
-                forward_edges[node] = []
-                reverse_edges[node] = []
-                reverse_edges[target] = [n for n in reverse_edges[target] if n != node]
-                
-                # Add new edge
-                new_edge = Edge(target, new_weight, new_seq)
-                forward_edges[source].append(new_edge)
-                reverse_edges[target].append(source)
-                
-                # Update sequences
-                node_seqs[source] = new_seq
-                
-                changed = True
-                break  # Restart after each merge as the graph changes
+            
+            # Get the edge weights
+            edge1_weight = next(e.weight for e in forward_edges[source] if e.to == node)
+            edge2_weight = forward_edges[node][0].weight
+            
+            # Calculate new average weight
+            new_weight = (edge1_weight + edge2_weight) // 2
+            
+            # Combine sequences
+            new_seq = node_seqs[source] + node_seqs[node][-1:]  # sequences overlap by k-1
+            print(node_seqs[node][-1:])
+            
+            # Remove old edges
+            forward_edges[source] = [e for e in forward_edges[source] if e.to != node]
+            forward_edges[node] = []
+            reverse_edges[node] = []
+            reverse_edges[target] = [n for n in reverse_edges[target] if n != node]
+            
+            # Add new edge
+            new_edge = Edge(target, new_weight, new_seq)
+            forward_edges[source].append(new_edge)
+            reverse_edges[target].append(source)
+            
+            # Update sequences if the 
+            #node_seqs[source] = new_seq
+            
+            changed = True
+            break  # Restart after each merge as the graph changes
 
 def write_merged_graph(filename, forward_edges, node_seqs):
     with open(filename, 'w') as f:
