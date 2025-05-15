@@ -1,8 +1,11 @@
 import sys
-from collections import defaultdict
+from collections import defaultdict, namedtuple
+
+Edge = namedtuple('Edge', ['to', 'weight', 'seq'])
 
 def read_graph(filename):
-    edges = defaultdict(list)
+    forward_edges = defaultdict(list)  # node -> [Edge]
+    reverse_edges = defaultdict(list)  # node -> [from_nodes]
     node_seqs = {}
     
     with open(filename, 'r') as f:
@@ -21,50 +24,42 @@ def read_graph(filename):
                 weight = int(parts[2])
                 seq = ' '.join(parts[3:])
                 
-                edges[from_node].append((to_node, weight, seq))
+                edge = Edge(to_node, weight, seq)
+                forward_edges[from_node].append(edge)
+                reverse_edges[to_node].append(from_node)
                 node_seqs[from_node] = seq
                 if to_node not in node_seqs:
                     node_seqs[to_node] = ""
             except ValueError:
                 continue
     
-    return edges, node_seqs
+    return forward_edges, reverse_edges, node_seqs
 
-def find_merge_candidates(edges):
-    # First build incoming edge counts
-    incoming = defaultdict(int)
-    for from_node in edges:
-        for to_node, _, _ in edges[from_node]:
-            incoming[to_node] += 1
-    
+def find_merge_candidates(forward_edges, reverse_edges):
     merge_candidates = []
     
-    # Check every node in the graph
-    all_nodes = set(edges.keys()).union(
-        to for neighbors in edges.values() for to, _, _ in neighbors)
+    # Get all nodes that appear in the graph
+    all_nodes = set(forward_edges.keys()).union(
+        edge.to for edges in forward_edges.values() for edge in edges)
     
     for node in sorted(all_nodes):
-        # Check if node has exactly one incoming edge
-        has_one_input = incoming.get(node, 0) == 1
+        # Check incoming edges
+        incoming_count = len(reverse_edges.get(node, []))
+        has_one_input = incoming_count == 1
         
-        # Check if node has exactly one outgoing edge
-        has_one_output = len(edges.get(node, [])) == 1
+        # Check outgoing edges
+        outgoing_count = len(forward_edges.get(node, []))
+        has_one_output = outgoing_count == 1
         
         if has_one_input and has_one_output:
-            # Find the source node (where the incoming edge comes from)
-            source = None
-            for from_node in edges:
-                for to_node, _, _ in edges[from_node]:
-                    if to_node == node:
-                        source = from_node
-                        break
-                if source is not None:
-                    break
+            # Get source node (O(1) lookup)
+            source = reverse_edges[node][0] if incoming_count == 1 else None
             
-            # Find the target node (where the outgoing edge goes to)
-            target = edges[node][0][0] if edges.get(node) else None
+            # Get target node (O(1) lookup)
+            target = forward_edges[node][0].to if outgoing_count == 1 else None
             
-            merge_candidates.append((source, node, target))
+            if source is not None and target is not None:
+                merge_candidates.append((source, node, target))
     
     return merge_candidates
 
@@ -74,10 +69,10 @@ def main():
         sys.exit(1)
 
     input_file = sys.argv[1]
-    edges, _ = read_graph(input_file)
+    forward_edges, reverse_edges, _ = read_graph(input_file)
     
     print("Merge candidates (source -> node -> target):")
-    candidates = find_merge_candidates(edges)
+    candidates = find_merge_candidates(forward_edges, reverse_edges)
     for source, node, target in candidates:
         print(f"{source} -> {node} -> {target}")
 
