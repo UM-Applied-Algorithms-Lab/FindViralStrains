@@ -1,5 +1,5 @@
-import sys
 from collections import defaultdict, namedtuple
+import sys
 
 Edge = namedtuple('Edge', ['to', 'weight', 'seq'])
 
@@ -37,44 +37,85 @@ def read_graph(filename):
 
 def find_merge_candidates(forward_edges, reverse_edges):
     merge_candidates = []
-    
-    # Get all nodes that appear in the graph
     all_nodes = set(forward_edges.keys()).union(
         edge.to for edges in forward_edges.values() for edge in edges)
     
     for node in sorted(all_nodes):
-        # Check incoming edges
         incoming_count = len(reverse_edges.get(node, []))
-        has_one_input = incoming_count == 1
-        
-        # Check outgoing edges
         outgoing_count = len(forward_edges.get(node, []))
-        has_one_output = outgoing_count == 1
         
-        if has_one_input and has_one_output:
-            # Get source node (O(1) lookup)
-            source = reverse_edges[node][0] if incoming_count == 1 else None
-            
-            # Get target node (O(1) lookup)
-            target = forward_edges[node][0].to if outgoing_count == 1 else None
-            
-            if source is not None and target is not None:
-                merge_candidates.append((source, node, target))
+        if incoming_count == 1 and outgoing_count == 1:
+            source = reverse_edges[node][0]
+            target = forward_edges[node][0].to
+            merge_candidates.append((source, node, target))
     
     return merge_candidates
 
+def merge_nodes(forward_edges, reverse_edges, node_seqs):
+    changed = True
+    while changed:
+        changed = False
+        candidates = find_merge_candidates(forward_edges, reverse_edges)
+        
+        for source, node, target in candidates:
+            # Verify the nodes still meet the merge conditions (might have changed)
+            if (len(reverse_edges.get(node, [])) == 1 and 
+                len(forward_edges.get(node, [])) == 1 and
+                reverse_edges[node][0] == source and
+                forward_edges[node][0].to == target):
+                
+                # Get the edge weights
+                edge1_weight = next(e.weight for e in forward_edges[source] if e.to == node)
+                edge2_weight = forward_edges[node][0].weight
+                
+                # Calculate new average weight
+                new_weight = (edge1_weight + edge2_weight) // 2
+                
+                # Combine sequences
+                new_seq = node_seqs[source] + node_seqs[node][-1:]  # sequences overlap by k-1
+                print(node_seqs[node][-1:])
+                
+                # Remove old edges
+                forward_edges[source] = [e for e in forward_edges[source] if e.to != node]
+                forward_edges[node] = []
+                reverse_edges[node] = []
+                reverse_edges[target] = [n for n in reverse_edges[target] if n != node]
+                
+                # Add new edge
+                new_edge = Edge(target, new_weight, new_seq)
+                forward_edges[source].append(new_edge)
+                reverse_edges[target].append(source)
+                
+                # Update sequences
+                node_seqs[source] = new_seq
+                
+                changed = True
+                break  # Restart after each merge as the graph changes
+
+def write_merged_graph(filename, forward_edges, node_seqs):
+    with open(filename, 'w') as f:
+        for from_node, edges in forward_edges.items():
+            for edge in edges:
+                line = f"{from_node}\t{edge.to}\t{edge.weight}\t{edge.seq}\n"
+                f.write(line)
+
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python find_merges.py <input_file>")
+    if len(sys.argv) != 3:
+        print("Usage: python find_merges.py <input_file> <output_file>")
         sys.exit(1)
 
     input_file = sys.argv[1]
-    forward_edges, reverse_edges, _ = read_graph(input_file)
+    output_file = sys.argv[2]
     
-    print("Merge candidates (source -> node -> target):")
-    candidates = find_merge_candidates(forward_edges, reverse_edges)
-    for source, node, target in candidates:
-        print(f"{source} -> {node} -> {target}")
+    forward_edges, reverse_edges, node_seqs = read_graph(input_file)
+    
+    print("Merging nodes...")
+    merge_nodes(forward_edges, reverse_edges, node_seqs)
+    
+    print("Writing merged graph...")
+    write_merged_graph(output_file, forward_edges, node_seqs)
+    
+    print(f"Merged graph written to {output_file}")
 
 if __name__ == "__main__":
     main()
