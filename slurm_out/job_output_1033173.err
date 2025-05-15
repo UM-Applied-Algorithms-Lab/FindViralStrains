@@ -1,0 +1,835 @@
+
+CondaValueError: prefix already exists: /mnt/beegfs/hellgate/home/tb208541/.conda/envs/Test
+
+warning: virtual workspace defaulting to `resolver = "1"` despite one or more workspace members being on edition 2021 which implies `resolver = "2"`
+note: to keep the current resolver, specify `workspace.resolver = "1"` in the workspace root's manifest
+note: to use the edition 2021 resolver, specify `workspace.resolver = "2"` in the workspace root's manifest
+note: for more details see https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions
+   Compiling libc v0.2.171
+   Compiling proc-macro2 v1.0.94
+   Compiling unicode-ident v1.0.18
+   Compiling cfg-if v1.0.0
+   Compiling shlex v1.3.0
+   Compiling autocfg v1.4.0
+   Compiling pkg-config v0.3.32
+   Compiling libm v0.2.11
+   Compiling quote v1.0.40
+   Compiling num-traits v0.2.19
+   Compiling jobserver v0.1.32
+   Compiling memchr v2.7.4
+   Compiling syn v2.0.100
+   Compiling cc v1.2.17
+   Compiling zerocopy v0.8.24
+   Compiling serde v1.0.219
+   Compiling serde_derive v1.0.219
+   Compiling aho-corasick v1.1.3
+   Compiling ppv-lite86 v0.2.21
+   Compiling getrandom v0.2.15
+   Compiling regex-syntax v0.8.5
+   Compiling getrandom v0.3.2
+   Compiling regex-automata v0.4.9
+   Compiling rand_core v0.6.4
+   Compiling zstd-sys v2.0.15+zstd.1.5.7
+   Compiling utf8parse v0.2.2
+   Compiling crossbeam-utils v0.8.21
+   Compiling anstyle-parse v0.2.6
+   Compiling regex v1.11.1
+   Compiling rand_chacha v0.3.1
+   Compiling is_terminal_polyfill v1.70.1
+   Compiling anstyle v1.0.10
+   Compiling anstyle-query v1.1.2
+   Compiling colorchoice v1.0.3
+   Compiling rand v0.8.5
+   Compiling anstream v0.6.18
+   Compiling liblzma-sys v0.3.13
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling matrixmultiply v0.3.9
+   Compiling heck v0.5.0
+   Compiling bytemuck v1.22.0
+   Compiling paste v1.0.15
+   Compiling zstd-safe v7.2.4
+   Compiling safe_arch v0.7.4
+   Compiling crossbeam-epoch v0.9.18
+   Compiling num-complex v0.4.6
+   Compiling num-integer v0.1.46
+   Compiling rayon-core v1.12.1
+   Compiling rawpointer v0.2.1
+   Compiling rustversion v1.0.20
+   Compiling semver v0.1.20
+   Compiling anyhow v1.0.97
+   Compiling bitflags v2.9.0
+   Compiling adler2 v2.0.0
+   Compiling either v1.15.0
+   Compiling rustix v1.0.5
+   Compiling typenum v1.18.0
+   Compiling miniz_oxide v0.8.5
+   Compiling rustc_version v0.1.7
+   Compiling crossbeam-deque v0.8.6
+   Compiling wide v0.7.32
+   Compiling approx v0.5.1
+   Compiling crc32fast v1.4.2
+   Compiling log v0.4.27
+   Compiling linux-raw-sys v0.9.3
+   Compiling thiserror v1.0.69
+   Compiling feature-probe v0.1.1
+   Compiling lazy_static v1.5.0
+   Compiling once_cell v1.21.3
+   Compiling bytecount v0.6.8
+   Compiling bv v0.11.1
+   Compiling env_filter v0.1.3
+   Compiling simba v0.9.0
+   Compiling flate2 v1.1.0
+   Compiling newtype_derive v0.1.6
+   Compiling bzip2 v0.4.4
+   Compiling zstd v0.13.3
+   Compiling num-rational v0.4.2
+   Compiling rand_distr v0.4.3
+   Compiling rand_core v0.9.3
+   Compiling thiserror-impl v1.0.69
+   Compiling buffer-redux v1.0.2
+   Compiling thiserror v2.0.12
+   Compiling strsim v0.11.1
+   Compiling stable_deref_trait v1.2.0
+   Compiling fastrand v2.3.0
+   Compiling hashbrown v0.15.2
+   Compiling equivalent v1.0.2
+   Compiling liblzma v0.3.6
+   Compiling jiff v0.2.5
+   Compiling clap_lex v0.7.4
+   Compiling indexmap v2.8.0
+   Compiling needletail v0.6.3
+   Compiling clap_builder v4.5.34
+   Compiling tempfile v3.19.1
+   Compiling as-slice v0.2.1
+   Compiling env_logger v0.11.7
+   Compiling rand_chacha v0.9.0
+   Compiling nalgebra v0.33.2
+   Compiling strum_macros v0.26.4
+   Compiling rayon v1.10.0
+   Compiling thread_local v1.1.8
+   Compiling clap_derive v4.5.32
+   Compiling format_num v0.1.0
+   Compiling bincode v1.3.3
+   Compiling thiserror-impl v2.0.12
+   Compiling mem_dbg-derive v0.1.7
+   Compiling derive-new v0.6.0
+   Compiling enum-map-derive v0.17.0
+   Compiling csv-core v0.1.12
+   Compiling num_cpus v1.16.0
+   Compiling ryu v1.0.20
+   Compiling itoa v1.0.15
+   Compiling bit-vec v0.8.0
+   Compiling fixedbitset v0.5.7
+   Compiling home v0.5.11
+   Compiling byteorder v1.5.0
+   Compiling enum-map v2.7.3
+   Compiling bit-set v0.8.0
+   Compiling fxhash v0.2.1
+   Compiling libsufr v0.6.2
+   Compiling petgraph v0.7.1
+   Compiling csv v1.3.1
+   Compiling mem_dbg v0.2.5
+   Compiling bio-types v1.0.4
+   Compiling statrs v0.18.0
+   Compiling clap v4.5.34
+   Compiling rand v0.9.0
+   Compiling aligned v0.4.2
+   Compiling ndarray v0.16.1
+   Compiling itertools v0.14.0
+   Compiling vec_map v0.8.2
+   Compiling multimap v0.10.0
+   Compiling ordered-float v5.0.0
+   Compiling itertools-num v0.1.3
+   Compiling strum v0.26.3
+   Compiling triple_accel v0.4.0
+   Compiling editdistancek v1.0.2
+   Compiling custom_derive v0.1.7
+   Compiling awry v0.3.1
+   Compiling colored v2.2.0
+   Compiling mer_graph v0.1.0 (/mnt/beegfs/projects/tb208541/FindViralStrains/libs/mer_graph)
+warning: comparison is useless due to type limits
+  --> libs/mer_graph/src/main.rs:25:31
+   |
+25 |                 let edge = if k >= 0 {
+   |                               ^^^^^^
+   |
+   = note: `#[warn(unused_comparisons)]` on by default
+
+   Compiling bio v2.2.0
+   Compiling graph_analyzer v0.1.0 (/mnt/beegfs/projects/tb208541/FindViralStrains/libs/graph_analyze)
+warning: `mer_graph` (bin "mer_graph") generated 1 warning
+   Compiling super_source_and_sink v0.1.0 (/mnt/beegfs/projects/tb208541/FindViralStrains/libs/super_source_and_sink)
+warning: unused variable: `edges`
+  --> libs/super_source_and_sink/src/main.rs:72:26
+   |
+72 |     let (mut full_nodes, edges) = read_edges_with_weights(edge_file)?;
+   |                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_edges`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: `super_source_and_sink` (bin "super_source_and_sink") generated 1 warning
+   Compiling compress_graph v0.1.0 (/mnt/beegfs/projects/tb208541/FindViralStrains/libs/compress_graph)
+   Compiling assembly_graph_generator v0.1.0 (/mnt/beegfs/projects/tb208541/FindViralStrains/libs/FmAssemblyGraph)
+    Finished `release` profile [optimized] target(s) in 6m 20s
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 15, in <module>
+    with open(dbg_file, 'r') as file, open(ref_and_dbg_file, 'w') as outfile:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/NoRefTest/dbg/B0841_S78_L001#temporary/pruned_0/out.dbg'
+thread 'main' panicked at libs/graph_analyze/src/main.rs:107:21:
+Unable to generate graph, check file: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 15, in <module>
+    with open(dbg_file, 'r') as file, open(ref_and_dbg_file, 'w') as outfile:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/NoRefTest/dbg/B0841_S78_L001#temporary/pruned_1/out.dbg'
+thread 'main' panicked at libs/graph_analyze/src/main.rs:107:21:
+Unable to generate graph, check file: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 15, in <module>
+    with open(dbg_file, 'r') as file, open(ref_and_dbg_file, 'w') as outfile:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/NoRefTest/dbg/{{sample}}/pruned_0/out.dbg'
+thread 'main' panicked at libs/graph_analyze/src/main.rs:107:21:
+Unable to generate graph, check file: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 15, in <module>
+    with open(dbg_file, 'r') as file, open(ref_and_dbg_file, 'w') as outfile:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/NoRefTest/dbg/{{sample}}/pruned_1/out.dbg'
+thread 'main' panicked at libs/graph_analyze/src/main.rs:107:21:
+Unable to generate graph, check file: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/tb208541/FindViralStrains/libs/prune/add_reference.py", line 36, in <module>
+    with open(ref_file, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/beegfs/projects/tb208541/data_from_lucy/reference_genome/GCF_009858895.2_ASM985889v3_genomic_notail.fna'

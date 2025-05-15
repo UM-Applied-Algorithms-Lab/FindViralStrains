@@ -180,7 +180,8 @@ onsuccess:
 rule all:
 	input:
 		[bd(x) for x in expand("output_genomes/{input_list}/{input_list}_1_of_{numpaths}_vs_ref.txt", input_list=fastq_filenames, numpaths=["1", "2", "3"])]
-
+	resources:
+		 partition="normal\(preemptable\)"
 rule trim_and_merge_raw_reads:
 	input:
 		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"), 

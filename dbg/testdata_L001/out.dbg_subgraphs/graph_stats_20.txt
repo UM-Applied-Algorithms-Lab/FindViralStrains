@@ -1,3 +1,0 @@
-Main Graph Stats:
-nodes		edges		total_weight		subgraphs		sources		sinks		acyclic?
-0		0		0		0		0		0		yes

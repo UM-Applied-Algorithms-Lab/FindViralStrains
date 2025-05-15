@@ -38,7 +38,7 @@ run_location: .
 
 decomp_time_limit: 1200
 
-read_purge_percent: 5
+read_purge_percent: 0
 # Model Time Limit (in min)
 # Threads used by solver
 gurobi_threads: 8
