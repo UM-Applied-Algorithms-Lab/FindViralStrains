@@ -68,16 +68,10 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
             
             # Combine sequences and append the last elements of node that don't overlap with source
 
-            # if sequences overlap by k-1 then new_seq = node_seqs[source] + node_seqs[node][-1:] 
-            # else append everything after the overlap
-            if len(node_seqs[source]) == len(node_seqs[node]):
-                new_seq = node_seqs[source] + node_seqs[node][-1:]
-            elif len(node_seqs[source]) < len(node_seqs[node]):
-                # If the source sequence is shorter, we need to find the overlap
-                overlap_length = abs(len(node_seqs[source]) - (len(node_seqs[node])))
-                
-                new_seq = node_seqs[source] + node_seqs[node][-(overlap_length + 1):]
-                print(f"Overlap detected: {overlap_length} characters")
+            # 
+            new_seq = node_seqs[source] + node_seqs[node][2:]
+
+            
             
             print(f'length of source: {len(node_seqs[source])}, length of node: {len(node_seqs[node])}')
     
@@ -97,7 +91,7 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
             reverse_edges[target].append(source)
             
             # Update sequences
-            node_seqs[source] = new_seq
+            #node_seqs[source] = new_seq
            
         
             changed = True
