@@ -66,9 +66,24 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
             # Calculate new average weight
             new_weight = (edge1_weight + edge2_weight) // 2
             
-            # Combine sequences
-            new_seq = node_seqs[source] + node_seqs[node][-1:]  # sequences overlap by k-1
-            print(node_seqs[node][-1:])
+            # Combine sequences and append the last elements of node that don't overlap with source
+
+            # if sequences overlap by k-1 then new_seq = node_seqs[source] + node_seqs[node][-1:] 
+            # else append everything after the overlap
+            if len(node_seqs[source]) == len(node_seqs[node]):
+                new_seq = node_seqs[source] + node_seqs[node][-1:]
+            elif len(node_seqs[source]) < len(node_seqs[node]):
+                # If the source sequence is shorter, we need to find the overlap
+                overlap_length = abs(len(node_seqs[source]) - (len(node_seqs[node])))
+                
+                new_seq = node_seqs[source] + node_seqs[node][-(overlap_length + 1):]
+                print(f"Overlap detected: {overlap_length} characters")
+            
+            print(f'length of source: {len(node_seqs[source])}, length of node: {len(node_seqs[node])}')
+    
+            print(f"Merging {source} -> {node} -> {target}")
+
+            print(f'New sequence: {new_seq}\n')
             
             # Remove old edges
             forward_edges[source] = [e for e in forward_edges[source] if e.to != node]
@@ -81,9 +96,10 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
             forward_edges[source].append(new_edge)
             reverse_edges[target].append(source)
             
-            # Update sequences if the 
-            #node_seqs[source] = new_seq
-            
+            # Update sequences
+            node_seqs[source] = new_seq
+           
+        
             changed = True
             break  # Restart after each merge as the graph changes
 
