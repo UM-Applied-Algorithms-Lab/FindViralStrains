@@ -51,8 +51,9 @@ def find_merge_candidates(forward_edges, reverse_edges):
     
     return merge_candidates
 
-def merge_nodes(forward_edges, reverse_edges, node_seqs):
+def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
     changed = True
+    kmer_length = int(kmer_length)
     while changed:
         changed = False
         candidates = find_merge_candidates(forward_edges, reverse_edges)
@@ -62,17 +63,34 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs):
             # Get the edge weights
             edge1_weight = next(e.weight for e in forward_edges[source] if e.to == node)
             edge2_weight = forward_edges[node][0].weight
-            
-            # Calculate new average weight
-            new_weight = (edge1_weight + edge2_weight) // 2
-            
-            # Combine sequences and append the last elements of node that don't overlap with source
 
-            # 
-            new_seq = node_seqs[source] + node_seqs[node][2:]
+            # Calculate new average weight with 4 if/elif statements #
+            if len(node_seqs[source]) and len(node_seqs[node]) == kmer_length:
+                new_weight = (edge1_weight + edge2_weight) / 2
 
+            elif len(node_seqs[source]) > kmer_length and len(node_seqs[node]) == kmer_length:
+                # take the difference between k and len and multiply by that number +1 for the weight #
+                kmer_diff = len(node_seqs[source]) - (kmer_length + 1)
+                edge1_weight = edge1_weight * kmer_diff
+                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 1)
+
+            elif len(node_seqs[source]) == kmer_length and len(node_seqs[node]) > kmer_length:
+                # take the difference between k and len and multiply by that number +1 for the weight #
+                kmer_diff = len(node_seqs[node]) - (kmer_length + 1)
+                edge2_weight = edge2_weight * kmer_diff
+                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 1)
+                # take the difference between k and len and multiply by that number +1 for the weight #
+
+            elif len(node_seqs[source]) > kmer_length and len(node_seqs[node]) > kmer_length:
+                kmer_diff1 = len(node_seqs[source]) - (kmer_length + 1)
+                kmer_diff2 = len(node_seqs[node]) - (kmer_length + 1)
+                # take the difference from length of k to length of strings, multiple each by that difference plus one, and then add them together #
+                # and divide by those numbers #
+                new_weight = (edge1_weight * kmer_diff1) + (edge2_weight * kmer_diff2)
             
-            
+            # Combine sequences and append the last elements of node that don't overlap with source #
+            new_seq = node_seqs[source] + node_seqs[node][2:] 
+
             print(f'length of source: {len(node_seqs[source])}, length of node: {len(node_seqs[node])}')
     
             print(f"Merging {source} -> {node} -> {target}")
@@ -105,17 +123,18 @@ def write_merged_graph(filename, forward_edges, node_seqs):
                 f.write(line)
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Usage: python find_merges.py <input_file> <output_file>")
         sys.exit(1)
 
     input_file = sys.argv[1]
     output_file = sys.argv[2]
+    kmer_length = sys.argv[3]
     
     forward_edges, reverse_edges, node_seqs = read_graph(input_file)
     
     print("Merging nodes...")
-    merge_nodes(forward_edges, reverse_edges, node_seqs)
+    merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length)
     
     print("Writing merged graph...")
     write_merged_graph(output_file, forward_edges, node_seqs)
