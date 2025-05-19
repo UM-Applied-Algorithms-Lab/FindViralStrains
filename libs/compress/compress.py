@@ -89,50 +89,15 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
             len1 = len(seq1)
             len2 = len(seq2)
 
-    
-            # Calculate new average weight with 4 if/elif statements #
-            if len1 == kmer_length and len2 == kmer_length:
-                new_weight = (edge1_weight + edge2_weight) / 2
-                print('Loop 1')
-                print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
-                 
+            kmer_diff1 = len1 - kmer_length 
+            kmer_diff2 = len2 - kmer_length 
+            # take the difference from length of k to length of strings, multiple each by that difference plus one, and then add them together #
+            # and divide by those numbers #
+            new_weight = ((edge1_weight * (kmer_diff1 +1 )) + (edge2_weight * (kmer_diff2 + 1)))/ (kmer_diff1 + kmer_diff2 + 2)
+            print('Loop 4')
+            print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
 
-            elif len1 > kmer_length and len2 == kmer_length:
-                # take the difference between k and len and multiply by that number +1 for the weight #
-                kmer_diff = len1 - kmer_length
-                edge1_weight = edge1_weight * (kmer_diff + 1)
-                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 2)
-                print('Loop 2')
-                print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
-                
-
-            elif len1 == kmer_length and len2 > kmer_length:
-                # take the difference between k and len and multiply by that number +1 for the weight #
-                kmer_diff = len2 - kmer_length 
-                edge2_weight = edge2_weight * (kmer_diff + 1)
-                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 2)
-                # take the difference between k and len and multiply by that number +1 for the weight #
-                print('Loop 3')
-                print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
-                
-            elif len1 > kmer_length and len2 > kmer_length:
-                kmer_diff1 = len1 - kmer_length 
-                kmer_diff2 = len2 - kmer_length 
-                # take the difference from length of k to length of strings, multiple each by that difference plus one, and then add them together #
-                # and divide by those numbers #
-                new_weight = (edge1_weight * (kmer_diff1 +1 )) + (edge2_weight * (kmer_diff2 + 1))/ (kmer_diff1 + kmer_diff2 + 2)
-                print('Loop 4')
-                print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
-
-
-            # Find actual overlap between sequences
-            overlap = 0
-            max_possible = min(len1, len2)
-            for i in range(1, max_possible + 1):
-                if seq1[-i:] == seq2[:i]:
-                    overlap = i
-    
-            
+            overlap = kmer_length -1         
             # Combine sequences with proper overlap
             new_seq = seq1 + seq2[overlap:]
            
