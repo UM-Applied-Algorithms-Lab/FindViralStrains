@@ -1,5 +1,6 @@
 from collections import defaultdict, namedtuple
 import sys
+import time
 
 Edge = namedtuple('Edge', ['to', 'weight', 'seq'])
 
@@ -73,6 +74,7 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
         changed = False
         candidates = find_merge_candidates(forward_edges, reverse_edges)
 
+        # see how long it 
         
         for source, node, target in candidates:
             
@@ -106,19 +108,19 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
 
             elif len1 == kmer_length and len2 > kmer_length:
                 # take the difference between k and len and multiply by that number +1 for the weight #
-                kmer_diff = len2 - (kmer_length + 1)
-                edge2_weight = edge2_weight * kmer_diff
+                kmer_diff = len2 - kmer_length 
+                edge2_weight = edge2_weight * (kmer_diff + 1)
                 new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 2)
                 # take the difference between k and len and multiply by that number +1 for the weight #
                 print('Loop 3')
                 print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
                 
             elif len1 > kmer_length and len2 > kmer_length:
-                kmer_diff1 = len1 - (kmer_length + 1)
-                kmer_diff2 = len2 - (kmer_length + 1)
+                kmer_diff1 = len1 - kmer_length 
+                kmer_diff2 = len2 - kmer_length 
                 # take the difference from length of k to length of strings, multiple each by that difference plus one, and then add them together #
                 # and divide by those numbers #
-                new_weight = (edge1_weight * kmer_diff1) + (edge2_weight * kmer_diff2)
+                new_weight = (edge1_weight * (kmer_diff1 +1 )) + (edge2_weight * (kmer_diff2 + 1))/ (kmer_diff1 + kmer_diff2 + 2)
                 print('Loop 4')
                 print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
 
