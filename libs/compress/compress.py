@@ -2,7 +2,7 @@ from collections import defaultdict, namedtuple
 import sys
 import time
 
-Edge = namedtuple('Edge', ['to', 'weight', 'seq'])
+Edge = namedtuple('Edge', ['to', 'weight', 'seq', 'min_weight', 'max_weight'])
 
 def read_graph(filename):
     forward_edges = defaultdict(list)  # node -> [Edge]
@@ -27,9 +27,9 @@ def read_graph(filename):
                 
                 # Take the first sequence part only 
                 seq = parts[3]
+
                 
-                
-                edge = Edge(to_node, weight, seq)
+                edge = Edge(to_node, weight, seq, weight, weight)
                 forward_edges[from_node].append(edge)
                 reverse_edges[to_node].append(from_node)
 
@@ -50,10 +50,20 @@ def read_graph(filename):
     return forward_edges, reverse_edges, node_seqs
 
 def find_merge_candidates(forward_edges, reverse_edges):
+    """
+    Finds nodes that can be merged based on the graph structure.
+    A node can be merged if it has exactly one incoming and one outgoing edge.
+    """
+
+    # Find nodes with exactly one incoming and one outgoing edge
     merge_candidates = []
+
+    # Get all nodes in the graph
+    # Use set union to get all unique nodes
     all_nodes = set(forward_edges.keys()).union(
         edge.to for edges in forward_edges.values() for edge in edges)
     
+
     for node in sorted(all_nodes):
         incoming_count = len(reverse_edges.get(node, []))
         outgoing_count = len(forward_edges.get(node, []))
@@ -66,21 +76,34 @@ def find_merge_candidates(forward_edges, reverse_edges):
     return merge_candidates
 
 def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
-    changed = True
+    """
+    Merges nodes in the graph based on kmer length.
+    The function identifies nodes with a single incoming and outgoing edge,
+    and merges them by combining their sequences and updating edge weights.
+    The merging process continues until no more candidates are found.
+    """
+    changed = True                
     kmer_length = int(kmer_length)
-    overlap_length = kmer_length - 1  
-    
+
     while changed:
         changed = False
         candidates = find_merge_candidates(forward_edges, reverse_edges)
 
-        # see how long it 
         
         for source, node, target in candidates:
             
             # Get the edge weights
             edge1_weight = next(e.weight for e in forward_edges[source] if e.to == node)
             edge2_weight = forward_edges[node][0].weight
+            # Get the min and max weights
+            edge1_min = next(e.min_weight for e in forward_edges[source] if e.to == node)
+            edge2_min = forward_edges[node][0].min_weight
+            edge1_max = next(e.max_weight for e in forward_edges[source] if e.to == node)
+            edge2_max = forward_edges[node][0].max_weight
+
+            # Calculate new min and max weights
+            new_min = min(edge1_weight, edge2_weight, edge1_min, edge2_min)
+            new_max = max(edge1_weight, edge2_weight, edge1_max, edge2_max)
 
 
             # Get the sequences and lengths
@@ -89,16 +112,18 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
             len1 = len(seq1)
             len2 = len(seq2)
 
+            # Check how many time compressed sequences are
             kmer_diff1 = len1 - kmer_length 
             kmer_diff2 = len2 - kmer_length 
+
             # take the difference from length of k to length of strings, multiple each by that difference plus one, and then add them together #
             # and divide by those numbers #
             new_weight = ((edge1_weight * (kmer_diff1 +1 )) + (edge2_weight * (kmer_diff2 + 1)))/ (kmer_diff1 + kmer_diff2 + 2)
-            print('Loop 4')
             print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
 
-            overlap = kmer_length -1         
+            
             # Combine sequences with proper overlap
+            overlap = kmer_length - 1 
             new_seq = seq1 + seq2[overlap:]
            
                 
@@ -117,7 +142,7 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
             reverse_edges[target] = [n for n in reverse_edges[target] if n != node]
             
             # Add new edge
-            new_edge = Edge(target, new_weight, new_seq)
+            new_edge = Edge(target, new_weight, new_seq, new_min, new_max)
             forward_edges[source].append(new_edge)
             reverse_edges[target].append(source)
            
@@ -127,13 +152,21 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
            
         
             changed = True
-            break  # Restart after each merge as the graph changes
+            break          # Restart after each merge as the graph changes
 
 def write_merged_graph(filename, forward_edges, node_seqs):
+    """
+    Writes the merged graph to a file in the specified format.
+    The output format is:
+    from_node to_node seq avg_weight max_weight min_weight
+    """
+
     with open(filename, 'w') as f:
+        f.write("from\tto_node\tseq\tavg_weight\tmax_weight\tmin_weight\n")
         for from_node, edges in forward_edges.items():
             for edge in edges:
-                line = f"{from_node}\t{edge.to}\t{edge.weight}\t{edge.seq}\n"
+                
+                line = f"{from_node}\t{edge.to}\t{edge.seq}\t\t{edge.weight}\t\t{edge.max_weight}\t\t{edge.min_weight}\n"
                 f.write(line)
 
 def main():
@@ -141,10 +174,12 @@ def main():
         print("Usage: python find_merges.py <input_file> <output_file> <kmer_length>")
         sys.exit(1)
 
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    kmer_length = sys.argv[3]
-    
+    # Get command line arguments
+    input_file = sys.argv[1]       # input file
+    output_file = sys.argv[2]      # output file
+    kmer_length = sys.argv[3]      # kmer length
+
+    # read in the graph 
     forward_edges, reverse_edges, node_seqs = read_graph(input_file)
 
 
