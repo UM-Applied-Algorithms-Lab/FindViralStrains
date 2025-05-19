@@ -108,7 +108,7 @@ def merge_nodes(forward_edges, reverse_edges, node_seqs, kmer_length):
                 # take the difference between k and len and multiply by that number +1 for the weight #
                 kmer_diff = len2 - (kmer_length + 1)
                 edge2_weight = edge2_weight * kmer_diff
-                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 1)
+                new_weight = (edge1_weight + edge2_weight) / (kmer_diff + 2)
                 # take the difference between k and len and multiply by that number +1 for the weight #
                 print('Loop 3')
                 print(f'edge1_weight: {edge1_weight}, edge2_weight: {edge2_weight}, new_weight: {new_weight}')
