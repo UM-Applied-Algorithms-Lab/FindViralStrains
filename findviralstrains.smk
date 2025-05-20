@@ -246,7 +246,7 @@ rule Compress:
 	output:
 		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
 	shell:
-		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg} 27"
+		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:

@@ -113,7 +113,7 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
 
         if source == 58223 or node == 58223 or target == 58223:
             print(f'Source: {source} -> Node: {node} -> target: {target}')
-            print(f'Edge1: {edge1_weight} Edge2: {edge2_weight}')
+            print(f'Edge1: {edge1_weight} Edge2: {edge2_weight}') 
 
 
 
@@ -168,12 +168,13 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
     
     
 
-def write_merged_graph(filename, forward_edges, edge_seqs):
+def write_merged_graph(filename, forward_edges):
     """
     Writes the merged graph to a file in the specified format.
     The output format is:
     from_node to_node seq avg_weight max_weight min_weight
     """
+
 
     with open(filename, 'w') as f:
         f.write("from_node\tto_node\tseq\t\tavg_weight\tmax_weight\tmin_weight\n")
@@ -186,7 +187,7 @@ def write_merged_graph(filename, forward_edges, edge_seqs):
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: python find_merges.py <input_file> <output_file> ")
+        print("Usage: python compress.py <input_file> <output_file> ")
         sys.exit(1)
 
     # Get command line arguments
@@ -202,7 +203,7 @@ def main():
     merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length)
     
     print("Writing merged graph...")
-    write_merged_graph(output_file, forward_edges, edge_seqs)
+    write_merged_graph(output_file, forward_edges)
     
     print(f"Merged graph written to {output_file}")
 
