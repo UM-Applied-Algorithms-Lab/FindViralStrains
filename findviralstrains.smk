@@ -239,20 +239,25 @@ rule Create_subgraphs:
     shell:
         "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats}"
 
-# Rule Prune here
-
-# Rule Compress graph here
+# Compress nodes with only one input and one output edge #
+rule Compress:
+	input:
+		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+	output:
+		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
+	shell:
+		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg} 27"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
 		sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
 		sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
-		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.dbg} {output.swg} graph_0"
+		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
