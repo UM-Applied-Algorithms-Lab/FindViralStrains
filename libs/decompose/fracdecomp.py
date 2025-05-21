@@ -60,23 +60,21 @@ def read_input_counts(graph_file_src, min_edge_weight):
     finalGraphs = []
     with open(graph_file_src, "r") as graph_file:
     
-        lines = graph_file.readlines()    # This file is never closed!
-        graphList = []  #this is a terrible name, it's not a list of graphs its a list of edges
-        # append the index of the comment (should be line 0), and the num lines in the file, including
-        # the comment line and the count line
+        lines = graph_file.readlines()
+        graphList = []
         for i in range(0, len(lines)):
             if lines[i][0] == '#':
                 graphList.append(i)
         graphList.append(len(lines))
 
-        for i in range(0, len(graphList) - 1):  # range 0-1, i is bad variable name
+        for i in range(0, len(graphList) - 1):
             num_edges = 0
-            edge_weights = dict()  #count of what? should be called "edge weights"
-            out_neighbors = dict()  #dict of node_name -> outgoing neighbors of node
-            in_neighbors = dict()   #dict of node_name -> incoming neighbors of node
-            max_edge_weight = 0   #count of what?
+            edge_weights = dict()
+            out_neighbors = dict()
+            in_neighbors = dict()
+            max_edge_weight = 0
 
-            for y in range(graphList[i], graphList[i+1]):   #0 to num_edges, y is bad variable name
+            for y in range(graphList[i], graphList[i+1]):
                 line = lines[y].strip()
                 if len(line) == 0 or line[0] == '#':
                     continue
@@ -84,8 +82,8 @@ def read_input_counts(graph_file_src, min_edge_weight):
                 elements = line.split()
                 if len(elements) == 1:
                     num_edges = int(elements[0])
-                elif len(elements) == 3 or len(elements) == 4:  # accepts lines with 3 or 4 elements
-                    edge_weight_value = int(elements[2])
+                elif len(elements) == 3 or len(elements) == 6:  # accepts lines with 3 or 6 elements
+                    edge_weight_value = float(elements[3])
                     edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0, TODO
                     max_edge_weight = max(max_edge_weight, edge_weight_value) #just used for a global max edges
                     if elements[0] not in out_neighbors:
@@ -126,7 +124,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
     out_neighbors = {k: list(set(v)) for k, v in out_neighbors.items()}
     in_neighbors = {k: list(set(v)) for k, v in in_neighbors.items()}
     output_data = dict()
-    W = 1 # Max flow?
+    W = 1 # Max flow
 
     try:
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
@@ -179,9 +177,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
 
-        #not really a constraint, just a sort 
         for path_idx in range(0, num_paths - 1):
-            # path flows should be ordered, starting at highest flow
             model.addConstr(w[path_idx] >= w[path_idx + 1])
 
         print(f"Creating {2 * len(edges) * num_paths} path flow error constraints")
