@@ -80,10 +80,9 @@ def read_input_counts(graph_file_src, min_edge_weight):
                     continue
                 
                 elements = line.split()
-                if len(elements) == 1:
-                    num_edges = int(elements[0])
-                elif len(elements) == 3 or len(elements) == 6:  # accepts lines with 3 or 6 elements
-                    edge_weight_value = float(elements[3])
+                print(elements)
+                if len(elements) == 3 or len(elements) == 6:  # accepts lines with 3 or 6 elements
+                    edge_weight_value = float(elements[-2])
                     edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0, TODO
                     max_edge_weight = max(max_edge_weight, edge_weight_value) #just used for a global max edges
                     if elements[0] not in out_neighbors:
@@ -98,9 +97,6 @@ def read_input_counts(graph_file_src, min_edge_weight):
                         out_neighbors[elements[1]] = []
                 else:
                     sys.exit("ERROR: input file contains an ill-formatted line")
-
-            if num_edges != len(in_neighbors) - 2:
-                sys.exit(f"ERROR: expecting {num_edges} edges, the input graph has {len(in_neighbors)} edges")
 
             source = get_extremity(in_neighbors, 'source')
             sink = get_extremity(out_neighbors, 'sink')
