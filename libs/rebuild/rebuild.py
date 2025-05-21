@@ -12,10 +12,10 @@ def main(path_file, edge_file, bd_outfile):
     sequences = defaultdict(dict)
     with open(edge_file, 'r') as f:
         for line in f:
-            elements = line.strip().split('\t')
-            if len(elements) != 4:
+            elements = line.split()
+            if len(elements) != 6:
                 continue  # Skip lines without kmers (super source and sink)
-            node1, node2, occurrence, sequence = elements
+            node1, node2, sequence, average_weight, max_weight, min_weight = elements
             sequences[node1][node2] = sequence
 
        # Count total number of alignments

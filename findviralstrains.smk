@@ -19,7 +19,7 @@ print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_
 # DO NOT PUT SPACES IN THIS FILE! It breaks snakemake and gives awful errors - McKayl #
 #################
 ##   GLOBALS   ##
-################# 
+#################
 # Main config settings
 ANALYSIS = config["analysis_ID"]
 READ_DIR = config["read_dir"]
@@ -29,11 +29,11 @@ SEQUENCER = config["sequencer"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
-RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"] 
+RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"]
 PRUNE_COUNT = config["prune"]
 ###############
 ##   SETUP   ##
-############### 
+###############
 
 # Get the current ulimit for file descriptors #
 soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
@@ -81,7 +81,7 @@ def files_per_sequencer(sequencer):
 
 expected_files = files_per_sequencer(SEQUENCER)
 
-# A short function to add the output directory in front 
+# A short function to add the output directory in front
 # of filepaths, for ease of listing filenames below
 def bd(filepath):
     return os.path.normpath(os.path.join(OUTPUT_DIR, ANALYSIS, filepath))
@@ -113,17 +113,17 @@ def find_read_files(wildcards):
     # Sort them
     result_R1.sort()
     result_R2.sort()
-    
+
     # Check that R1 and R2 have an equal number of files
     # Give error if not (otherwise there will be issues with read pairing)
     if len(result_R1) != len(result_R2):
         raise OSError("\nUnequal number of R1 and R2 files found for sample: " + str({wildcards.sample}) + "\nR1 files: " + str(len(result_R1)) + "\nR2 files: " + str(len(result_R2)) + "\n")
-    
+
     # Check that the the filenames for R1 and R2 match up properly
     # Throw error if not (out-of-order files will cause issues with read pairing)
     R1_check = [x.replace("_R1_", "") for x in result_R1]
     R2_check = [x.replace("_R2_", "") for x in result_R2]
-    
+
     if R1_check != R2_check:
         print(result_R1)
         print(result_R2)
@@ -133,7 +133,7 @@ def find_read_files(wildcards):
     # Print warning if not, but analysis can proceed
     if len(result_R1) != expected_files:
         print("Found " + str(len(result_R1)) + " sets of read files for sample " + str({wildcards.sample}).strip("{'}") + ", not " + str(expected_files))
-    
+
     # Return lists of R1 and R2 files
     return [result_R1, result_R2]
 
@@ -162,6 +162,7 @@ onstart:
     with open(pipeline_log_file, 'w') as tsvfile:
         writer = csv.writer(tsvfile, delimiter='\t')
         writer.writerow(["Raw data folder used:", READ_DIR])
+        writer.writerow(["Prune count used:", PRUNE_COUNT])
         writer.writerow(["Start time:", start_time.strftime("%B %d, %Y: %H:%M:%S")])
 
 
@@ -183,7 +184,7 @@ rule all:
 
 rule trim_and_merge_raw_reads:
 	input:
-		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"), 
+		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"),
 		raw_r2 = os.path.join(READ_DIR, "{sample}_R2_001.fastq"),
 	output:
 		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
@@ -226,7 +227,7 @@ rule Prune:
 	output:
 		pruned_dbg = bd("dbg/{sample}/pruned/out.dbg"),
 	shell:
-		"python3 libs/prune/filter_reads.py  {input.dbg} {output.pruned_dbg} PRUNE_COUNT"
+		"python3 libs/prune/filter_reads.py {input.dbg} {output.pruned_dbg} {PRUNE_COUNT}"
 
 rule Create_subgraphs:
     input:
@@ -239,20 +240,25 @@ rule Create_subgraphs:
     shell:
         "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats}"
 
-# Rule Prune here
-
-# Rule Compress graph here
+# Compress nodes with only one input and one output edge #
+rule Compress:
+	input:
+		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+	output:
+		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
+	shell:
+		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
 		sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
 		sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("wgs/super/{sample}.super.wg"),
 	shell:
-		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.dbg} {output.swg} graph_0"
+		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_0"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
