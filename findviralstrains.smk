@@ -24,7 +24,6 @@ print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_
 ANALYSIS = config["analysis_ID"]
 READ_DIR = config["read_dir"]
 OUTPUT_DIR = config["output_dir"]
-REF = config["ref_genome"]
 SEQUENCER = config["sequencer"]
 READ_PURGE_PERCENT = config["read_purge_percent"]
 DECOMP_TIME_LIMIT = config["decomp_time_limit"]
