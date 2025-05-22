@@ -5,7 +5,7 @@
 # Analysis ID
 # Give a name/ID that is unique to a given analysis
 # This will be the name of the folder into which all files are placed
-analysis_ID: build_test
+analysis_ID: example
 
 # Folder/Directory where where reads are stored.
 read_dir: test/data/testdata_L001/
@@ -22,7 +22,7 @@ sequencer: MiSeq
 run_location: .
 
 # How long Gurobi will run before stopping itself
-decomp_time_limit: 60
+decomp_time_limit: 100
 
 # Size (of total percent) subgraphs that will automatically be deleted
 read_purge_percent: 5
