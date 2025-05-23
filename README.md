@@ -1,29 +1,28 @@
 # FindViralStrains
 The goal of this pipeline is to sift out viral strains from data sets using MFD.
-These are early drafts and ideas for our workflow, and are not yet polished and/or finished.
+Some of these programs may not yet polished and/or completely finished.
 If you do have questions about anything that is happening in this workflow feel free to reach
 out to us via github or email. Below you'll find the basic setup instructions that have been
-tested on Redhat and Debian based Linux systems.
+tested on Redhat, Debian, and Mac OS.
 
 Cheers,
-McKayl, Lucy, & Tim
+University of Montana Applied Algorithms Lab
 
-
-Please note that everything below assumes that you already have copied our code into a working
-directory, and have some variation of Conda installed on your device. If you need help doing any of
-this below i've linked some very informative guides. I would suggest reaching out to your system
-administrators for help/training if you are setting this up on any sort of HPC enviroment. The
-command to download our repository is below.
+First, you should clone our repository to your local machine using the command below.
 
 ```
 git clone --recurse-submodules https://github.com/UM-Applied-Algorithms-Lab/FindViralStrains
 ```
+
+Next you will need to download dependencies and set up your local enviroment. We will be
+using Conda/Anaconda for this. If you do not have this locally you can use the guides
+below. 
+
 https://github.com/git-guides/git-clone
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
-Set up your own working enviroment, I would use our environment.yml file, along with the
-command below. As written, this will create an environment called `find_viral_strains`---you can change this by editing
-the first line of `environment.yml`.
+This command downloads program packages from our pre-configured file that will be needed 
+to run the pipeline. 
 
 ```
 conda env create -f environment.yml
@@ -35,9 +34,19 @@ Now, compile the rust libraries that we use.
 cargo build --release
 ```
 
-Once you have build list and verified that all packages are successfully installed you can move on to
-actually running. An example config file is `config_files/example_config.yaml`.
-If you have cloned the directory, it should run as is.
+Additionally, you will need to locally donwload the emboss package using brew, apt, or
+other similar package managers. Below is documentation for Mac users who do not already
+have brew.
+
+https://docs.brew.sh/Installation
+
+```
+brew install brewsci/bio/emboss
+```
+
+With all of the needed software now download, all that is left it so configure your config
+file, and run the pipeline. In the config_files directory, you can edit the example file
+to point to your data. Using the command below you can now run the entire pipeline.
 
 ```
 snakemake -s findviralstrains.smk --configfile config_files/example_config.yaml --cores 2
