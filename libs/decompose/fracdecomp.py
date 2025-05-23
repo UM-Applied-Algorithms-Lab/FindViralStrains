@@ -447,7 +447,7 @@ def read_graph_to_networkx(file_path, min_edge_weight=0):
             if len(parts) >= 3:
                 try:
                     u, v = parts[0], parts[1]
-                    flow = float(parts[3]) 
+                    flow = float(parts[-2]) 
 
                     # add edge 
                     if flow >= min_edge_weight:
@@ -455,41 +455,63 @@ def read_graph_to_networkx(file_path, min_edge_weight=0):
                 except ValueError:
                     continue
                 
-                    
-    return graph 
+    return graph  
 
 
 
-def draw_labeled_multigraph(G, attr_name, ax=None):
+def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=1):
     """
-    Length of connectionstyle must be at least that of a maximum number of edges
-    between pair of nodes. This number is maximum one-sided connections
-    for directed graph and maximum total connections for undirected graph.
+    Draw a multigraph with edge labels showing flow values.
+    
+    Parameters:
+    - G: NetworkX graph
+    - attr_name: Edge attribute to display
+    - ax: Matplotlib axis (optional)
+    - decimal_places: Number of decimal places to round to (default: 1)
     """
-    # Works with arc3 and angle3 connectionstyles
+    # Connection styles for curved edges
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.40] * 5)]
-    #connectionstyle = [f"angle3,angleA={r}" for r in it.accumulate([30] * 4)]
-
+    
+    # Get graph layout
     pos = nx.nx_pydot.graphviz_layout(G)
-    nx.draw_networkx_nodes(G, pos, ax=ax)
+    
+    # Draw nodes and edges
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=500)
     nx.draw_networkx_labels(G, pos, font_size=10, ax=ax)
     nx.draw_networkx_edges(
-        G, pos, edge_color="grey", connectionstyle=connectionstyle, ax=ax
-    )  
-
+        G, pos, 
+        edge_color="grey", 
+        width=1.5,  # Thicker edges
+        connectionstyle=connectionstyle, 
+        ax=ax
+    )
+    
+    # Create edge labels with rounded values
     labels = {
-        tuple(edge): f"{attr_name}={attrs[attr_name]}"
+        tuple(edge): f"{round(attrs[attr_name], decimal_places)}"
         for *edge, attrs in G.edges(keys=True, data=True)
     }
+    
+    # Draw edge labels with improved formatting
     nx.draw_networkx_edge_labels(
         G,
         pos,
-        labels,
+        edge_labels=labels,
+        font_size=9,  # Slightly larger font
+        font_color="black",  # Higher contrast
+        font_weight="bold",  # Bold text
+        bbox={
+            "boxstyle": "round",
+            "facecolor": "white",
+            "alpha": 0.7,  # Semi-transparent white background
+            "edgecolor": "none"
+        },
+        rotate=False,  # Keep text horizontal
+        label_pos=0.5,  # Center of edge
         connectionstyle=connectionstyle,
-        label_pos=0.3,
-        font_color="blue",
-        bbox={"alpha": 0},
         ax=ax,
+        horizontalalignment="center",  # Center text
+        verticalalignment="center"     # Center text
     )
 
 
@@ -581,9 +603,9 @@ if __name__ == '__main__':
 
     # Create and visualize graph
     k_least_graph = create_k_least_graph(graph, paths)
-    visualize_and_save_graph(k_least_graph, args.output, args.minpaths)
+    visualize_and_save_graph(k_least_graph, args.output, args.maxpaths)
 
     # Save path information
-    save_paths_to_file(paths, args.output, args.minpaths)
+    save_paths_to_file(paths, args.output, args.maxpaths)
 
     print("INFO: Processing completed.")
