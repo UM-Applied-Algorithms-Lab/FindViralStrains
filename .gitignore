@@ -23,5 +23,6 @@ target
 .vscode
 summary.txt
 Cargo.lock
-config_files/test.yml
-config_files/small_dataset.yml
+config_files/*
+test/*
+dbg/

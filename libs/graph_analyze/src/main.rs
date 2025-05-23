@@ -10,9 +10,9 @@ use std::rc::Rc;
 //This pulls help text from the comments, and compiler flags/options from the variable names
 #[derive(Parser, Debug)]
 struct InputArgs {
-    ///file src for the mer graph file to parse
+    ///file src for the dbg graph file to parse
     #[arg(short, long)]
-    mg_file_name: String,
+    dbg_file_name: String,
 
     ///percentage of nodes required in a subgraph to be reported, e.g., 0.05 requires 5% of total nodes in a subgraph to be reported.
     #[arg(short, long, default_value_t = 0.01)]
@@ -25,12 +25,17 @@ struct InputArgs {
     /// the directory that the output will be written to. By default, outputs will be put in the calling_directory/input_name/
     #[arg(short, long)]
     output_directory: Option<String>,
+
+    /// file to save statistics output (in addition to terminal display)
+    #[arg(short, long)]
+    stats_output_file: Option<String>,
 }
 
 //struct to hold the analysis data for a graph or subgraph
 struct GraphAnalysisData {
     num_nodes: usize,
     num_edges: usize,
+    total_edge_weight: usize,
     num_disconnected_subgraphs: usize,
     sources: Vec<Rc<str>>,
     sinks: Vec<Rc<str>>,
@@ -46,15 +51,17 @@ impl std::fmt::Display for GraphAnalysisData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}\t\t{}\t\t{}\t{}\t\t{}\t\t{}\n{}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{}",
+            "{:<12}{:<12}{:<18}{:<14}{:<12}{:<12}{:<10}\n{:<12}{:<12}{:<18}{:<14}{:<12}{:<12}{:<10}",
             "nodes".blue(),
             "edges".blue(),
+            "total_weight".blue(),
             "subgraphs".blue(),
             "sources".blue(),
             "sinks".blue(),
             "acyclic?".blue(),
             self.num_nodes,
             self.num_edges,
+            self.total_edge_weight,
             self.num_disconnected_subgraphs,
             self.sources.len(),
             self.sinks.len(),
@@ -94,7 +101,7 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_kmers, graph_label) = match make_main_graph(Path::new(&args.mg_file_name))
+    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
     {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
@@ -105,25 +112,27 @@ fn main() {
     let significant_subgraph_list =
         make_significant_subgraph_list(&subgraph_list, args.node_percent_cutoff);
 
-    //displays the stats from the main graph and any subgraphs that match the display criteri
-    // (currently, only displays subgraphs with a large enough % of total nodes)
+    //displays the stats from the main graph and any subgraphs that match the display criteria
     let display_type = match args.all_subgraphs_displayed {
         true => SubgraphDisplayType::All,
         false => SubgraphDisplayType::OnlySignificant(args.node_percent_cutoff),
     };
-    display_graph_stats(
+    if let Err(e) = display_graph_stats(
         &main_graph,
         &subgraph_list,
-        // &significant_subgraph_list,
+        &edge_info,
         display_type,
-    );
+        &args.stats_output_file,
+    ) {
+        eprintln!("Warning: Failed to write statistics to file: {}", e);
+    }
 
     //writes the subgraphs over the node % cutoff to individual files for further processing
     write_subgraph_files(
         significant_subgraph_list,
-        &args.mg_file_name,
+        &args.dbg_file_name,
         &graph_label,
-        &edge_kmers,
+        &edge_info,
         args.output_directory,
     );
 }
@@ -136,7 +145,7 @@ fn write_subgraph_files(
     significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
     main_graph_label: &String,
-    edge_kmers: &HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     output_dir: Option<String>,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
@@ -165,7 +174,7 @@ fn write_subgraph_files(
         );
 
         let subgraph_file_path =
-            Path::new(&subgraph_directory_name).join(format!("graph_{}.mg", &subgraph_idx_string));
+            Path::new(&subgraph_directory_name).join(format!("graph_{}.dbg", &subgraph_idx_string));
 
         //configure the file output to initially overwrite the file, and append all nodes of the subgraph
         let mut subgraph_mg_file = std::fs::OpenOptions::new()
@@ -191,16 +200,23 @@ fn write_subgraph_files(
 
         for (from_node, edges) in *subgraph {
             for to_node in &edges.out_edges {
-                subgraph_mg_file
-                    .write_fmt(format_args!(
-                        "{}\t{}\t{}\n",
-                        from_node,
-                        to_node,
-                        edge_kmers
-                            .get(&(from_node.clone(), to_node.clone()))
-                            .unwrap()
-                    ))
-                    .expect("unable to write graph line to subgraph file");
+                match edge_info.get(&(from_node.clone(), to_node.clone())) {
+                    Some(result) => {
+                        let (count, kmer) = result;
+                        subgraph_mg_file
+                            .write_fmt(format_args!(
+                                "{}\t{}\t{}\t{}\n",
+                                from_node,
+                                to_node,
+                                count,
+                                kmer
+                            ))
+                            .expect("unable to write graph line to subgraph file");
+                    }
+                    None => {
+                        println!("No count or kmer stored ")
+                    }
+                }
             }
         }
     }
@@ -210,47 +226,69 @@ fn write_subgraph_files(
 fn display_graph_stats(
     main_graph: &HashMap<Rc<str>, NodeEdges>,
     subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     subgraph_display_type: SubgraphDisplayType,
-) {
-    println!(
-        "Main Graph Stats:\n{}",
-        make_graph_stats(main_graph, subgraph_list.len())
-    );
+    stats_output_file: &Option<String>,
+) -> std::io::Result<()> {
+    let mut output = String::new();
+    
+    output.push_str(&format!(
+        "Main Graph Stats:\n{}\n",
+        make_graph_stats(main_graph,&edge_info, subgraph_list.len())
+    ));
 
     match subgraph_display_type {
         SubgraphDisplayType::All => {
             for (subgraph_idx, subgraph) in subgraph_list.iter().enumerate() {
-                println!(
-                    "Subgraph {}:\n{}",
+                output.push_str(&format!(
+                    "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph, 0)
-                );
+                    make_graph_stats(subgraph,&edge_info, 0)
+                ));
             }
         }
 
         SubgraphDisplayType::OnlySignificant(cutoff) => {
             let significant_subgraph_list = make_significant_subgraph_list(&subgraph_list, cutoff);
             for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
-                println!(
-                    "Subgraph {}:\n{}",
+                output.push_str(&format!(
+                    "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph, 0)
-                );
+                    make_graph_stats(subgraph,&edge_info, 0)
+                ));
             }
         }
     }
+
+    // Print to terminal (original functionality)
+    print!("{}", output);
+
+    // Write to file if specified
+    if let Some(file_path) = stats_output_file {
+        std::fs::write(file_path, output)?;
+    }
+
+    Ok(())
 }
 
 /// generates the stats for a graph (or subgraph)
 /// If using for the full graph, give the num_subgraphs, for a subgraph just give zero, I guess...
 fn make_graph_stats(
     graph: &HashMap<Rc<str>, NodeEdges>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     num_subgraphs: usize,
 ) -> GraphAnalysisData {
     let (sources, sinks) = make_source_sink_lists(&graph);
+    let total_edge_weight = graph.iter().flat_map(|(from, edges)| {
+        edges.out_edges.iter().filter_map(move |to| {
+             edge_info.get(&(from.clone(), to.clone())).map(|(count, _)| count)
+        })
+    }).sum();
+
     GraphAnalysisData {
         num_nodes: graph.len(),
         num_edges: graph.iter().map(|(_, edges)| edges.out_edges.len()).sum(),
+        total_edge_weight,
         num_disconnected_subgraphs: num_subgraphs,
         sources,
         sinks,
@@ -312,21 +350,17 @@ fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
     HashMap<Rc<str>, NodeEdges>,
-    HashMap<(Rc<str>, Rc<str>), Rc<str>>,
+    HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
     let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
-    let mut edge_kmers: HashMap<(Rc<str>, Rc<str>), Rc<str>> = HashMap::new();
-    let mut lines = file_reader.lines();
-    let graph_label = lines
-        .next()
-        .expect("could not read any lines from graph file")
-        .expect("unable to read from graph file.");
-    //skip the line containing the number of nodes
-    let _ = lines.next();
+    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)> = HashMap::new();
+    let lines = file_reader.lines();
+    // decompose needs a graph label, but assembly graph generator does not make one //
+    let graph_label = "# fake label".to_string();
 
     for line in lines {
         let line = line.expect("unable to read line in input file");
@@ -341,6 +375,12 @@ fn make_main_graph(
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
         ));
+
+        let count: usize = split_line.next().unwrap().parse().expect( // TODO change to int
+            "encountered incorrectly formatted line in input file: \
+            could not parse second node name",
+        );
+
         let edge_kmer: Rc<str> = Rc::from(split_line.next().expect(
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
@@ -357,10 +397,10 @@ fn make_main_graph(
             .in_edges
             .push(from_node.clone());
 
-        edge_kmers.insert((from_node, to_node), edge_kmer);
+        edge_info.insert((from_node, to_node), (count, edge_kmer));
     }
 
-    return Ok((main_graph, edge_kmers, graph_label));
+    return Ok((main_graph, edge_info, graph_label));
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph

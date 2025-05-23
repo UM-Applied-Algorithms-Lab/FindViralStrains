@@ -7,7 +7,6 @@ import time
 import os
 import math
 
-# TODO: change code to use source/sink files, instead of parsing them from input.
 
 def get_extremity(neighbors, extremity_type):
     """TODO: deprecate this function, and use super-source and super-sink files 
@@ -61,33 +60,29 @@ def read_input_counts(graph_file_src, min_edge_weight):
     finalGraphs = []
     with open(graph_file_src, "r") as graph_file:
     
-        lines = graph_file.readlines()    # This file is never closed!
-        graphList = []  #this is a terrible name, it's not a list of graphs its a list of edges
-        # append the index of the comment (should be line 0), and the num lines in the file, including
-        # the comment line and the count line
+        lines = graph_file.readlines()
+        graphList = []
         for i in range(0, len(lines)):
             if lines[i][0] == '#':
                 graphList.append(i)
         graphList.append(len(lines))
 
-        for i in range(0, len(graphList) - 1):  # range 0-1, i is bad variable name
+        for i in range(0, len(graphList) - 1):
             num_edges = 0
-            edge_weights = dict()  #count of what? should be called "edge weights"
-            out_neighbors = dict()  #dict of node_name -> outgoing neighbors of node
-            in_neighbors = dict()   #dict of node_name -> incoming neighbors of node
-            max_edge_weight = 0   #count of what?
+            edge_weights = dict()
+            out_neighbors = dict()
+            in_neighbors = dict()
+            max_edge_weight = 0
 
-            for y in range(graphList[i], graphList[i+1]):   #0 to num_edges, y is bad variable name
+            for y in range(graphList[i], graphList[i+1]):
                 line = lines[y].strip()
                 if len(line) == 0 or line[0] == '#':
                     continue
                 
                 elements = line.split()
-                if len(elements) == 1:
-                    num_edges = int(elements[0])
-                elif len(elements) == 3:
-                    edge_weight_value = int(elements[2])
-                    edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0 tho
+                if len(elements) == 3 or len(elements) == 6:  # accepts lines with 3 or 6 elements
+                    edge_weight_value = float(elements[-2])
+                    edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0, TODO
                     max_edge_weight = max(max_edge_weight, edge_weight_value) #just used for a global max edges
                     if elements[0] not in out_neighbors:
                         out_neighbors[elements[0]] = []
@@ -101,9 +96,6 @@ def read_input_counts(graph_file_src, min_edge_weight):
                         out_neighbors[elements[1]] = []
                 else:
                     sys.exit("ERROR: input file contains an ill-formatted line")
-
-            if num_edges != len(in_neighbors):
-                sys.exit(f"ERROR: expecting {num_edges} edges, the input graph has {len(in_neighbors)} edges")
 
             source = get_extremity(in_neighbors, 'source')
             sink = get_extremity(out_neighbors, 'sink')
@@ -127,7 +119,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
     out_neighbors = {k: list(set(v)) for k, v in out_neighbors.items()}
     in_neighbors = {k: list(set(v)) for k, v in in_neighbors.items()}
     output_data = dict()
-    W = 1 # Max flow?
+    W = 1 # Max flow
 
     try:
         T = [(from_node, to_node, k) for (from_node, to_node) in edges for k in range(0, num_paths)]    #collection of (i)node->(j)node edges for each (k)path
@@ -180,9 +172,7 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
                 model.addConstr(z[vertex_from, vertex_to, path_idx] <= w[path_idx])
 
 
-        #not really a constraint, just a sort 
         for path_idx in range(0, num_paths - 1):
-            # path flows should be ordered, starting at highest flow
             model.addConstr(w[path_idx] >= w[path_idx + 1])
 
         print(f"Creating {2 * len(edges) * num_paths} path flow error constraints")
@@ -253,29 +243,29 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         model.optimize()
 
     # Debugging statements after optimization
-        for (vertex_from, vertex_to) in edges:
-            total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
-            print([(vertex_from, neighbor )for neighbor in out_neighbors[vertex_from]])
-            total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
-            total_flow_in = sum(f[neighbor, vertex_to].x for neighbor in in_neighbors[vertex_to])
-            total_flow_out = sum(f[vertex_from, neighbor].x for neighbor in out_neighbors[vertex_from])
-
-            # Debugging statements to check the values after optimization
-            print(f"vertex_from: {vertex_from}, vertex_to: {vertex_to}")
-            print(f"total_outgoing_count: {total_outgoing_count}, total_incoming_count: {total_incoming_count}")
-            print(f"total_flow_in: {total_flow_in}, total_flow_out: {total_flow_out}")
-            print(f"count[vertex_from, vertex_to]: {count[vertex_from, vertex_to]}")
-            print(f"epsilon[vertex_from, vertex_to]: {epsilon[vertex_from, vertex_to].x}")
-
-            # Print the errors for each edge
-            print(f"Edge {vertex_from} to {vertex_to} has error {epsilon[vertex_from, vertex_to].x}")
-
-            # Print the actual flow for each edge
-            print(f"Edge {vertex_from} to {vertex_to} has actual flow {f[vertex_from, vertex_to].x}")
+      #  for (vertex_from, vertex_to) in edges:
+     #       total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
+    #        print([(vertex_from, neighbor )for neighbor in out_neighbors[vertex_from]])
+   #         total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
+  #          total_flow_in = sum(f[neighbor, vertex_to].x for neighbor in in_neighbors[vertex_to])
+ #           total_flow_out = sum(f[vertex_from, neighbor].x for neighbor in out_neighbors[vertex_from])
+#
+      #      # Debugging statements to check the values after optimization
+     #       print(f"vertex_from: {vertex_from}, vertex_to: {vertex_to}")
+    #        print(f"total_outgoing_count: {total_outgoing_count}, total_incoming_count: {total_incoming_count}")
+   #         print(f"total_flow_in: {total_flow_in}, total_flow_out: {total_flow_out}")
+  #          print(f"count[vertex_from, vertex_to]: {count[vertex_from, vertex_to]}")
+ #           print(f"epsilon[vertex_from, vertex_to]: {epsilon[vertex_from, vertex_to].x}")
+#
+  #          # Print the errors for each edge
+ #           print(f"Edge {vertex_from} to {vertex_to} has error {epsilon[vertex_from, vertex_to].x}")
+#
+ #           # Print the actual flow for each edge
+#            print(f"Edge {vertex_from} to {vertex_to} has actual flow {f[vertex_from, vertex_to].x}")
 
             # Print the expected flow for each edge
-            expected_flow = sum(z[vertex_from, vertex_to, path_idx].x for path_idx in range(num_paths))
-            print(f"Edge {vertex_from} to {vertex_to} has expected flow {expected_flow}")
+        #    expected_flow = sum(z[vertex_from, vertex_to, path_idx].x for path_idx in range(num_paths))
+        #    print(f"Edge {vertex_from} to {vertex_to} has expected flow {expected_flow}")
 
             
         
