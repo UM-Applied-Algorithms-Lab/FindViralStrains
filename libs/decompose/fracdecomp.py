@@ -80,7 +80,6 @@ def read_input_counts(graph_file_src, min_edge_weight):
                     continue
                 
                 elements = line.split()
-                print(elements)
                 if len(elements) == 3 or len(elements) == 6:  # accepts lines with 3 or 6 elements
                     edge_weight_value = float(elements[-2])
                     edge_weights[(elements[0], elements[1])] = 0 if edge_weight_value < min_edge_weight else edge_weight_value    #this line turns all counts below min_count to zero! defaults to 0, TODO
@@ -244,29 +243,29 @@ def decompose_flow(vertices, count, out_neighbors, in_neighbors, source_node_nam
         model.optimize()
 
     # Debugging statements after optimization
-        for (vertex_from, vertex_to) in edges:
-            total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
-            print([(vertex_from, neighbor )for neighbor in out_neighbors[vertex_from]])
-            total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
-            total_flow_in = sum(f[neighbor, vertex_to].x for neighbor in in_neighbors[vertex_to])
-            total_flow_out = sum(f[vertex_from, neighbor].x for neighbor in out_neighbors[vertex_from])
-
-            # Debugging statements to check the values after optimization
-            print(f"vertex_from: {vertex_from}, vertex_to: {vertex_to}")
-            print(f"total_outgoing_count: {total_outgoing_count}, total_incoming_count: {total_incoming_count}")
-            print(f"total_flow_in: {total_flow_in}, total_flow_out: {total_flow_out}")
-            print(f"count[vertex_from, vertex_to]: {count[vertex_from, vertex_to]}")
-            print(f"epsilon[vertex_from, vertex_to]: {epsilon[vertex_from, vertex_to].x}")
-
-            # Print the errors for each edge
-            print(f"Edge {vertex_from} to {vertex_to} has error {epsilon[vertex_from, vertex_to].x}")
-
-            # Print the actual flow for each edge
-            print(f"Edge {vertex_from} to {vertex_to} has actual flow {f[vertex_from, vertex_to].x}")
+      #  for (vertex_from, vertex_to) in edges:
+     #       total_outgoing_count = sum(count[vertex_from, neighbor] for neighbor in out_neighbors[vertex_from])
+    #        print([(vertex_from, neighbor )for neighbor in out_neighbors[vertex_from]])
+   #         total_incoming_count = sum(count[neighbor, vertex_to] for neighbor in in_neighbors[vertex_to])
+  #          total_flow_in = sum(f[neighbor, vertex_to].x for neighbor in in_neighbors[vertex_to])
+ #           total_flow_out = sum(f[vertex_from, neighbor].x for neighbor in out_neighbors[vertex_from])
+#
+      #      # Debugging statements to check the values after optimization
+     #       print(f"vertex_from: {vertex_from}, vertex_to: {vertex_to}")
+    #        print(f"total_outgoing_count: {total_outgoing_count}, total_incoming_count: {total_incoming_count}")
+   #         print(f"total_flow_in: {total_flow_in}, total_flow_out: {total_flow_out}")
+  #          print(f"count[vertex_from, vertex_to]: {count[vertex_from, vertex_to]}")
+ #           print(f"epsilon[vertex_from, vertex_to]: {epsilon[vertex_from, vertex_to].x}")
+#
+  #          # Print the errors for each edge
+ #           print(f"Edge {vertex_from} to {vertex_to} has error {epsilon[vertex_from, vertex_to].x}")
+#
+ #           # Print the actual flow for each edge
+#            print(f"Edge {vertex_from} to {vertex_to} has actual flow {f[vertex_from, vertex_to].x}")
 
             # Print the expected flow for each edge
-            expected_flow = sum(z[vertex_from, vertex_to, path_idx].x for path_idx in range(num_paths))
-            print(f"Edge {vertex_from} to {vertex_to} has expected flow {expected_flow}")
+        #    expected_flow = sum(z[vertex_from, vertex_to, path_idx].x for path_idx in range(num_paths))
+        #    print(f"Edge {vertex_from} to {vertex_to} has expected flow {expected_flow}")
 
             
         

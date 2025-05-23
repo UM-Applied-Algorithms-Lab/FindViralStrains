@@ -110,13 +110,6 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
         edge2_max = forward_edges[node][0].max_weight
 
 
-
-        if source == 58223 or node == 58223 or target == 58223:
-            print(f'Source: {source} -> Node: {node} -> target: {target}')
-            print(f'Edge1: {edge1_weight} Edge2: {edge2_weight}') 
-
-
-
         # Calculate new min and max weights
         new_min = min(edge1_weight, edge2_weight, edge1_min, edge2_min)
         new_max = max(edge1_weight, edge2_weight, edge1_max, edge2_max)
