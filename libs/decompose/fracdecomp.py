@@ -3,14 +3,14 @@ import argparse
 import gurobipy as gp
 from gurobipy import GRB
 from gurobipy import quicksum
-import time
-import os
 import math
 import networkx as nx
 import itertools as it
 import numpy as np
 import matplotlib.pyplot as plt
 import flowpaths as fp
+from matplotlib import pylab
+from matplotlib.collections import LineCollection
 
 
 def get_extremity(neighbors, extremity_type):
@@ -473,11 +473,19 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=1):
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.40] * 5)]
     
     # Get graph layout
-    pos = nx.nx_pydot.graphviz_layout(G)
+    pos = nx.nx_pydot.graphviz_layout(G, prog="sfdp", root = "0")
+
+    # Calculate dynamic figure size based on graph complexity
+    num_nodes = graph.number_of_nodes()
+    
+    
+    # Adjust element sizes based on graph size
+    node_size = max(500, 2000 - num_nodes * 0.1) if num_nodes < 10000 else 100
+    font_size = max(8, 12 - math.log(num_nodes + 1))
     
     # Draw nodes and edges
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=500)
-    nx.draw_networkx_labels(G, pos, font_size=10, ax=ax)
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size= node_size)
+    nx.draw_networkx_labels(G, pos, font_size=font_size, ax=ax)
     nx.draw_networkx_edges(
         G, pos, 
         edge_color="grey", 
@@ -492,13 +500,13 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=1):
         for *edge, attrs in G.edges(keys=True, data=True)
     }
     
-    # Draw edge labels with improved formatting
+    # Draw edge labels
     nx.draw_networkx_edge_labels(
         G,
         pos,
         edge_labels=labels,
-        font_size=9,  # Slightly larger font
-        font_color="black",  # Higher contrast
+        font_size=9, 
+        font_color="black",  
         font_weight="bold",  # Bold text
         bbox={
             "boxstyle": "round",
@@ -564,16 +572,24 @@ def create_k_least_graph(graph, paths):
     
     return k_least_graph
 
-def visualize_and_save_graph(graph, output_path, num_paths):
+def visualize_and_save_graph(graph, output_path, num_paths, base_size=10):
     """Visualize the graph and save to file."""
-    fig, ax = plt.subplots()
+    # Calculate dynamic figure size based on graph complexity
+    num_nodes = graph.number_of_nodes()
+    num_edges = graph.number_of_edges()
+    
+    # Logarithmic scaling to handle large graphs
+    scale_factor = math.log(num_nodes + num_edges + 1) * 0.5
+    figsize = (base_size * scale_factor, base_size * scale_factor)
+    
+
+    fig, ax = plt.subplots(figsize = figsize)
     draw_labeled_multigraph(graph, 'flow', ax=ax)
     ax.set_title(f"Top {num_paths} Paths with Least Absolute Errors")
     
-    visualization_file = f"{output_path}_visualization.png"
+    visualization_file = f"{output_path}_visualization.pdf"
     plt.savefig(visualization_file, dpi=300, bbox_inches='tight')
     print(f"INFO: Visualization saved to {visualization_file}")
-    plt.show()
 
 def save_paths_to_file(paths, output_path, num_paths):
     """Save path information to a text file."""
@@ -582,9 +598,11 @@ def save_paths_to_file(paths, output_path, num_paths):
         f.write("="*50 + "\n\n")
         for index, path in enumerate(paths['paths']):
             path_weight = paths['weights'][index]
-            f.write(f"Path {index + 1} (weight: {path_weight:.4f}):\n")
+            f.write(f"Path {index + 1}  (weight: {path_weight:.4f}):\n")
             f.write(" -> ".join(path) + "\n\n")
+            
     print(f"INFO: Path details saved to {output_path}")
+
 
 
 if __name__ == '__main__':
@@ -596,6 +614,15 @@ if __name__ == '__main__':
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
+    # print the number of nodes in the graph
+    print(f"INFO: The input graph has {graph.number_of_nodes()} nodes and {graph.number_of_edges()} edges.")
+
+
+    # vizualize original graph
+    visualize_and_save_graph(graph, args.output, args.maxpaths)
+
+    
+    '''
     # Perform k-least errors analysis
     k_least = fp.kLeastAbsErrors(G=graph, k=args.maxpaths, flow_attr='flow')
     k_least.solve()
@@ -607,5 +634,7 @@ if __name__ == '__main__':
 
     # Save path information
     save_paths_to_file(paths, args.output, args.maxpaths)
+    '''
 
+    # 
     print("INFO: Processing completed.")
