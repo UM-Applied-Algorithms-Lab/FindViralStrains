@@ -447,8 +447,11 @@ def read_graph_to_networkx(file_path, min_edge_weight=0):
             if len(parts) >= 3:
                 try:
                     u, v = parts[0], parts[1]
-                    flow = float(parts[-2]) 
 
+                    if len(parts) == 3:
+                        flow = float(parts[2])
+                    else:
+                        flow = float(parts[-2]) 
                     # add edge 
                     if flow >= min_edge_weight:
                         graph.add_edge(u, v, flow=flow)
@@ -521,8 +524,6 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=1):
         horizontalalignment="center",  # Center text
         verticalalignment="center"     # Center text
     )
-
-
 
 
 def parse_arguments():
