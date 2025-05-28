@@ -8,6 +8,7 @@ import networkx as nx
 import itertools as it
 import numpy as np
 import flowpaths as fp
+import time
 
 def read_graph_to_networkx(file_path, min_edge_weight=0):
     """
@@ -82,14 +83,19 @@ def create_k_least_graph(graph, paths):
     
     return k_least_graph
 
-def save_paths_to_file(paths, output_path, num_paths):
-    """Save path information to a text file."""
+def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objective_value):
+    """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
     
     with open(output_path, 'w') as f:
-        f.write(f"Top {num_paths} Paths with Least Absolute Errors\n")
-        f.write("="*50 + "\n\n")
+        f.write(f"Decomposition into {num_paths} paths\n")
+        f.write(f"Runtime: {runtime:.2f} seconds\n")
+        f.write(f"MIP Gap: {mip_gap:.6f}\n")
+        f.write(f"Objective Value: {objective_value:.6f}\n")
+        f.write(f"Number of Paths: {num_paths}\n")
+        f.write("Paths and Weights:\n")
+        
         for index, path in enumerate(paths['paths']):
             path_weight = paths['weights'][index]
             # Calculate fraction of total flow
@@ -97,11 +103,16 @@ def save_paths_to_file(paths, output_path, num_paths):
                 fraction = path_weight / total_flow
             else:
                 fraction = 0.0
-            f.write(f"Path {index + 1} (fraction of total flow: {fraction:.4f}):\n")
-            f.write(" -> ".join(path) + "\n\n")
+            
+            # Format the path with fraction first, then nodes
+            path_str = " ".join(path)
+            f.write(f"{fraction:.6f} {path_str}\n")
+    
     print(f"INFO: Path details saved to {output_path}")
 
 if __name__ == '__main__':
+    start_time = time.time()
+    
     # Parse command line arguments
     args = parse_arguments()
     print_thread_info(args.threads)
@@ -113,11 +124,23 @@ if __name__ == '__main__':
     k_least = fp.kLeastAbsErrors(G=graph, k=args.maxpaths, flow_attr='flow')
     k_least.solve()
     paths = k_least.get_solution(remove_empty_paths=True)
+    
+    # Get solver statistics
+    runtime = time.time() - start_time
+    mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
+    objective_value = k_least.model.ObjVal if hasattr(k_least, 'model') else 0.0
 
     # Create graph (without visualization)
     k_least_graph = create_k_least_graph(graph, paths)
 
     # Save path information
-    save_paths_to_file(paths, args.output, args.maxpaths)
+    save_paths_to_file(
+        paths, 
+        args.output, 
+        args.maxpaths,
+        runtime,
+        mip_gap,
+        objective_value
+    )
 
     print("INFO: Processing completed.")
