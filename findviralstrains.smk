@@ -265,12 +265,13 @@ rule Decompose:
 		script = "libs/decompose/kleast_errors.py",
 		swg = bd("wgs/super/{sample}.super.wg"),
 	output:
-		decomp = bd("decomp_results/{sample}.txt"),
 		flow = bd("decomp_results/{sample}_1.paths"),
 		flow2 = bd("decomp_results/{sample}_2.paths"),
 		flow3 = bd("decomp_results/{sample}_3.paths"),
+	params:
+		decomp = bd("decomp_results/{sample}.txt"),
 	shell:
-		"python3 {input.script} -i {input.swg} -o {output.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
+		"python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
 
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:

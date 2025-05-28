@@ -9,6 +9,7 @@ import itertools as it
 import numpy as np
 import flowpaths as fp
 import time
+import os
 
 def read_graph_to_networkx(file_path, min_edge_weight=0):
     """
@@ -56,7 +57,7 @@ def parse_arguments():
     
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
-    requiredNamed.add_argument('-o', '--output', type=str, help='Output filename', required=True)
+    requiredNamed.add_argument('-o', '--output', type=str, help='Output base filename', required=True)
     requiredNamed.add_argument('-M', '--maxpaths', type=int,
                              help='maximum number of paths to try.', required=True)
     
@@ -110,9 +111,41 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
     
     print(f"INFO: Path details saved to {output_path}")
 
-if __name__ == '__main__':
-    start_time = time.time()
+def generate_output_files(base_output_path, graph, max_paths, min_paths=1):
+    """Generate output files for all path counts from max_paths down to min_paths."""
+    # Extract the base filename without extension
+    base_name = os.path.splitext(base_output_path)[0]
     
+    for num_paths in range(max_paths, min_paths - 1, -1):
+        # Create the specific output filename
+        output_path = f"{base_name}_{num_paths}.paths"
+        
+        start_time = time.time()
+        
+        # Perform k-least errors analysis for current number of paths
+        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow')
+        k_least.solve()
+        paths = k_least.get_solution(remove_empty_paths=True)
+        
+        # Get solver statistics
+        runtime = time.time() - start_time
+        mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
+        objective_value = k_least.model.ObjVal if hasattr(k_least, 'model') else 0.0
+
+        # Create graph (without visualization)
+        k_least_graph = create_k_least_graph(graph, paths)
+
+        # Save path information
+        save_paths_to_file(
+            paths, 
+            output_path, 
+            num_paths,
+            runtime,
+            mip_gap,
+            objective_value
+        )
+
+if __name__ == '__main__':
     # Parse command line arguments
     args = parse_arguments()
     print_thread_info(args.threads)
@@ -120,27 +153,7 @@ if __name__ == '__main__':
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
-    # Perform k-least errors analysis
-    k_least = fp.kLeastAbsErrors(G=graph, k=args.maxpaths, flow_attr='flow')
-    k_least.solve()
-    paths = k_least.get_solution(remove_empty_paths=True)
-    
-    # Get solver statistics
-    runtime = time.time() - start_time
-    mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
-    objective_value = k_least.model.ObjVal if hasattr(k_least, 'model') else 0.0
-
-    # Create graph (without visualization)
-    k_least_graph = create_k_least_graph(graph, paths)
-
-    # Save path information
-    save_paths_to_file(
-        paths, 
-        args.output, 
-        args.maxpaths,
-        runtime,
-        mip_gap,
-        objective_value
-    )
+    # Generate output files for all path counts from max_paths down to 1
+    generate_output_files(args.output, graph, args.maxpaths, args.minpaths)
 
     print("INFO: Processing completed.")
