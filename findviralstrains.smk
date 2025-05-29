@@ -30,6 +30,7 @@ DECOMP_TIME_LIMIT = config["decomp_time_limit"]
 GUROBI_THREADS = config["gurobi_threads"]
 RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"]
 PRUNE_COUNT = config["prune"]
+VISUALIZE = config["visualize"]
 ###############
 ##   SETUP   ##
 ###############
@@ -271,7 +272,7 @@ rule Decompose:
 	params:
 		decomp = bd("decomp_results/{sample}.txt"),
 	shell:
-		"python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS}"
+		"python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS} --visualize {visualize}"
 
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:

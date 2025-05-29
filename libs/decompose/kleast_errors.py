@@ -56,7 +56,7 @@ def parse_arguments():
                        help='minimum number of paths to try (default 1).')
     parser.add_argument('-mc', '--mincount', type=int, default=0, 
                        help='minimum valid count on an edge (default 0)')
-    parser.add_argument('-v', '--vizualize', type=bool, default=False,
+    parser.add_argument('-v', '--visualize', type=bool, default=False,
                        help='visualize the graph with matplotlib (default False).')
     
     requiredNamed = parser.add_argument_group('required arguments')

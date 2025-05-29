@@ -35,6 +35,8 @@ gurobi_threads: 8
 # See documentation to better understand what averages are
 prune: 0
 
+
+visualize: False
 #######################
 ## Optional settings ##
 #######################
