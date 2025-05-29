@@ -321,6 +321,6 @@ if __name__ == '__main__':
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
     # Generate output files for all path counts from max_paths down to 1
-    generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.vizualize)
+    generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
 
     print("INFO: Processing completed.")

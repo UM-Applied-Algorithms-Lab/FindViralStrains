@@ -272,7 +272,7 @@ rule Decompose:
 	params:
 		decomp = bd("decomp_results/{sample}.txt"),
 	shell:
-		"python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS} --visualize {visualize}"
+		"python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS} --visualize {VISUALIZE}"
 
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
