@@ -214,7 +214,7 @@ rule Create_graph:
     input:
         unzipped = bd("read_data/trimmed/{sample}/{sample}.merged.fq"),
     output:
-        dbg = bd("graphs/{sample}/out.dbg"),
+        dbg = bd("graphs/{sample}/original.dbg"),
     params:
         pairdir = bd("read_data/trimmed/{sample}/"),
     shell:
@@ -223,38 +223,38 @@ rule Create_graph:
 #Prune edges with small counts
 rule Prune:
 	input:
-		dbg = bd("graphs/{sample}/out.dbg"),
+		dbg = bd("graphs/{sample}/original.dbg"),
 	output:
-		pruned_dbg = bd("graphs/{sample}/pruned/out.dbg"),
+		pruned_dbg = bd("graphs/{sample}/pruned.dbg"),
 	shell:
 		"python3 libs/prune/filter_reads.py {input.dbg} {output.pruned_dbg} {PRUNE_COUNT}"
 
 rule Create_subgraphs:
     input:
-        dbg = bd("graphs/{sample}/pruned/out.dbg"),
+        dbg = bd("graphs/{sample}/pruned.dbg"),
     output:
-        graph_0 = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
-        sources = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
-        sinks = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
-        stats = bd("graphs/{sample}/out.dbg_subgraphs/graph_stats.txt"),
+        graph_0 = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.dbg"),
+        sources = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sources"),
+        sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sinks"),
+        stats = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_stats.txt"),
     shell:
         "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats}"
 
 # Compress nodes with only one input and one output edge #
 rule Compress:
 	input:
-		dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+		dbg = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.dbg"),
 	output:
-		comp_dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
+		comp_dbg = bd("graphs/{sample}/out.dbg_subgraphs/graph_0_compressed.dbg"),
 	shell:
 		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		comp_dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
-		sources = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
-		sinks = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
+		comp_dbg = bd("graphs/{sample}/out.dbg_subgraphs/graph_0_compressed.dbg"),
+		sources = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sources"),
+		sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sinks"),
 	output:
 		swg = bd("graphs/super/{sample}.super.wg"),
 	shell:
