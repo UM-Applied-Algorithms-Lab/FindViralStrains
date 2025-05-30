@@ -187,13 +187,13 @@ rule trim_and_merge_raw_reads:
 		raw_r1 = os.path.join(READ_DIR, "{sample}_R1_001.fastq"),
 		raw_r2 = os.path.join(READ_DIR, "{sample}_R2_001.fastq"),
 	output:
-		trim_merged= (bd("processed_reads/trimmed/{sample}.merged.fq.gz")),
-		trim_r1_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
-		trim_r2_pair= (bd("processed_reads/trimmed/{sample}.nomerge.pair.R2.fq.gz")),
-		trim_r1_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R1.fq.gz")),
-		trim_r2_nopair= (bd("processed_reads/trimmed/{sample}.nopair.R2.fq.gz")),
-		rep_html= bd("logs/fastp/{sample}_trim_fastp.html"),
-		rep_json= bd("logs/fastp/{sample}_trim_fastp.json")
+		trim_merged= (bd("read_data/trimmed/{sample}.merged.fq.gz")),
+		trim_r1_pair= (bd("read_data/trimmed/{sample}.nomerge.pair.R1.fq.gz")),
+		trim_r2_pair= (bd("read_data/trimmed/{sample}.nomerge.pair.R2.fq.gz")),
+		trim_r1_nopair= (bd("read_data/trimmed/{sample}.nopair.R1.fq.gz")),
+		trim_r2_nopair= (bd("read_data/trimmed/{sample}.nopair.R2.fq.gz")),
+		rep_html= bd(".fastp_logs/fastp/{sample}_trim_fastp.html"),
+		rep_json= bd(".fastp_logs/fastp/{sample}_trim_fastp.json")
 #	threads: trim_threads # Unsure if this is needed #
 	shell:
 		"""
@@ -203,60 +203,60 @@ rule trim_and_merge_raw_reads:
 # Unzip fastq files
 rule Unzip:
     input:
-        trim_merged = bd("processed_reads/trimmed/{sample}.merged.fq.gz"),
+        trim_merged = bd("read_data/trimmed/{sample}.merged.fq.gz"),
     output:
-        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+        unzipped = bd("read_data/trimmed/{sample}/{sample}.merged.fq"),
     shell:
         "gunzip -c {input.trim_merged} > {output.unzipped}"
 
 # Make graph using BWT and our fm-index program
 rule Create_graph:
     input:
-        unzipped = bd("processed_reads/trimmed/{sample}/{sample}.merged.fq"),
+        unzipped = bd("read_data/trimmed/{sample}/{sample}.merged.fq"),
     output:
-        dbg = bd("dbg/{sample}/out.dbg"),
+        dbg = bd("graphs/{sample}/out.dbg"),
     params:
-        pairdir = bd("processed_reads/trimmed/{sample}/"),
+        pairdir = bd("read_data/trimmed/{sample}/"),
     shell:
         "target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
 
 #Prune edges with small counts
 rule Prune:
 	input:
-		dbg = bd("dbg/{sample}/out.dbg"),
+		dbg = bd("graphs/{sample}/out.dbg"),
 	output:
-		pruned_dbg = bd("dbg/{sample}/pruned/out.dbg"),
+		pruned_dbg = bd("graphs/{sample}/pruned/out.dbg"),
 	shell:
 		"python3 libs/prune/filter_reads.py {input.dbg} {output.pruned_dbg} {PRUNE_COUNT}"
 
 rule Create_subgraphs:
     input:
-        dbg = bd("dbg/{sample}/pruned/out.dbg"),
+        dbg = bd("graphs/{sample}/pruned/out.dbg"),
     output:
-        graph_0 = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
-        sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
-        sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
-        stats = bd("dbg/{sample}/out.dbg_subgraphs/graph_stats.txt"),
+        graph_0 = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+        sources = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
+        sinks = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
+        stats = bd("graphs/{sample}/out.dbg_subgraphs/graph_stats.txt"),
     shell:
         "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats}"
 
 # Compress nodes with only one input and one output edge #
 rule Compress:
 	input:
-		dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
+		dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.dbg"),
 	output:
-		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
+		comp_dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
 	shell:
 		"python3 libs/compress/compress.py {input.dbg} {output.comp_dbg}"
 
 # Add super source and sink for ILP solver #
 rule Add_super:
 	input:
-		comp_dbg = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
-		sources = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
-		sinks = bd("dbg/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
+		comp_dbg = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0_compressed.dbg"),
+		sources = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sources"),
+		sinks = bd("graphs/{sample}/pruned/out.dbg_subgraphs/graph_0.sinks"),
 	output:
-		swg = bd("wgs/super/{sample}.super.wg"),
+		swg = bd("graphs/super/{sample}.super.wg"),
 	shell:
 		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_0"
 
@@ -264,7 +264,7 @@ rule Add_super:
 rule Decompose:
 	input:
 		script = "libs/decompose/kleast_errors.py",
-		swg = bd("wgs/super/{sample}.super.wg"),
+		swg = bd("graphs/super/{sample}.super.wg"),
 	output:
 		flow = bd("decomp_results/{sample}_1.paths"),
 		flow2 = bd("decomp_results/{sample}_2.paths"),
@@ -279,7 +279,7 @@ rule Rebuild_1:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		swg = bd("wgs/super/{sample}.super.wg"),
+		swg = bd("graphs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
 	params:
@@ -293,7 +293,7 @@ rule Rebuild_2:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_2.paths"),
-		swg = bd("wgs/super/{sample}.super.wg"),
+		swg = bd("graphs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
@@ -308,7 +308,7 @@ rule Rebuild_3:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_3.paths"),
-		swg = bd("wgs/super/{sample}.super.wg"),
+		swg = bd("graphs/super/{sample}.super.wg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
