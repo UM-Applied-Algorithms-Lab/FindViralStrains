@@ -77,6 +77,50 @@ def find_merge_candidates(forward_edges, reverse_edges):
     
     return merge_candidates
 
+
+def split_edges(forward_edges, reverse_edges, edge_seqs):
+    """
+    Splits edges in the graph if a node has multiple edges going to the same target node.
+    This ensures that each edge is unique and can be processed independently.
+    """
+
+    new_forward_edges = defaultdict(list)
+    new_reverse_edges = defaultdict(list)
+    new_edge_seqs = {}
+
+    for from_node, edges in forward_edges.items():
+        seen_targets = set()
+        for edge in edges:
+            target = edge.to
+            if target not in seen_targets:
+                seen_targets.add(target)
+                new_forward_edges[from_node].append(edge)
+                new_reverse_edges[target].append(from_node)
+                new_edge_seqs[f"{from_node}_seq_{target}"] = edge.seq
+            else:
+                # Create a new unique target node
+                new_target = f"{target}_{len(new_forward_edges[from_node])}"
+                new_edge = Edge(new_target, edge.weight, edge.seq, edge.min_weight, edge.max_weight)
+                new_forward_edges[from_node].append(new_edge)
+                new_reverse_edges[new_target].append(from_node)
+                new_edge_seqs[f"{from_node}_seq_{new_target}"] = edge.seq
+
+                # create a new edge from the new target to the original targetss
+                new_reverse_edges[target].append(new_target)
+                new_forward_edges[new_target].append(Edge(target, edge.weight, edge.seq, edge.min_weight, edge.max_weight))
+
+                
+
+                
+
+                
+            
+
+    return new_forward_edges, new_reverse_edges, new_edge_seqs
+
+
+
+
 def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
     """
     Merges nodes in the graph based on kmer length.
@@ -108,12 +152,6 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
         edge2_min = forward_edges[node][0].min_weight
         edge1_max = next(e.max_weight for e in forward_edges[source] if e.to == node)
         edge2_max = forward_edges[node][0].max_weight
-
-
-
-        if source == 58223 or node == 58223 or target == 58223:
-            print(f'Source: {source} -> Node: {node} -> target: {target}')
-            print(f'Edge1: {edge1_weight} Edge2: {edge2_weight}') 
 
 
 
@@ -185,6 +223,8 @@ def write_merged_graph(filename, forward_edges):
                 line = f"{from_node}\t{edge.to}\t{edge.seq}\t{seq_pad}{edge.weight}\t\t{edge.max_weight}\t\t{edge.min_weight}\n"
                 f.write(line)
 
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: python compress.py <input_file> <output_file> ")
@@ -198,12 +238,18 @@ def main():
     # read in the graph 
     forward_edges, reverse_edges, edge_seqs, kmer_length = read_graph(input_file)
 
-
+    # merge the nodes
     print("Merging nodes...")
     merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length)
     
+
+    print("Splitting edges...")
+    new_forward_edges, reverse_edges, edge_seqs = split_edges(forward_edges, reverse_edges, edge_seqs)
+  
+
+    #
     print("Writing merged graph...")
-    write_merged_graph(output_file, forward_edges)
+    write_merged_graph(output_file, new_forward_edges)
     
     print(f"Merged graph written to {output_file}")
 
