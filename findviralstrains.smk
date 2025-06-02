@@ -256,7 +256,7 @@ rule Add_super:
 		sources = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sources"),
 		sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sinks"),
 	output:
-		swg = bd("graphs/super/{sample}.super.wg"),
+		swg = bd("graphs/{sample}.super.dbg"),
 	shell:
 		"target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_0"
 
@@ -264,7 +264,7 @@ rule Add_super:
 rule Decompose:
 	input:
 		script = "libs/decompose/kleast_errors.py",
-		swg = bd("graphs/super/{sample}.super.wg"),
+		swg = bd("graphs/{sample}.super.dbg"),
 	output:
 		flow = bd("decomp_results/{sample}_1.paths"),
 		flow2 = bd("decomp_results/{sample}_2.paths"),
