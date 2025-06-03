@@ -89,7 +89,7 @@ def create_k_least_graph(graph, paths):
     
     return k_least_graph
 
-def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objective_value):
+def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objective_value, multigraph_decomposer=None):
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
@@ -110,39 +110,18 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
             else:
                 fraction = 0.0
             
-            # Format the path with fraction first, then nodes
-            path_str = " ".join(path)
+            # Format the path appropriately based on whether we're dealing with a multigraph
+            if multigraph_decomposer is not None:
+                # For multigraphs, the path is a list of (u, v, key) tuples
+                path_str = " ".join(f"{u}-{v}({key})" for u, v, key in path)
+            else:
+                # For regular graphs, the path is a list of nodes
+                path_str = " ".join(path)
+            
             f.write(f"{fraction:.6f} {path_str}\n")
     
     print(f"INFO: Path details saved to {output_path}")
 
-def save_graph_gml(graph, filepath):
-    """Save graph in GML format with proper type handling"""
-    try:
-        
-        nx.write_gml(graph, filepath, stringizer=str)
-        print(f"Graph successfully saved to {filepath}")
-    except Exception as e:
-        print(f"Error saving GML: {str(e)}")
-        raise
-
-
-
-def save_graph_gexf(G, filepath):
-    """Safely save graph as GEXF"""
-    try:
-        
-        nx.write_gexf(
-            G,
-            filepath,
-            encoding='utf-8',
-            prettyprint=True,
-            version='1.2draft'
-        )
-        print(f"Graph saved to {filepath}")
-    except Exception as e:
-        print(f"Error saving GEXF: {str(e)}")
-        raise
 def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places= 2, paths = None):
     """
     Draw a multigraph with edge labels showing flow values.
@@ -196,7 +175,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places= 2, paths = No
     nx.draw_networkx_edges(
                     G, pos, 
                     edge_color="grey", 
-                    width=1.2,             # Thicker edges
+                    width=1.2,            
                     connectionstyle=connectionstyle, 
                     ax=ax
                     )
@@ -289,6 +268,8 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow')
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
+
+
         
         # Get solver statistics
         runtime = time.time() - start_time
@@ -301,6 +282,10 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
             visualize_and_save_graph(graph, output_path, num_paths, paths = paths)
 
 
+        # see the type of graph
+        decomposer = isinstance(graph, nx.MultiDiGraph)
+
+
         # Save path information
         save_paths_to_file(
             paths, 
@@ -308,7 +293,8 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
             num_paths,
             runtime,
             mip_gap,
-            objective_value
+            objective_value,
+            multigraph_decomposer=decomposer
         )
 
     
