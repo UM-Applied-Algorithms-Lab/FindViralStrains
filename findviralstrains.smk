@@ -279,7 +279,7 @@ rule Rebuild_1:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_1.paths"),
-		swg = bd("graphs/super/{sample}.super.wg"),
+		swg = bd("graphs/{sample}.super.dbg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_1.fasta"),
 	params:
@@ -293,7 +293,7 @@ rule Rebuild_2:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_2.paths"),
-		swg = bd("graphs/super/{sample}.super.wg"),
+		swg = bd("graphs/{sample}.super.dbg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_2.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_2.fasta"),
@@ -308,7 +308,7 @@ rule Rebuild_3:
 	input:
 		script = "libs/rebuild/rebuild.py",
 		flow = bd("decomp_results/{sample}_3.paths"),
-		swg = bd("graphs/super/{sample}.super.wg"),
+		swg = bd("graphs/{sample}.super.dbg"),
 	output:
 		genome = bd("output_genomes/{sample}/{sample}_1_of_3.fasta"),
 		genome2 = bd("output_genomes/{sample}/{sample}_2_of_3.fasta"),
