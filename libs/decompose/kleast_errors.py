@@ -122,7 +122,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
     
     print(f"INFO: Path details saved to {output_path}")
 
-def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places= 2, paths = None):
+def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None):
     """
     Draw a multigraph with edge labels showing flow values.
     
@@ -130,105 +130,116 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places= 2, paths = No
     - G: NetworkX graph
     - attr_name: Edge attribute to display
     - ax: Matplotlib axis (optional)
-    - decimal_places: Number of decimal places to round to (default: 1)
+    - decimal_places: Number of decimal places to round to
+    - paths: Dictionary containing 'paths' and 'weights' for highlighting
     """
+    if ax is None:
+        ax = plt.gca()
+    
     # Connection styles for curved edges
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)]
 
-    # topologic sort the graph to ensure a proper layout
-    list_of_nodes = list(nx.topological_sort(G))
+    # Topological sort the graph to ensure a proper layout
+    try:
+        list_of_nodes = list(nx.topological_sort(G))
+    except nx.NetworkXUnfeasible:
+        list_of_nodes = list(G.nodes())
 
-    
     # Calculate dynamic figure size based on graph complexity
-    num_nodes = graph.number_of_nodes()
+    num_nodes = G.number_of_nodes()
+    font_size = max(8, 12 - math.log(num_nodes + 1))
 
     # Get graph layout
     pos = nx.nx_pydot.graphviz_layout(G, prog="sfdp")
 
-    # place 0 and 1 at the furthest ends of the graph
+    # Adjust positions to prevent overlapping edge labels
+    if len(set(y for x, y in pos.values())) <= 1:  # If all y-coords are same
+        y_positions = np.linspace(0, 100, num_nodes)
+        for i, node in enumerate(pos):
+            pos[node] = (pos[node][0], y_positions[i])
+
+    # Place 0 and 1 at the furthest ends of the graph
     if '0' in pos and '1' in pos:
-        pos['0'] = (min(pos.values(), key=lambda x: x[0])[0] - 1, pos['0'][1])
-        pos['1'] = (max(pos.values(), key=lambda x: x[0])[0] + 1, pos['1'][1])
-    
-        # place both nodes at the same height, middway between the top and bottom of the graph
-        min_y = min(y for _, y in pos.values())
-        max_y = max(y for _, y in pos.values())
-        mid_y = (min_y + max_y) / 2
-        pos['0'] = (pos['0'][0], mid_y)
-        pos['1'] = (pos['1'][0], mid_y)
-    
-    # place all other nodes in between the source and sink
-    for node in list_of_nodes:
-        if node != '0' and node != '1':
-            # find the x position of the node by finding the average x position of its neighbors
-            x_pos = np.mean([pos[neighbor][0] for neighbor in G.neighbors(node) if neighbor in pos])
-            pos[node] = (x_pos, pos[node][1])  # Keep the y position the same
-            
-        
-    
-    # Adjust element sizes based on graph size
-    font_size = max(8, 12 - math.log(num_nodes + 1))
-    
+        x_coords = [x for x, y in pos.values()]
+        min_x, max_x = min(x_coords), max(x_coords)
+        pos['0'] = (min_x - 1, pos['0'][1])
+        pos['1'] = (max_x + 1, pos['1'][1])
+
+        # Center 0 and 1 vertically
+        y_coords = [y for x, y in pos.values() if x not in [pos['0'][0], pos['1'][0]]]
+        if y_coords:
+            mid_y = (min(y_coords) + max(y_coords)) / 2
+            pos['0'] = (pos['0'][0], mid_y)
+            pos['1'] = (pos['1'][0], mid_y)
+
     # Draw nodes and edges
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_size= 300)
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=300)
     nx.draw_networkx_labels(G, pos, font_size=font_size, ax=ax)
     nx.draw_networkx_edges(
-                    G, pos, 
-                    edge_color="grey", 
-                    width=1.2,            
-                    connectionstyle=connectionstyle, 
-                    ax=ax
-                    )
-    
-    
-    # Draw paths with thicker edges in red
-    colors = ['r', 'b', 'g', 'c', 'm']                       # Colors for different paths
-    for index, path in enumerate(paths['paths']):
-        path_weight = paths['weights'][index]
-        for i in range(len(path) - 1):
-            u, v = path[i], path[i + 1]
-            if graph.has_edge(u, v):
-                
-                
-                nx.draw_networkx_edges(
-                    G, pos, 
-                    edgelist=[(u, v)], 
-                    edge_color=colors[index % len(colors)],  # Cycle through colors
-                    width=1.5,                               # Thicker edges for paths
-                    connectionstyle=connectionstyle,
-                    ax=ax
-                )
-            
-                
-
-    # Create edge labels with rounded values
-    labels = {
-        tuple(edge): f"{round(attrs[attr_name], decimal_places)}"
-        for *edge, attrs in G.edges(keys=True, data=True)
-    }
-    
-    # Draw edge labels
-    nx.draw_networkx_edge_labels(
-        G,
-        pos,
-        edge_labels=labels,
-        font_size=9, 
-        font_color="black",  
-        font_weight="bold",         # Bold text
-        bbox={
-            "boxstyle": "round",
-            "facecolor": "white",
-            "alpha": 0.7,            # Semi-transparent white background
-            "edgecolor": "none"
-        },
-        rotate=False,   # Keep text horizontal
-        label_pos=0.5,  # Center of edge
+        G, pos,
+        edge_color="grey",
+        width=1.2,
         connectionstyle=connectionstyle,
-        ax=ax,
-        horizontalalignment="center",  # Center text
-        verticalalignment="center"     # Center text
+        ax=ax
     )
 
+    # Draw paths if provided
+    if paths and 'paths' in paths:
+        colors = ['r', 'b', 'g', 'c', 'm']
+        for index, path in enumerate(paths['paths']):
+            if not path:  # Skip empty paths
+                continue
+                
+            path_edges = []
+            if all(isinstance(step, tuple) and len(step) == 3 for step in path):
+                path_edges = [(u, v) for u, v, key in path]
+            else:
+                path_edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
+
+            nx.draw_networkx_edges(
+                G, pos,
+                edgelist=path_edges,
+                edge_color=colors[index % len(colors)],
+                width=2.0,
+                connectionstyle=connectionstyle,
+                ax=ax
+            )
+
+    # Create edge labels with rounded values
+    labels = {}
+    for u, v, key, data in G.edges(keys=True, data=True):
+        if attr_name in data:
+            labels[(u, v, key)] = f"{data[attr_name]:.{decimal_places}f}"
+
+    # Draw edge labels with error handling
+    try:
+        nx.draw_networkx_edge_labels(
+            G, pos,
+            edge_labels=labels,
+            font_size=9,
+            font_color="black",
+            font_weight="bold",
+            bbox={
+                "boxstyle": "round",
+                "facecolor": "white",
+                "alpha": 0.7,
+                "edgecolor": "none"
+            },
+            rotate=False,
+            label_pos=0.5,
+            ax=ax,
+            horizontalalignment="center",
+            verticalalignment="center"
+        )
+    except ValueError as e:
+        print(f"Warning: Could not draw all edge labels - {str(e)}")
+        # Fallback to simple straight labels
+        nx.draw_networkx_edge_labels(
+            G, pos,
+            edge_labels=labels,
+            font_size=9,
+            ax=ax
+        )
 
 
 def visualize_and_save_graph(graph, output_path, num_paths, base_size=10, paths = None):
@@ -305,6 +316,7 @@ if __name__ == '__main__':
 
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
+
 
     # Generate output files for all path counts from max_paths down to 1
     generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
