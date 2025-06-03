@@ -4,7 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 from gurobipy import quicksum
 import math
-import networkx as nx
+import networkx as nx 
 import itertools as it
 import numpy as np
 import flowpaths as fp

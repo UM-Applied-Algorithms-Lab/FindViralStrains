@@ -109,13 +109,7 @@ def split_edges(forward_edges, reverse_edges, edge_seqs):
                 new_reverse_edges[target].append(new_target)
                 new_forward_edges[new_target].append(Edge(target, edge.weight, edge.seq, edge.min_weight, edge.max_weight))
 
-                
-
-                
-
-                
-            
-
+        
     return new_forward_edges, new_reverse_edges, new_edge_seqs
 
 
@@ -243,13 +237,13 @@ def main():
     merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length)
     
 
-    print("Splitting edges...")
-    new_forward_edges, reverse_edges, edge_seqs = split_edges(forward_edges, reverse_edges, edge_seqs)
+    #print("Splitting edges...")
+    #new_forward_edges, reverse_edges, edge_seqs = split_edges(forward_edges, reverse_edges, edge_seqs)
   
 
     #
     print("Writing merged graph...")
-    write_merged_graph(output_file, new_forward_edges)
+    write_merged_graph(output_file, forward_edges)
     
     print(f"Merged graph written to {output_file}")
 
