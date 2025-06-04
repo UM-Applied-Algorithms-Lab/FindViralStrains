@@ -145,7 +145,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
     font_size = max(8, 12 - math.log(num_nodes + 1))
 
     # Get graph layout
-    pos = nx.nx_pydot.graphviz_layout(G, prog = 'twopi', root='13')
+    pos = nx.nx_pydot.graphviz_layout(G, prog = 'sfdp')
 
     
     # Place 0 and 1 at the furthest ends of the graph
@@ -212,7 +212,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
                 width=2.0,
                 connectionstyle=connectionstyle,
                 ax=ax,
-                style='dashed' if index % 2 == 0 else 'solid'
+                style='dashed'
             )
     # Create edge labels with rounded values
     labels = {}
