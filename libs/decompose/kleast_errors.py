@@ -139,25 +139,15 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
     # Connection styles for curved edges
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)]
 
-    # Topological sort the graph to ensure a proper layout
-    try:
-        list_of_nodes = list(nx.topological_sort(G))
-    except nx.NetworkXUnfeasible:
-        list_of_nodes = list(G.nodes())
 
     # Calculate dynamic figure size based on graph complexity
     num_nodes = G.number_of_nodes()
     font_size = max(8, 12 - math.log(num_nodes + 1))
 
     # Get graph layout
-    pos = nx.nx_pydot.graphviz_layout(G, prog="sfdp")
+    pos = nx.nx_pydot.graphviz_layout(G, prog = 'twopi', root='13')
 
-    # Adjust positions to prevent overlapping edge labels
-    if len(set(y for x, y in pos.values())) <= 1:  # If all y-coords are same
-        y_positions = np.linspace(0, 100, num_nodes)
-        for i, node in enumerate(pos):
-            pos[node] = (pos[node][0], y_positions[i])
-
+    
     # Place 0 and 1 at the furthest ends of the graph
     if '0' in pos and '1' in pos:
         x_coords = [x for x, y in pos.values()]
@@ -183,12 +173,31 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
         ax=ax
     )
 
-    # Draw paths if provided
+    
+
+    # Draw paths if provided 
     if paths and 'paths' in paths:
-        colors = ['r', 'b', 'g', 'c', 'm']
+        colors = [
+                "red",
+                "blue",
+                "green",
+                "purple",
+                "brown",
+                "cyan",
+                "yellow",
+                "pink",
+                "grey",
+                "chocolate",
+                "darkblue",
+                "darkolivegreen",
+                "darkslategray",
+                "deepskyblue2",
+                "cadetblue3",
+                "darkmagenta",
+                "goldenrod1"
+            ]
+        
         for index, path in enumerate(paths['paths']):
-            if not path:  # Skip empty paths
-                continue
                 
             path_edges = []
             if all(isinstance(step, tuple) and len(step) == 3 for step in path):
@@ -202,14 +211,16 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
                 edge_color=colors[index % len(colors)],
                 width=2.0,
                 connectionstyle=connectionstyle,
-                ax=ax
+                ax=ax,
+                style='dashed' if index % 2 == 0 else 'solid'
             )
-
     # Create edge labels with rounded values
     labels = {}
     for u, v, key, data in G.edges(keys=True, data=True):
         if attr_name in data:
             labels[(u, v, key)] = f"{data[attr_name]:.{decimal_places}f}"
+            print(f'labels: {labels[(u, v, key)]} for edge ({u}, {v}, {key})')
+           
 
     # Draw edge labels with error handling
     try:
@@ -229,7 +240,8 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
             label_pos=0.5,
             ax=ax,
             horizontalalignment="center",
-            verticalalignment="center"
+            verticalalignment="center", 
+            connectionstyle= connectionstyle
         )
     except ValueError as e:
         print(f"Warning: Could not draw all edge labels - {str(e)}")
@@ -240,6 +252,9 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
             font_size=9,
             ax=ax
         )
+    # Adjust layout to prevent label clipping
+    ax.autoscale_view()
+    plt.tight_layout()
 
 
 def visualize_and_save_graph(graph, output_path, num_paths, base_size=10, paths = None):
