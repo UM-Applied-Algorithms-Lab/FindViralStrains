@@ -103,13 +103,9 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
         f.write("Paths and Weights:\n")
         
         for index, path in enumerate(paths['paths']):
-            path_weight = paths['weights'][index]
-            # Calculate fraction of total flow
-            if total_flow > 0:
-                fraction = path_weight / total_flow
-            else:
-                fraction = 0.0
+            path_weight = paths['weights'][index] if total_flow > 0 else 0
             
+        
             # Format the path appropriately based on whether we're dealing with a multigraph
             if multigraph_decomposer is not None:
                 # For multigraphs, the path is a list of (u, v, key) tuples
@@ -118,7 +114,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
                 # For regular graphs, the path is a list of nodes
                 path_str = " ".join(path)
             
-            f.write(f"{fraction:.6f} {path_str}\n")
+            f.write(f"{path_weight:.6f} {path_str}\n")
     
     print(f"INFO: Path details saved to {output_path}")
 
@@ -145,8 +141,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
     font_size = max(8, 12 - math.log(num_nodes + 1))
 
     # Get graph layout
-    pos = nx.nx_pydot.graphviz_layout(G, prog = 'twopi', root='13')
-
+    pos = nx.nx_pydot.graphviz_layout(G, prog = 'sfdp')
     
     # Place 0 and 1 at the furthest ends of the graph
     if '0' in pos and '1' in pos:
