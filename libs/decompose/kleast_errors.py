@@ -228,13 +228,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
                     arrowsize=15,
                 )
                 
-            # Add path number label at the start of the path
-            if path_edges:
-                start_node = path_edges[0][0]
-                ax.text(pos[start_node][0], pos[start_node][1] + 0.1, 
-                        str(index+1), color=colors[index % len(colors)],
-                        bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'),
-                        fontsize=10, fontweight='bold')
+        
 
     # Create edge labels with rounded values
     labels = {}
@@ -352,7 +346,7 @@ if __name__ == '__main__':
 
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
-    
+
 
     # Generate output files for all path counts from max_paths down to 1
     generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
