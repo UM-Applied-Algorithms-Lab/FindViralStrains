@@ -13,6 +13,8 @@ import os
 import matplotlib.pyplot as plt
 
 
+
+
 def read_graph_to_networkx(file_path, min_edge_weight=0):
     """
     Reads a graph from a file and returns it as a NetworkX MultiDiGraph with flow attributes.
@@ -101,6 +103,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
         f.write(f"Objective Value: {objective_value:.6f}\n")
         f.write(f"Number of Paths: {num_paths}\n")
         f.write("Paths and Weights:\n")
+
         
         for index, path in enumerate(paths['paths']):
             path_weight = paths['weights'][index] if total_flow > 0 else 0
@@ -135,13 +138,12 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
     # Connection styles for curved edges
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)]
 
-
     # Calculate dynamic figure size based on graph complexity
     num_nodes = G.number_of_nodes()
     font_size = max(8, 12 - math.log(num_nodes + 1))
 
     # Get graph layout
-    pos = nx.nx_pydot.graphviz_layout(G, prog = 'sfdp')
+    pos = nx.nx_pydot.graphviz_layout(G, prog='sfdp')
     
     # Place 0 and 1 at the furthest ends of the graph
     if '0' in pos and '1' in pos:
@@ -168,55 +170,78 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
         ax=ax
     )
 
-    
-
     # Draw paths if provided 
     if paths and 'paths' in paths:
         colors = [
-                "red",
-                "blue",
-                "green",
-                "purple",
-                "brown",
-                "cyan",
-                "yellow",
-                "pink",
-                "grey",
-                "chocolate",
-                "darkblue",
-                "darkolivegreen",
-                "darkslategray",
-                "deepskyblue2",
-                "cadetblue3",
-                "darkmagenta",
-                "goldenrod1"
-            ]
+            "red", "blue", "green", "purple", "orange",
+            "cyan", "magenta", "lime", "brown", "pink",
+            "teal", "navy", "olive", "maroon", "darkgreen",
+            "darkviolet", "gold"
+        ]
         
-        for index, path in enumerate(paths['paths']):
-                
+        line_styles = ['solid', 'dashed', 'dotted', 'dashdot']
+        line_widths = [5.00,4.00,3.00,2.00]  # Varying widths
+        
+        # First pass: count how many times each edge appears in paths
+        edge_counts = {}
+        for path in paths['paths']:
             path_edges = []
             if all(isinstance(step, tuple) and len(step) == 3 for step in path):
                 path_edges = [(u, v) for u, v, key in path]
             else:
                 path_edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
+            
+            for edge in path_edges:
+                edge_counts[edge] = edge_counts.get(edge, 0) + 1
+        
+        # Second pass: draw paths with offsets for overlapping edges
+        for index, path in enumerate(paths['paths']):
+            path_edges = []
+            if all(isinstance(step, tuple) and len(step) == 3 for step in path):
+                path_edges = [(u, v) for u, v, key in path]
+            else:
+                path_edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
+            
+            # Calculate offset for each edge in this path
+            offsets = {}
+            for edge in path_edges:
+                if edge_counts.get(edge, 0) > 1:
+                    # Assign offsets based on path index
+                    offsets[edge] = (index % 3 - 1) * 2  # -2, 0, +2
+                else:
+                    offsets[edge] = 0
+            
+            # Draw each edge with its own style and offset
+            for edge in path_edges:
+                nx.draw_networkx_edges(
+                    G, pos,
+                    edgelist=[edge],
+                    edge_color=colors[index % len(colors)],
+                    width=line_widths[index % len(line_widths)],
+                    style=line_styles[index % len(line_styles)],
+                    connectionstyle=connectionstyle,
+                    ax=ax,
+                    alpha=0.8,
+                    arrows=True,
+                    node_size=300,
+                    arrowstyle='-|>',
+                    arrowsize=15,
+                )
+                
+            # Add path number label at the start of the path
+            if path_edges:
+                start_node = path_edges[0][0]
+                ax.text(pos[start_node][0], pos[start_node][1] + 0.1, 
+                        str(index+1), color=colors[index % len(colors)],
+                        bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'),
+                        fontsize=10, fontweight='bold')
 
-            nx.draw_networkx_edges(
-                G, pos,
-                edgelist=path_edges,
-                edge_color=colors[index % len(colors)],
-                width=2.0,
-                connectionstyle=connectionstyle,
-                ax=ax,
-                style='dashed' if index % 2 == 0 else 'solid'
-            )
     # Create edge labels with rounded values
     labels = {}
     for u, v, key, data in G.edges(keys=True, data=True):
         if attr_name in data:
             labels[(u, v, key)] = f"{data[attr_name]:.{decimal_places}f}"
-            print(f'labels: {labels[(u, v, key)]} for edge ({u}, {v}, {key})')
-           
-
+         
     # Draw edge labels with error handling
     try:
         nx.draw_networkx_edge_labels(
@@ -236,7 +261,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
             ax=ax,
             horizontalalignment="center",
             verticalalignment="center", 
-            connectionstyle= connectionstyle
+            connectionstyle=connectionstyle
         )
     except ValueError as e:
         print(f"Warning: Could not draw all edge labels - {str(e)}")
@@ -247,6 +272,7 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
             font_size=9,
             ax=ax
         )
+    
     # Adjust layout to prevent label clipping
     ax.autoscale_view()
     plt.tight_layout()
@@ -326,7 +352,7 @@ if __name__ == '__main__':
 
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
-
+    
 
     # Generate output files for all path counts from max_paths down to 1
     generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
