@@ -198,9 +198,9 @@ onsuccess:
 rule all:
     input:
         expand(
-            "output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_{numpaths}_vs_ref.txt",
-            sample=fastq_filenames,
-            subgraph=lambda wildcards: get_subgraph_indices(wildcards.sample),
+            "output_genomes/{input_list}/subgraph_{subgraph}/{input_list}_1_of_{numpaths}_vs_ref.txt",
+            input_list=fastq_filenames,
+            subgraph=["0", "1"],
             numpaths=["1", "2", "3"]
         )
 
