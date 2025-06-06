@@ -201,19 +201,12 @@ def get_subgraph_count(sample):
 # Create a dictionary mapping each sample to its subgraph count
 subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filenames}
 
-print(f"Subgraph counts: {list(subgraph_counts.values())}")
-
-
-
-# One rule to rule them all #
 rule all:
     input:
-        expand(
-            "output_genomes/{input_list}/subgraph_{subgraph}/{input_list}_1_of_{numpaths}_vs_ref.txt",
-            input_list=fastq_filenames,
-            subgraph=list(subgraph_counts.values()),
-            numpaths=["1", "2", "3"]
-        )
+        [f"output_genomes/{sample}/subgraph_{subgraph_num}/{sample}_1_of_{numpath}_vs_ref.txt"
+         for sample in fastq_filenames
+         for subgraph_num in range(1, get_subgraph_count(sample) + 1)
+         for numpath in ["1", "2", "3"]]
 
 # Compress nodes with only one input and one output edge #
 rule Compress:
