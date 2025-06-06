@@ -6,6 +6,7 @@ import warnings
 import resource
 from datetime import datetime
 import glob
+from pathlib import Path
 
 start_time = datetime.now()
 
@@ -201,11 +202,39 @@ def get_subgraph_count(sample):
 # Create a dictionary mapping each sample to its subgraph count
 subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filenames}
 
+print(f"Fastq filenames: {fastq_filenames}")
+print(f"Subgraph counts: {subgraph_counts}")
+
+def get_subgraph_indices(sample):
+    """Returns list of subgraph indices (1-based) for a sample, with at least [1] if none found"""
+    subgraphs_dir = Path(OUTPUT_DIR) / "graphs" / sample / "pruned.dbg_subgraphs"
+    dbg_files = glob.glob(str(subgraphs_dir / "graph_*.dbg"))
+    
+    if dbg_files:  # If subgraphs exist
+        # Extract numbers from filenames like graph_1.dbg, graph_2.dbg, etc.
+        indices = []
+        for f in dbg_files:
+            try:
+                num = int(Path(f).stem.split('_')[-1])
+                indices.append(num)
+            except (IndexError, ValueError):
+                continue
+        return sorted(indices) or [1]  # Return found indices or [1] if empty
+    return [1]  # Default to [1] if no subgraphs found
+
+# Create dictionary mapping each sample to its subgraph indices
+subgraph_indices = {sample: get_subgraph_indices(sample) 
+                   for sample in fastq_filenames}
+
 rule all:
     input:
-        [f"output_genomes/{sample}/subgraph_{subgraph_num}/{sample}_1_of_{numpath}_vs_ref.txt"
+        # This handles all combinations:
+        # - Multiple samples
+        # - Variable subgraphs per sample (1+)
+        # - Always creates 3 numpath versions
+        [f"output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_{numpath}_vs_ref.txt"
          for sample in fastq_filenames
-         for subgraph_num in range(1, get_subgraph_count(sample) + 1)
+         for subgraph in subgraph_indices[sample]
          for numpath in ["1", "2", "3"]]
 
 # Compress nodes with only one input and one output edge #
