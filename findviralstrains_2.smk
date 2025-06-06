@@ -5,7 +5,7 @@ import sys
 import warnings
 import resource
 from datetime import datetime
-from glob import glob
+import glob
 
 start_time = datetime.now()
 
@@ -193,6 +193,17 @@ onsuccess:
         writer.writerow(["Elapsed time:", str(elapsed_time)])
         writer.writerow(["Copy of snakefile used stored at:", str(bd("snakefile_used_copy.smk"))])
 
+def get_subgraph_count(sample):
+    """Returns the number of subgraphs for a given sample"""
+    subgraphs_dir = Path(OUTPUT_DIR) / "graphs" / sample / "pruned.dbg_subgraphs"
+    return len(glob.glob(str(subgraphs_dir / "graph_*.dbg")))
+
+# Create a dictionary mapping each sample to its subgraph count
+subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filenames}
+
+print(f"Subgraph counts: {list(subgraph_counts.values())}")
+
+
 
 # One rule to rule them all #
 rule all:
@@ -200,7 +211,7 @@ rule all:
         expand(
             "output_genomes/{input_list}/subgraph_{subgraph}/{input_list}_1_of_{numpaths}_vs_ref.txt",
             input_list=fastq_filenames,
-            subgraph=["0", "1"],
+            subgraph=list(subgraph_counts.values()),
             numpaths=["1", "2", "3"]
         )
 
