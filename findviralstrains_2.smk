@@ -215,11 +215,11 @@ print(f"Subgraph indices: {subgraph_indices}")
 
 rule all:
     input:
-        [f"output_genomes/{sample}/subgraph_{subgraph}/{sample}_{i}_of_{numpath}_vs_ref.txt"
+        [bd(x) for x in
+        [f"output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_{numpath}_vs_ref.txt"
          for sample in fastq_filenames
          for subgraph in subgraph_indices[sample]
-         for numpath in ["1", "2", "3"]
-         for i in range(1, int(numpath) + 1)]
+         for numpath in ["1", "2", "3"]]]
 
 # Compress nodes with only one input and one output edge #
 rule Compress:
