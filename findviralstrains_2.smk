@@ -85,7 +85,7 @@ fastq_filenames = set(fastq_filenames) # Deletes duplicate file entrys by conver
 fastq_filenames = list(fastq_filenames)
 
 fastq_filenames = [entry for entry in fastq_filenames if entry != ""] # Remake list with only populated values #
-print(fastq_filenames)
+
 
 ######################
 ## HELPER FUNCTIONS ##
@@ -143,11 +143,12 @@ def get_subgraph_indices(sample):
     Reads the output directory from config and returns a list of all subgraph indices.
     """
     # Construct the path to the subgraphs directory using config OUTPUT_DIR
-    subgraphs_dir = Path(OUTPUT_DIR) / "graphs" / sample / "pruned.dbg_subgraphs"
-    
+    subgraphs_dir = Path(OUTPUT_DIR) / ANALYSIS /"graphs" / sample / "pruned.dbg_subgraphs"
+
+
     # Find all .dbg files in the directory
     dbg_files = glob.glob(str(subgraphs_dir / "graph_*.dbg"))
-    
+
     # Extract the numeric indices from the filenames
     subgraph_indices = []
     for file_path in dbg_files:
@@ -158,7 +159,7 @@ def get_subgraph_indices(sample):
             subgraph_indices.append(num)
         except (IndexError, ValueError):
             continue
-    
+  
     # Return sorted unique indices
     return sorted(subgraph_indices)
 
@@ -205,26 +206,13 @@ subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filena
 print(f"Fastq filenames: {fastq_filenames}")
 print(f"Subgraph counts: {subgraph_counts}")
 
-def get_subgraph_indices(sample):
-    """Returns list of subgraph indices (1-based) for a sample, with at least [1] if none found"""
-    subgraphs_dir = Path(OUTPUT_DIR) / "graphs" / sample / "pruned.dbg_subgraphs"
-    dbg_files = glob.glob(str(subgraphs_dir / "graph_*.dbg"))
-    
-    if dbg_files:  # If subgraphs exist
-        # Extract numbers from filenames like graph_1.dbg, graph_2.dbg, etc.
-        indices = []
-        for f in dbg_files:
-            try:
-                num = int(Path(f).stem.split('_')[-1])
-                indices.append(num)
-            except (IndexError, ValueError):
-                continue
-        return sorted(indices) or [1]  # Return found indices or [1] if empty
-    return [1]  # Default to [1] if no subgraphs found
 
 # Create dictionary mapping each sample to its subgraph indices #
 subgraph_indices = {sample: get_subgraph_indices(sample) 
                    for sample in fastq_filenames}
+
+print(f"Subgraph indices: {subgraph_indices}")
+
 
 rule all:
     input:
