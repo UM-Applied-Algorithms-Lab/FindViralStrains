@@ -222,16 +222,12 @@ def get_subgraph_indices(sample):
         return sorted(indices) or [1]  # Return found indices or [1] if empty
     return [1]  # Default to [1] if no subgraphs found
 
-# Create dictionary mapping each sample to its subgraph indices
+# Create dictionary mapping each sample to its subgraph indices #
 subgraph_indices = {sample: get_subgraph_indices(sample) 
                    for sample in fastq_filenames}
 
 rule all:
     input:
-        # This handles all combinations:
-        # - Multiple samples
-        # - Variable subgraphs per sample (1+)
-        # - Always creates 3 numpath versions
         [f"output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_{numpath}_vs_ref.txt"
          for sample in fastq_filenames
          for subgraph in subgraph_indices[sample]
