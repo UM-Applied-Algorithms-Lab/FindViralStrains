@@ -203,15 +203,9 @@ def get_subgraph_count(sample):
 # Create a dictionary mapping each sample to its subgraph count
 subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filenames}
 
-print(f"Fastq filenames: {fastq_filenames}")
-print(f"Subgraph counts: {subgraph_counts}")
-
-
 # Create dictionary mapping each sample to its subgraph indices #
 subgraph_indices = {sample: get_subgraph_indices(sample) 
                    for sample in fastq_filenames}
-
-print(f"Subgraph indices: {subgraph_indices}")
 
 rule all:
     input:
