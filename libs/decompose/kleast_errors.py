@@ -96,11 +96,6 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
-    print(f"Error: {paths["edge_errors"]} ")
-    print(f"Total flow through all paths: {total_flow:.6f}")
-    print(f'paths: {paths["paths"]}')
-    print(f'weights: {paths["weights"]}')
-    print(f'paths2: {paths}')
     
     with open(output_path, 'w') as f:
         f.write(f"Decomposition into {num_paths} paths\n")
@@ -334,10 +329,8 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
- 
-
-
         
+
         # Get solver statistics
         runtime = time.time() - start_time
         mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
