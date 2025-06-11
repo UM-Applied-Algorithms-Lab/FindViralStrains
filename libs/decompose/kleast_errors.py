@@ -36,9 +36,10 @@ def read_graph_to_networkx(file_path, min_edge_weight=0):
                     # add edge 
                     if flow >= min_edge_weight:
                         graph.add_edge(u, v, flow=flow)
+                        
                 except ValueError:
                     continue
-                
+    
     return graph  
 
 def parse_arguments():
@@ -95,6 +96,11 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
+    print(f"Error: {paths["edge_errors"]} ")
+    print(f"Total flow through all paths: {total_flow:.6f}")
+    print(f'paths: {paths["paths"]}')
+    print(f'weights: {paths["weights"]}')
+    print(f'paths2: {paths}')
     
     with open(output_path, 'w') as f:
         f.write(f"Decomposition into {num_paths} paths\n")
@@ -107,8 +113,8 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
         
         for index, path in enumerate(paths['paths']):
             path_weight = paths['weights'][index] if total_flow > 0 else 0
+
             
-        
             # Format the path appropriately based on whether we're dealing with a multigraph
             if multigraph_decomposer is not None:
                 # For multigraphs, the path is a list of (u, v, key) tuples
@@ -292,6 +298,22 @@ def visualize_and_save_graph(graph, output_path, num_paths, base_size=10, paths 
     print(f"INFO: Visualization saved to {visualization_file}")
 
 
+def get_all_edges_for_node(graph, node):
+    """
+    Get all edges connected to a node in a NetworkX graph.
+    Returns both incoming and outgoing edges.
+
+    """
+    # Convert node to string if it isn't already (since your keys are strings)
+    node = str(node)
+    outgoing = list(graph.adj.get(node, {}).keys())
+    incoming = [u for u in graph.adj if node in graph.adj[u]]
+    
+    # Combine and format as edge tuples
+    edges = [(node, v) for v in outgoing] + [(u, node) for u in incoming]
+    
+    return edges
+
 
 def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visualize=False):
     """Generate output files for all path counts from max_paths down to min_paths."""
@@ -304,11 +326,15 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         output_path = f"{base_name}_{num_paths}.paths"
         
         start_time = time.time()
-        
+
+        # Get all edges to ignore for the current number of edges for source and sink nodes
+        edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
+    
         # Perform k-least errors analysis for current number of paths
-        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow')
+        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
+ 
 
 
         
