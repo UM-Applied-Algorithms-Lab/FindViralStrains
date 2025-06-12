@@ -52,5 +52,14 @@ to point to your data. Using the command below you can now run the entire pipeli
 snakemake -s findviralstrains.smk --configfile config_files/example_config.yaml --cores 2
 ```
 
+After running through all the Snakemake rules, your output will be organized into the following directories:
+
+```
+decomp_results (paths chosen by the ILP solver and their visualizations)
+graphs (data files for the graphs themselves)
+output_genomes (final genome from each found path)
+read_data (intermittent data files from your fastq files)
+```
+
 # How to contribute to this repository
 Todo, but generally: make a branch for your new feature, make changes, commit them, merge into main, then make a pull request.
