@@ -1,11 +1,10 @@
 name: find_viral_strains
 channels:
-  - https://repo.anaconda.com/pkgs/main
-  - https://repo.anaconda.com/pkgs/r
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
+  - snakemake
   - fastp
   - gurobi::gurobi
-  - snakemake
-  - bioconda::needle
-  - rust
-prefix: /home/mikhailu/anaconda3/envs/find_viral_strains
+prefix: /opt/anaconda3/envs/find_viral_strains
