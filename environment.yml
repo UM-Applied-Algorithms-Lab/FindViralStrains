@@ -7,4 +7,6 @@ dependencies:
   - snakemake
   - fastp
   - gurobi::gurobi
+  - bioconda::emboss
+  - conda-forge::rust
 prefix: /opt/anaconda3/envs/find_viral_strains
