@@ -29,6 +29,10 @@ struct InputArgs {
     /// file to save statistics output (in addition to terminal display)
     #[arg(short, long)]
     stats_output_file: Option<String>,
+
+    /// exclude graphs with cycles from output
+    #[arg(short = 'x', long, default_value_t = false)]
+    exclude_cyclic_graphs: bool,
 }
 
 //struct to hold the analysis data for a graph or subgraph
@@ -101,8 +105,7 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
-    {
+    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name)) {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
     };
@@ -134,6 +137,7 @@ fn main() {
         &graph_label,
         &edge_info,
         args.output_directory,
+        args.exclude_cyclic_graphs,
     );
 }
 
@@ -147,8 +151,14 @@ fn write_subgraph_files(
     main_graph_label: &String,
     edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     output_dir: Option<String>,
+    exclude_cyclic_graphs: bool,
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
+        // Skip cyclic graphs if the flag is set
+        if exclude_cyclic_graphs && !graph_is_acyclic(subgraph) {
+            continue;
+        }
+
         let subgraph_sub_dir = base_file_name.to_string() + "_subgraphs";
         let subgraph_directory_name = match output_dir {
             Some(ref dir) => Path::new(dir).join(Path::new(&subgraph_sub_dir)),
@@ -159,7 +169,6 @@ fn write_subgraph_files(
             "could not create subgraph directory"
         );
         let subgraph_idx_string = subgraph_idx.to_string();
-        // let subgraph_mg_file_src = base_file_name.to_owned() + "." + &subgraph_idx_string;
         let (sources, sinks) = make_source_sink_lists(&subgraph);
 
         let _ = std::fs::write(
@@ -234,7 +243,7 @@ fn display_graph_stats(
     
     output.push_str(&format!(
         "Main Graph Stats:\n{}\n",
-        make_graph_stats(main_graph,&edge_info, subgraph_list.len())
+        make_graph_stats(main_graph, &edge_info, subgraph_list.len())
     ));
 
     match subgraph_display_type {
@@ -243,7 +252,7 @@ fn display_graph_stats(
                 output.push_str(&format!(
                     "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph,&edge_info, 0)
+                    make_graph_stats(subgraph, &edge_info, 0)
                 ));
             }
         }
@@ -254,7 +263,7 @@ fn display_graph_stats(
                 output.push_str(&format!(
                     "Subgraph {}:\n{}\n",
                     subgraph_idx,
-                    make_graph_stats(subgraph,&edge_info, 0)
+                    make_graph_stats(subgraph, &edge_info, 0)
                 ));
             }
         }
@@ -405,8 +414,6 @@ fn make_main_graph(
 
 /// generates lists of sources and sinks for the given graph or subgraph
 fn make_source_sink_lists(edge_map: &HashMap<Rc<str>, NodeEdges>) -> (Vec<Rc<str>>, Vec<Rc<str>>) {
-    // let end_nodes: HashSet<&String> = out_edge_map.values().flatten().collect();
-
     let sources: Vec<Rc<str>> = edge_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())

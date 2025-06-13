@@ -229,5 +229,5 @@ rule Create_subgraphs:
         sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sinks"),
         stats = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_stats.txt"),
     shell:
-        "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats}"
+        "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats} -x"
 
