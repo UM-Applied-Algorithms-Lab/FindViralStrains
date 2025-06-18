@@ -1,14 +1,17 @@
 use std::path::{Path, PathBuf};
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, Write};
-use std::collections::BTreeMap; // Changed from HashMap for ordered output
+use std::io::{BufRead, BufReader};
+use std::collections::BTreeMap;
+use csv::Writer;
 
 #[derive(Debug)]
 struct AlignmentStats {
-    file_name: String,
+    sample_name: String,
     length: usize,
     identity_pct: f64,
+    identity_count: usize,
     gaps_pct: f64,
+    gaps_count: usize,
     score: f64,
     start_position: usize,
     end_position: usize,
@@ -17,15 +20,15 @@ struct AlignmentStats {
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
-        eprintln!("Usage: {} <input_directory> <output_file>", args[0]);
+        eprintln!("Usage: {} <input_directory> <output_csv>", args[0]);
         std::process::exit(1);
     }
 
     let input_dir = Path::new(&args[1]);
     let output_path = Path::new(&args[2]);
-    let mut results = BTreeMap::new(); // Key: subgraph name, Value: Vec of stats
+    let mut results = BTreeMap::new();
 
-    // Walk through the directory structure
+    // Process each subgraph directory
     for entry in fs::read_dir(input_dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -34,14 +37,16 @@ fn main() -> std::io::Result<()> {
             if let Some(dir_name) = path.file_name() {
                 let dir_name = dir_name.to_string_lossy();
                 if dir_name.starts_with("subgraph_") {
-                    process_subgraph_dir(&path, &dir_name, &mut results)?;
+                    if let Some((sample_name, stats)) = process_subgraph_dir(&path)? {
+                        results.insert(dir_name.to_string(), (sample_name, stats));
+                    }
                 }
             }
         }
     }
 
-    // Write formatted results
-    write_formatted_output(output_path, &results)?;
+    // Write CSV output
+    write_csv_output(output_path, &results)?;
 
     println!("Successfully processed {} subgraphs, output written to {}", 
         results.len(), 
@@ -50,9 +55,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn process_subgraph_dir(dir: &Path, subgraph: &str, results: &mut BTreeMap<String, Vec<AlignmentStats>>) -> std::io::Result<()> {
-    let mut subgraph_results = Vec::new();
-    
+fn process_subgraph_dir(dir: &Path) -> std::io::Result<Option<(String, AlignmentStats)>> {
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -61,34 +64,30 @@ fn process_subgraph_dir(dir: &Path, subgraph: &str, results: &mut BTreeMap<Strin
             if let Some(file_name) = path.file_name() {
                 let file_name = file_name.to_string_lossy();
                 if file_name.ends_with("_vs_ref.txt") && file_name.contains("1_of_1") {
-                    if let Ok(stats) = parse_alignment_file(&path) {
-                        subgraph_results.push(stats);
-                    }
+                    // Extract sample name from filename (e.g., E1250_S84_L001 from E1250_S84_L001_1_of_1_vs_ref.txt)
+                    let sample_name = file_name.split('_')
+                        .take(3)
+                        .collect::<Vec<_>>()
+                        .join("_");
+                    return Ok(Some((sample_name, parse_alignment_file(&path)?)));
                 }
             }
         }
     }
-    
-    if !subgraph_results.is_empty() {
-        results.insert(subgraph.to_string(), subgraph_results);
-    }
-    Ok(())
+    Ok(None)
 }
 
 fn parse_alignment_file(file_path: &Path) -> std::io::Result<AlignmentStats> {
     let file = fs::File::open(file_path)?;
     let reader = BufReader::new(file);
-    
-    let file_name = file_path.file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or("unknown")
-        .to_string();
 
     let mut stats = AlignmentStats {
-        file_name,
+        sample_name: String::new(),
         length: 0,
         identity_pct: 0.0,
+        identity_count: 0,
         gaps_pct: 0.0,
+        gaps_count: 0,
         score: 0.0,
         start_position: 0,
         end_position: 0,
@@ -103,10 +102,12 @@ fn parse_alignment_file(file_path: &Path) -> std::io::Result<AlignmentStats> {
         else if line.starts_with("# Identity: ") {
             let identity_str = line[12..].trim();
             stats.identity_pct = parse_percentage(identity_str);
+            stats.identity_count = parse_count(identity_str);
         } 
         else if line.starts_with("# Gaps: ") {
             let gaps_str = line[8..].trim();
             stats.gaps_pct = parse_percentage(gaps_str);
+            stats.gaps_count = parse_count(gaps_str);
         } 
         else if line.starts_with("# Score: ") {
             stats.score = line[9..].trim().parse().unwrap_or(0.0);
@@ -132,29 +133,48 @@ fn parse_percentage(s: &str) -> f64 {
         .unwrap_or(0.0)
 }
 
-fn write_formatted_output(output_path: &Path, results: &BTreeMap<String, Vec<AlignmentStats>>) -> std::io::Result<()> {
-    let mut file = File::create(output_path)?;
-    
-    for (subgraph, stats_vec) in results {
-        writeln!(file, "╔══════════════════════════════════════╗")?;
-        writeln!(file, "║ Subgraph: {:<26} ║", subgraph)?;
-        writeln!(file, "╠══════════════════════════════════════╣")?;
-        
-        for stats in stats_vec {
-            writeln!(file, "║ File: {:<30} ║", stats.file_name)?;
-            writeln!(file, "║   Length: {:<26} ║", stats.length)?;
-            writeln!(file, "║   Identity: {:>5.1}% {:<18} ║", 
-                stats.identity_pct, 
-                format!("({}/{})", (stats.identity_pct/100.0 * stats.length as f64) as usize, stats.length))?;
-            writeln!(file, "║   Gaps: {:>5.1}% {:<20} ║", 
-                stats.gaps_pct,
-                format!("({}/{})", (stats.gaps_pct/100.0 * stats.length as f64) as usize, stats.length))?;
-            writeln!(file, "║   Score: {:<26.1} ║", stats.score)?;
-            writeln!(file, "║   Positions: {}-{:<18} ║", stats.start_position, stats.end_position)?;
-            writeln!(file, "╠──────────────────────────────────────╣")?;
-        }
+fn parse_count(s: &str) -> usize {
+    s.split('/').next()
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(0)
+}
+
+fn write_csv_output(output_path: &Path, results: &BTreeMap<String, (String, AlignmentStats)>) -> std::io::Result<()> {
+    let mut writer = Writer::from_path(output_path)?;
+
+    // Write header
+    writer.write_record(&[
+        "Subgraph",
+        "Sample",
+        "Length",
+        "Identity %",
+        "Identity Count",
+        "Gaps %",
+        "Gaps Count",
+        "Score",
+        "Start Position",
+        "End Position",
+        "Alignment Length",
+    ])?;
+
+    // Write data with one row per subgraph
+    for (subgraph, (sample_name, stats)) in results {
+        let alignment_length = stats.end_position - stats.start_position + 1;
+        writer.write_record(&[
+            subgraph,
+            sample_name,
+            &stats.length.to_string(),
+            &format!("{:.1}", stats.identity_pct),
+            &stats.identity_count.to_string(),
+            &format!("{:.1}", stats.gaps_pct),
+            &stats.gaps_count.to_string(),
+            &format!("{:.1}", stats.score),
+            &stats.start_position.to_string(),
+            &stats.end_position.to_string(),
+            &alignment_length.to_string(),
+        ])?;
     }
-    
-    writeln!(file, "╚══════════════════════════════════════╝")?;
+
+    writer.flush()?;
     Ok(())
 }
