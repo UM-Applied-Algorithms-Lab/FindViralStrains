@@ -289,7 +289,7 @@ rule Rebuild_3:
     shell:
         "python3 {input.script} {input.flow} {input.swg} {params.outtemp}"
 
-# Compares our newly constructed genomes to original covid reference using Needleman-Wunsch #
+# Compares our newly constructed genomes to original covid reference using waterman-Wunsch #
 rule Compare_1:
     input:
         rebuilt_genome = bd("output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_1.fasta"),
@@ -297,7 +297,7 @@ rule Compare_1:
     output:
         compar_file = bd("output_genomes/{sample}/subgraph_{subgraph}/{sample}_1_of_1_vs_ref.txt")
     shell:
-        "needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
+        "water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file}"
 
 # Compares genomes from the two path result to the reference #
 rule Compare_2:
@@ -310,8 +310,8 @@ rule Compare_2:
         compar_file_2 = bd("output_genomes/{sample}/subgraph_{subgraph}/{sample}_2_of_2_vs_ref.txt")
     shell:
         """
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+        water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+        water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
         """
 
 # Compares genomes from the three path result to the reference #
@@ -327,7 +327,7 @@ rule Compare_3:
         compar_file_3 = bd("output_genomes/{sample}/subgraph_{subgraph}/{sample}_3_of_3_vs_ref.txt")
     shell:
         """
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
-        needle -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_3} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_3}
+        water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_1} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_1}
+        water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_2} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_2}
+        water -asequence {input.origin_covid} -bsequence {input.rebuilt_genome_3} -gapopen 10 -gapextend 0.5 -outfile {output.compar_file_3}
         """
