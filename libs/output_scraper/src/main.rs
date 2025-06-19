@@ -7,7 +7,7 @@ use csv::Writer;
 #[derive(Debug)]
 struct AlignmentStats {
     sample_name: String,
-    subgraph_name: String,  // Added to track subgraph directory
+    subgraph_name: String,
     part_number: usize,
     total_parts: usize,
     length: usize,
@@ -59,12 +59,20 @@ fn main() -> std::io::Result<()> {
                 }
             }
             
-            // Also check for files directly in the sample directory (like subgraph_0 might be missing)
+            // Also check for files directly in the sample directory
             if let Some(stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
                 results.extend(stats_vec);
             }
         }
     }
+
+    // Sort results by sample, then subgraph, then total parts, then part number
+    results.sort_by(|a, b| {
+        a.sample_name.cmp(&b.sample_name)
+            .then(a.subgraph_name.cmp(&b.subgraph_name))
+            .then(a.total_parts.cmp(&b.total_parts))
+            .then(a.part_number.cmp(&b.part_number))
+    });
 
     // Write CSV output
     write_csv_output(output_path, &results)?;
@@ -91,7 +99,6 @@ fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> s
             if let Some(file_name) = path.file_name() {
                 let file_name = file_name.to_string_lossy();
                 if file_name.ends_with("_vs_ref.txt") {
-                    // Extract the part numbers
                     let part_numbers = extract_part_numbers(&file_name);
                     
                     stats_vec.push(parse_alignment_file(
@@ -200,12 +207,11 @@ fn parse_count(s: &str) -> usize {
 fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::Result<()> {
     let mut writer = Writer::from_path(output_path)?;
 
-    // Write header
     writer.write_record(&[
         "Sample",
         "Subgraph",
-        "Part",
-        "Total Parts",
+        "Path",
+        "Total Paths",
         "Length",
         "Identity %",
         "Identity Count",
@@ -217,7 +223,6 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
         "Alignment Length",
     ])?;
 
-    // Write data
     for stats in results {
         let alignment_length = stats.end_position - stats.start_position + 1;
         writer.write_record(&[
