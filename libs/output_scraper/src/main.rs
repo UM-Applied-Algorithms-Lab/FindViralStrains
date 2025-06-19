@@ -18,6 +18,14 @@ struct AlignmentStats {
     score: f64,
     start_position: usize,
     end_position: usize,
+    runtime: f64,
+    objective_value: f64,
+}
+
+#[derive(Debug)]
+struct DecompStats {
+    runtime: f64,
+    objective_value: f64,
 }
 
 fn main() -> std::io::Result<()> {
@@ -28,6 +36,7 @@ fn main() -> std::io::Result<()> {
     }
 
     let input_dir = Path::new(&args[1]);
+    let decomp_dir = input_dir.join("../decomp_results");
     let output_path = Path::new(&args[2]);
     let mut results = Vec::new();
 
@@ -51,7 +60,8 @@ fn main() -> std::io::Result<()> {
                     if let Some(dir_name) = subgraph_path.file_name() {
                         let subgraph_name = dir_name.to_string_lossy().to_string();
                         if subgraph_name.starts_with("subgraph_") {
-                            if let Some(stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name)? {
+                            if let Some(mut stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name)? {
+                                add_decomp_stats(&decomp_dir, &mut stats_vec)?;
                                 results.extend(stats_vec);
                             }
                         }
@@ -60,13 +70,14 @@ fn main() -> std::io::Result<()> {
             }
             
             // Also check for files directly in the sample directory
-            if let Some(stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
+            if let Some(mut stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
+                add_decomp_stats(&decomp_dir, &mut stats_vec)?;
                 results.extend(stats_vec);
             }
         }
     }
 
-    // Sort results by sample, then subgraph, then total parts, then part number
+    // Sort results
     results.sort_by(|a, b| {
         a.sample_name.cmp(&b.sample_name)
             .then(a.subgraph_name.cmp(&b.subgraph_name))
@@ -82,6 +93,57 @@ fn main() -> std::io::Result<()> {
         output_path.display());
 
     Ok(())
+}
+
+fn add_decomp_stats(decomp_dir: &Path, stats_vec: &mut Vec<AlignmentStats>) -> std::io::Result<()> {
+    for stat in stats_vec {
+        if let Some(decomp_stats) = get_decomp_stats(decomp_dir, &stat.sample_name, &stat.subgraph_name, stat.part_number)? {
+            stat.runtime = decomp_stats.runtime;
+            stat.objective_value = decomp_stats.objective_value;
+        }
+    }
+    Ok(())
+}
+
+fn get_decomp_stats(decomp_dir: &Path, sample_name: &str, subgraph_name: &str, part_number: usize) -> std::io::Result<Option<DecompStats>> {
+    let pattern = format!("{}_{}_{}.paths", sample_name, subgraph_name, part_number);
+    
+    for entry in fs::read_dir(decomp_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        
+        if let Some(file_name) = path.file_name() {
+            let file_name = file_name.to_string_lossy();
+            if file_name.ends_with(&pattern) {
+                return parse_decomp_file(&path);
+            }
+        }
+    }
+    
+    Ok(None)
+}
+
+fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+
+    let mut runtime = 0.0;
+    let mut objective_value = 0.0;
+
+    for line in reader.lines() {
+        let line = line?;
+        
+        if line.starts_with("Runtime: ") {
+            runtime = line.split_whitespace().nth(1).and_then(|s| s.parse().ok()).unwrap_or(0.0);
+        } else if line.starts_with("Objective Value: ") {
+            objective_value = line.split_whitespace().nth(2).and_then(|s| s.parse().ok()).unwrap_or(0.0);
+        }
+    }
+
+    Ok(Some(DecompStats {
+        runtime,
+        objective_value,
+    }))
 }
 
 fn process_subgraph_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
@@ -131,7 +193,7 @@ fn extract_part_numbers(filename: &str) -> (usize, usize) {
             }
         }
     }
-    (1, 1) // Default values if parsing fails
+    (1, 1)
 }
 
 fn parse_alignment_file(
@@ -140,7 +202,7 @@ fn parse_alignment_file(
     subgraph_name: String,
     part_numbers: (usize, usize)
 ) -> std::io::Result<AlignmentStats> {
-    let file = fs::File::open(file_path)?;
+    let file = File::open(file_path)?;
     let reader = BufReader::new(file);
 
     let mut stats = AlignmentStats {
@@ -156,6 +218,8 @@ fn parse_alignment_file(
         score: 0.0,
         start_position: 0,
         end_position: 0,
+        runtime: 0.0,
+        objective_value: 0.0,
     };
 
     for line in reader.lines() {
@@ -221,6 +285,8 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
         "Start Position",
         "End Position",
         "Alignment Length",
+        "Runtime (s)",
+        "Objective Value",
     ])?;
 
     for stats in results {
@@ -239,6 +305,8 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
             &stats.start_position.to_string(),
             &stats.end_position.to_string(),
             &alignment_length.to_string(),
+            &format!("{:.4}", stats.runtime),
+            &format!("{:.6}", stats.objective_value),
         ])?;
     }
 
