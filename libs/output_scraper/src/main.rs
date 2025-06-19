@@ -7,8 +7,9 @@ use csv::Writer;
 #[derive(Debug)]
 struct AlignmentStats {
     sample_name: String,
-    part_number: usize,    // First number (1 in "1_of_3") //
-    total_parts: usize,   // Second number (3 in "1_of_3") //
+    subgraph_name: String,  // Added to track subgraph directory
+    part_number: usize,
+    total_parts: usize,
     length: usize,
     identity_pct: f64,
     identity_count: usize,
@@ -28,21 +29,39 @@ fn main() -> std::io::Result<()> {
 
     let input_dir = Path::new(&args[1]);
     let output_path = Path::new(&args[2]);
-    let mut results = BTreeMap::new();
+    let mut results = Vec::new();
 
-    // Process each subgraph directory //
-    for entry in fs::read_dir(input_dir)? {
-        let entry = entry?;
-        let path = entry.path();
+    // Process each sample directory
+    for sample_entry in fs::read_dir(input_dir)? {
+        let sample_entry = sample_entry?;
+        let sample_path = sample_entry.path();
         
-        if path.is_dir() {
-            if let Some(dir_name) = path.file_name() {
-                let dir_name = dir_name.to_string_lossy();
-                if dir_name.starts_with("subgraph_") {
-                    if let Some((sample_name, stats)) = process_subgraph_dir(&path)? {
-                        results.insert(dir_name.to_string(), (sample_name, stats));
+        if sample_path.is_dir() {
+            let sample_name = sample_path.file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string();
+
+            // Process each subgraph directory in the sample directory
+            for subgraph_entry in fs::read_dir(&sample_path)? {
+                let subgraph_entry = subgraph_entry?;
+                let subgraph_path = subgraph_entry.path();
+                
+                if subgraph_path.is_dir() {
+                    if let Some(dir_name) = subgraph_path.file_name() {
+                        let subgraph_name = dir_name.to_string_lossy().to_string();
+                        if subgraph_name.starts_with("subgraph_") {
+                            if let Some(stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name)? {
+                                results.extend(stats_vec);
+                            }
+                        }
                     }
                 }
+            }
+            
+            // Also check for files directly in the sample directory (like subgraph_0 might be missing)
+            if let Some(stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
+                results.extend(stats_vec);
             }
         }
     }
@@ -50,14 +69,20 @@ fn main() -> std::io::Result<()> {
     // Write CSV output
     write_csv_output(output_path, &results)?;
 
-    println!("Successfully processed {} subgraphs, output written to {}", 
+    println!("Successfully processed {} alignment files, output written to {}", 
         results.len(), 
         output_path.display());
 
     Ok(())
 }
 
-fn process_subgraph_dir(dir: &Path) -> std::io::Result<Option<(String, AlignmentStats)>> {
+fn process_subgraph_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
+    process_files_in_dir(dir, sample_name, subgraph_name)
+}
+
+fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
+    let mut stats_vec = Vec::new();
+    
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -66,44 +91,56 @@ fn process_subgraph_dir(dir: &Path) -> std::io::Result<Option<(String, Alignment
             if let Some(file_name) = path.file_name() {
                 let file_name = file_name.to_string_lossy();
                 if file_name.ends_with("_vs_ref.txt") {
-                    // Extract sample name from filename, to be changed later //
-                    let sample_name = file_name.split('_')
-                        .take(3)
-                        .collect::<Vec<_>>()
-                        .join("_");
-                    
-                    // Extract the subgraph numbers //
+                    // Extract the part numbers
                     let part_numbers = extract_part_numbers(&file_name);
                     
-                    return Ok(Some((sample_name, parse_alignment_file(&path, part_numbers)?)));
+                    stats_vec.push(parse_alignment_file(
+                        &path, 
+                        sample_name.to_string(),
+                        subgraph_name.to_string(),
+                        part_numbers
+                    )?);
                 }
             }
         }
     }
-    Ok(None)
+    
+    if stats_vec.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(stats_vec))
+    }
 }
 
 fn extract_part_numbers(filename: &str) -> (usize, usize) {
     let parts: Vec<&str> = filename.split('_').collect();
-    if parts.len() >= 5 {
-        if let (Ok(current), Ok(total)) = (
-            parts[3].parse::<usize>(),
-            parts[5].parse::<usize>(),
-        ) {
-            return (current, total);
+    for i in 0..parts.len() {
+        if parts[i] == "of" && i > 0 && i < parts.len() - 1 {
+            if let (Ok(current), Ok(total)) = (
+                parts[i-1].parse::<usize>(),
+                parts[i+1].parse::<usize>(),
+            ) {
+                return (current, total);
+            }
         }
     }
-    (1, 1) // Default values if parsing fails //
+    (1, 1) // Default values if parsing fails
 }
 
-fn parse_alignment_file(file_path: &Path, part_numbers: (usize, usize)) -> std::io::Result<AlignmentStats> {
+fn parse_alignment_file(
+    file_path: &Path, 
+    sample_name: String,
+    subgraph_name: String,
+    part_numbers: (usize, usize)
+) -> std::io::Result<AlignmentStats> {
     let file = fs::File::open(file_path)?;
     let reader = BufReader::new(file);
 
     let mut stats = AlignmentStats {
-        sample_name: String::new(),
+        sample_name,
+        subgraph_name,
         part_number: part_numbers.0,
-        total_parts: part_numbers.0,
+        total_parts: part_numbers.1,
         length: 0,
         identity_pct: 0.0,
         identity_count: 0,
@@ -160,13 +197,13 @@ fn parse_count(s: &str) -> usize {
         .unwrap_or(0)
 }
 
-fn write_csv_output(output_path: &Path, results: &BTreeMap<String, (String, AlignmentStats)>) -> std::io::Result<()> {
+fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::Result<()> {
     let mut writer = Writer::from_path(output_path)?;
 
     // Write header
     writer.write_record(&[
-        "Subgraph",
         "Sample",
+        "Subgraph",
         "Part",
         "Total Parts",
         "Length",
@@ -180,12 +217,12 @@ fn write_csv_output(output_path: &Path, results: &BTreeMap<String, (String, Alig
         "Alignment Length",
     ])?;
 
-    // Write data with one row per subgraph //
-    for (subgraph, (sample_name, stats)) in results {
+    // Write data
+    for stats in results {
         let alignment_length = stats.end_position - stats.start_position + 1;
         writer.write_record(&[
-            subgraph,
-            sample_name,
+            &stats.sample_name,
+            &stats.subgraph_name,
             &stats.part_number.to_string(),
             &stats.total_parts.to_string(),
             &stats.length.to_string(),
