@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use csv::Writer;
 
 #[derive(Debug)]
@@ -22,7 +22,7 @@ struct AlignmentStats {
     objective_value: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct DecompStats {
     runtime: f64,
     objective_value: f64,
@@ -40,7 +40,9 @@ fn main() -> std::io::Result<()> {
     let output_path = Path::new(&args[2]);
     let mut results = Vec::new();
 
-    // Process each sample directory
+    let decomp_stats_map = build_decomp_stats_map(&decomp_dir)?;
+
+    // Process each sample dir //
     for sample_entry in fs::read_dir(input_dir)? {
         let sample_entry = sample_entry?;
         let sample_path = sample_entry.path();
@@ -51,7 +53,7 @@ fn main() -> std::io::Result<()> {
                 .to_string_lossy()
                 .to_string();
 
-            // Process each subgraph directory in the sample directory
+            // Process each subgraph dir //
             for subgraph_entry in fs::read_dir(&sample_path)? {
                 let subgraph_entry = subgraph_entry?;
                 let subgraph_path = subgraph_entry.path();
@@ -61,7 +63,7 @@ fn main() -> std::io::Result<()> {
                         let subgraph_name = dir_name.to_string_lossy().to_string();
                         if subgraph_name.starts_with("subgraph_") {
                             if let Some(mut stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name)? {
-                                add_decomp_stats(&decomp_dir, &mut stats_vec)?;
+                                add_decomp_stats(&decomp_stats_map, &mut stats_vec);
                                 results.extend(stats_vec);
                             }
                         }
@@ -69,15 +71,15 @@ fn main() -> std::io::Result<()> {
                 }
             }
             
-            // Also check for files directly in the sample directory
+            // Also check for files //
             if let Some(mut stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
-                add_decomp_stats(&decomp_dir, &mut stats_vec)?;
+                add_decomp_stats(&decomp_stats_map, &mut stats_vec);
                 results.extend(stats_vec);
             }
         }
     }
 
-    // Sort results
+    // Sort results by sample, then subgraph, then total parts, then part number //
     results.sort_by(|a, b| {
         a.sample_name.cmp(&b.sample_name)
             .then(a.subgraph_name.cmp(&b.subgraph_name))
@@ -85,7 +87,7 @@ fn main() -> std::io::Result<()> {
             .then(a.part_number.cmp(&b.part_number))
     });
 
-    // Write CSV output
+    // Write csv //
     write_csv_output(output_path, &results)?;
 
     println!("Successfully processed {} alignment files, output written to {}", 
@@ -95,18 +97,8 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn add_decomp_stats(decomp_dir: &Path, stats_vec: &mut Vec<AlignmentStats>) -> std::io::Result<()> {
-    for stat in stats_vec {
-        if let Some(decomp_stats) = get_decomp_stats(decomp_dir, &stat.sample_name, &stat.subgraph_name, stat.part_number)? {
-            stat.runtime = decomp_stats.runtime;
-            stat.objective_value = decomp_stats.objective_value;
-        }
-    }
-    Ok(())
-}
-
-fn get_decomp_stats(decomp_dir: &Path, sample_name: &str, subgraph_name: &str, part_number: usize) -> std::io::Result<Option<DecompStats>> {
-    let pattern = format!("{}_{}_{}.paths", sample_name, subgraph_name, part_number);
+fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String, String), DecompStats>> {
+    let mut map = HashMap::new();
     
     for entry in fs::read_dir(decomp_dir)? {
         let entry = entry?;
@@ -114,13 +106,41 @@ fn get_decomp_stats(decomp_dir: &Path, sample_name: &str, subgraph_name: &str, p
         
         if let Some(file_name) = path.file_name() {
             let file_name = file_name.to_string_lossy();
-            if file_name.ends_with(&pattern) {
-                return parse_decomp_file(&path);
+            if file_name.ends_with(".paths") {
+                if let Some((sample_name, subgraph_name)) = parse_decomp_filename(&file_name) {
+                    if let Some(stats) = parse_decomp_file(&path)? {
+                        map.insert((sample_name, subgraph_name), stats);
+                    }
+                }
             }
         }
     }
     
-    Ok(None)
+    Ok(map)
+}
+
+fn parse_decomp_filename(filename: &str) -> Option<(String, String)> {
+    let parts: Vec<&str> = filename.split('_').collect();
+    if parts.len() >= 4 {
+        let sample_end = parts.len() - 3;
+        let sample_name = parts[..sample_end].join("_");
+        let subgraph_name = format!("{}_{}", parts[sample_end], parts[sample_end + 1]);
+        return Some((sample_name, subgraph_name));
+    }
+    None
+}
+
+fn add_decomp_stats(
+    decomp_stats_map: &HashMap<(String, String), DecompStats>,
+    stats_vec: &mut Vec<AlignmentStats>
+) {
+    for stat in stats_vec {
+        let key = (stat.sample_name.clone(), stat.subgraph_name.clone());
+        if let Some(decomp_stats) = decomp_stats_map.get(&key) {
+            stat.runtime = decomp_stats.runtime;
+            stat.objective_value = decomp_stats.objective_value;
+        }
+    }
 }
 
 fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
@@ -140,10 +160,14 @@ fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
         }
     }
 
-    Ok(Some(DecompStats {
-        runtime,
-        objective_value,
-    }))
+    if runtime > 0.0 || objective_value > 0.0 {
+        Ok(Some(DecompStats {
+            runtime,
+            objective_value,
+        }))
+    } else {
+        Ok(None)
+    }
 }
 
 fn process_subgraph_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
