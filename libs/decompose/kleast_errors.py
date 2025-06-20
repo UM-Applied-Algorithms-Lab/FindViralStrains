@@ -89,7 +89,7 @@ def create_k_least_graph(graph, paths):
     
     return k_least_graph
 
-def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objective_value, multigraph_decomposer=None):
+def save_paths_to_file(paths, output_path, num_paths, runtime, objective_value, multigraph_decomposer=None):
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
@@ -97,8 +97,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
     with open(output_path, 'w') as f:
         f.write(f"Decomposition into {num_paths} paths\n")
         f.write(f"Runtime: {runtime:.2f} seconds\n")
-        f.write(f"MIP Gap: {mip_gap:.6f}\n")
-        f.write(f"Objective Value: {objective_value:.6f}\n")
+        f.write(f"Objective Value: {objective_value}\n")
         f.write(f"Number of Paths: {num_paths}\n")
         f.write("Paths and Weights:\n")
         
@@ -299,8 +298,8 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         
         # Get solver statistics
         runtime = time.time() - start_time
-        mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
-        objective_value = k_least.model.ObjVal if hasattr(k_least, 'model') else 0.0
+        #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
+        objective_value = k_least.get_objective_value
 
 
         if visualize:
@@ -318,7 +317,6 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
             output_path, 
             num_paths,
             runtime,
-            mip_gap,
             objective_value,
             multigraph_decomposer=decomposer
         )
