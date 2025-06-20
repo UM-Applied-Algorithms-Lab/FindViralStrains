@@ -306,12 +306,15 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
-        
+
+  
 
         # Get solver statistics
         runtime = time.time() - start_time
         #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
-        objective_value = k_least.get_objective_value
+        objective_value = k_least.get_objective_value()
+
+        print(f'objective: {type(objective_value)}')
 
 
         if visualize:
