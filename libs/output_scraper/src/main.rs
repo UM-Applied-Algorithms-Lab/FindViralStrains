@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use csv::Writer;
 
 #[derive(Debug)]
@@ -20,12 +20,24 @@ struct AlignmentStats {
     end_position: usize,
     runtime: f64,
     objective_value: f64,
+    nodes: usize,
+    edges: usize,
+    sources: usize,
+    sinks: usize,
 }
 
 #[derive(Debug, Clone)]
 struct DecompStats {
     runtime: f64,
     objective_value: f64,
+}
+
+#[derive(Debug, Default)]
+struct GraphData {
+    nodes: HashSet<usize>,
+    edges: usize,
+    sources: usize,
+    sinks: usize,
 }
 
 fn main() -> std::io::Result<()> {
@@ -37,12 +49,23 @@ fn main() -> std::io::Result<()> {
 
     let input_dir = Path::new(&args[1]);
     let decomp_dir = input_dir.join("../decomp_results");
+    let graphs_dir = input_dir.join("../graphs");
     let output_path = Path::new(&args[2]);
     let mut results = Vec::new();
 
-    let decomp_stats_map = build_decomp_stats_map(&decomp_dir)?;
+    println!("Starting processing with:");
+    println!("- Input directory: {}", input_dir.display());
+    println!("- Decomp directory: {}", decomp_dir.display());
+    println!("- Graphs directory: {}", graphs_dir.display());
+    println!("- Output CSV: {}", output_path.display());
 
-    // Process each sample dir //
+    // First collect all decomp stats in a lookup table
+    println!("\nBuilding decomp stats map...");
+    let decomp_stats_map = build_decomp_stats_map(&decomp_dir)?;
+    println!("Found {} decomp results", decomp_stats_map.len());
+
+    // Process each sample directory
+    println!("\nProcessing sample directories...");
     for sample_entry in fs::read_dir(input_dir)? {
         let sample_entry = sample_entry?;
         let sample_path = sample_entry.path();
@@ -53,7 +76,10 @@ fn main() -> std::io::Result<()> {
                 .to_string_lossy()
                 .to_string();
 
-            // Process each subgraph dir //
+            println!("\nProcessing sample: {}", sample_name);
+
+            // Process each subgraph directory in the sample directory
+            println!("Processing subgraph directories...");
             for subgraph_entry in fs::read_dir(&sample_path)? {
                 let subgraph_entry = subgraph_entry?;
                 let subgraph_path = subgraph_entry.path();
@@ -62,7 +88,9 @@ fn main() -> std::io::Result<()> {
                     if let Some(dir_name) = subgraph_path.file_name() {
                         let subgraph_name = dir_name.to_string_lossy().to_string();
                         if subgraph_name.starts_with("subgraph_") {
-                            if let Some(mut stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name)? {
+                            println!("  Processing subgraph: {}", subgraph_name);
+                            if let Some(mut stats_vec) = process_subgraph_dir(&subgraph_path, &sample_name, &subgraph_name, &graphs_dir)? {
+                                println!("    Found {} alignment files", stats_vec.len());
                                 add_decomp_stats(&decomp_stats_map, &mut stats_vec);
                                 results.extend(stats_vec);
                             }
@@ -71,15 +99,17 @@ fn main() -> std::io::Result<()> {
                 }
             }
             
-            // Also check for files //
-            if let Some(mut stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root")? {
+            // Also check for files directly in the sample directory
+            println!("Checking for root-level alignment files...");
+            if let Some(mut stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root", &graphs_dir)? {
+                println!("  Found {} root-level alignment files", stats_vec.len());
                 add_decomp_stats(&decomp_stats_map, &mut stats_vec);
                 results.extend(stats_vec);
             }
         }
     }
 
-    // Sort results by sample, then subgraph, then total parts, then part number //
+    // Sort results by sample, then subgraph, then total parts, then part number
     results.sort_by(|a, b| {
         a.sample_name.cmp(&b.sample_name)
             .then(a.subgraph_name.cmp(&b.subgraph_name))
@@ -87,18 +117,120 @@ fn main() -> std::io::Result<()> {
             .then(a.part_number.cmp(&b.part_number))
     });
 
-    // Write csv //
+    // Write CSV output
+    println!("\nWriting output to {}...", output_path.display());
     write_csv_output(output_path, &results)?;
 
-    println!("Successfully processed {} alignment files, output written to {}", 
+    println!("\nSuccessfully processed {} alignment files, output written to {}", 
         results.len(), 
         output_path.display());
 
     Ok(())
 }
 
+fn parse_graph_file(file_path: &Path) -> std::io::Result<GraphData> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+    let mut graph_data = GraphData::default();
+
+    // Skip header line
+    let mut lines = reader.lines().skip(1);
+
+    while let Some(Ok(line)) = lines.next() {
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() >= 2 {
+            if let (Ok(from_node), Ok(to_node)) = (parts[0].parse::<usize>(), parts[1].parse::<usize>()) {
+                graph_data.nodes.insert(from_node);
+                graph_data.nodes.insert(to_node);
+                graph_data.edges += 1;
+                
+                // Count sources (edges from node 0)
+                if from_node == 0 {
+                    graph_data.sources += 1;
+                }
+                // Count sinks (edges to node 1)
+                if to_node == 1 {
+                    graph_data.sinks += 1;
+                }
+            }
+        }
+    }
+
+    Ok(graph_data)
+}
+
+fn process_subgraph_dir(dir: &Path, sample_name: &str, subgraph_name: &str, graphs_dir: &Path) -> std::io::Result<Option<Vec<AlignmentStats>>> {
+    process_files_in_dir(dir, sample_name, subgraph_name, graphs_dir)
+}
+
+fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str, graphs_dir: &Path) -> std::io::Result<Option<Vec<AlignmentStats>>> {
+    let mut stats_vec = Vec::new();
+    
+    println!("    Scanning directory: {}", dir.display());
+    
+    for entry in fs::read_dir(dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        
+        if path.is_file() {
+            if let Some(file_name) = path.file_name() {
+                let file_name = file_name.to_string_lossy();
+                if file_name.ends_with("_vs_ref.txt") {
+                    println!("      Found alignment file: {}", file_name);
+                    let part_numbers = extract_part_numbers(&file_name);
+                    
+                    let mut stats = parse_alignment_file(
+                        &path, 
+                        sample_name.to_string(),
+                        subgraph_name.to_string(),
+                        part_numbers
+                    )?;
+                    
+                    // Find and parse graph file in the new format: <sample>.super_<num>.dbg
+                    let subgraph_num = subgraph_name.trim_start_matches("subgraph_");
+                    let graph_file_path = graphs_dir.join(format!("{}.super_{}.dbg", sample_name, subgraph_num));
+                    
+                    if graph_file_path.exists() {
+                        println!("        Parsing graph file: {}", graph_file_path.display());
+                        let graph_data = parse_graph_file(&graph_file_path)?;
+                        stats.nodes = graph_data.nodes.len();
+                        stats.edges = graph_data.edges;
+                        stats.sources = graph_data.sources;
+                        stats.sinks = graph_data.sinks;
+                        
+                        println!("          Nodes: {}, Edges: {}, Sources (from 0): {}, Sinks (to 1): {}", 
+                            stats.nodes, stats.edges, stats.sources, stats.sinks);
+                    } else {
+                        println!("        Graph file not found: {}", graph_file_path.display());
+                    }
+                    
+                    println!("        Part {}/{}: length={}, identity={:.1}%, gaps={:.1}%", 
+                        stats.part_number, stats.total_parts, stats.length, 
+                        stats.identity_pct, stats.gaps_pct);
+                    
+                    stats_vec.push(stats);
+                }
+            }
+        }
+    }
+    
+    if stats_vec.is_empty() {
+        println!("      No alignment files found");
+        Ok(None)
+    } else {
+        Ok(Some(stats_vec))
+    }
+}
+
+// [Rest of the functions remain exactly the same as in previous implementation...]
+// [build_decomp_stats_map, parse_decomp_filename, add_decomp_stats, parse_decomp_file]
+// [extract_part_numbers, parse_alignment_file, parse_percentage, parse_count]
+// [write_csv_output]
+
 fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String, String), DecompStats>> {
     let mut map = HashMap::new();
+    
+    println!("Scanning decomp directory: {}", decomp_dir.display());
     
     for entry in fs::read_dir(decomp_dir)? {
         let entry = entry?;
@@ -107,8 +239,11 @@ fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String,
         if let Some(file_name) = path.file_name() {
             let file_name = file_name.to_string_lossy();
             if file_name.ends_with(".paths") {
+                println!("  Found decomp file: {}", file_name);
                 if let Some((sample_name, subgraph_name)) = parse_decomp_filename(&file_name) {
+                    println!("    Sample: {}, Subgraph: {}", sample_name, subgraph_name);
                     if let Some(stats) = parse_decomp_file(&path)? {
+                        println!("    Runtime: {:.4}s, Objective: {:.6}", stats.runtime, stats.objective_value);
                         map.insert((sample_name, subgraph_name), stats);
                     }
                 }
@@ -170,41 +305,6 @@ fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
     }
 }
 
-fn process_subgraph_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
-    process_files_in_dir(dir, sample_name, subgraph_name)
-}
-
-fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str) -> std::io::Result<Option<Vec<AlignmentStats>>> {
-    let mut stats_vec = Vec::new();
-    
-    for entry in fs::read_dir(dir)? {
-        let entry = entry?;
-        let path = entry.path();
-        
-        if path.is_file() {
-            if let Some(file_name) = path.file_name() {
-                let file_name = file_name.to_string_lossy();
-                if file_name.ends_with("_vs_ref.txt") {
-                    let part_numbers = extract_part_numbers(&file_name);
-                    
-                    stats_vec.push(parse_alignment_file(
-                        &path, 
-                        sample_name.to_string(),
-                        subgraph_name.to_string(),
-                        part_numbers
-                    )?);
-                }
-            }
-        }
-    }
-    
-    if stats_vec.is_empty() {
-        Ok(None)
-    } else {
-        Ok(Some(stats_vec))
-    }
-}
-
 fn extract_part_numbers(filename: &str) -> (usize, usize) {
     let parts: Vec<&str> = filename.split('_').collect();
     for i in 0..parts.len() {
@@ -244,6 +344,10 @@ fn parse_alignment_file(
         end_position: 0,
         runtime: 0.0,
         objective_value: 0.0,
+        nodes: 0,
+        edges: 0,
+        sources: 0,
+        sinks: 0,
     };
 
     for line in reader.lines() {
@@ -311,6 +415,10 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
         "Alignment Length",
         "Runtime (s)",
         "Objective Value",
+        "Nodes",
+        "Edges",
+        "Sources (from 0)",
+        "Sinks (to 1)",
     ])?;
 
     for stats in results {
@@ -331,6 +439,10 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
             &alignment_length.to_string(),
             &format!("{:.4}", stats.runtime),
             &format!("{:.6}", stats.objective_value),
+            &stats.nodes.to_string(),
+            &stats.edges.to_string(),
+            &stats.sources.to_string(),
+            &stats.sinks.to_string(),
         ])?;
     }
 
