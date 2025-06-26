@@ -59,11 +59,12 @@ fn main() -> std::io::Result<()> {
     println!("- Graphs directory: {}", graphs_dir.display());
     println!("- Output CSV: {}", output_path.display());
 
+    // First collect all decomp stats in a lookup table
     println!("\nBuilding decomp stats map...");
     let decomp_stats_map = build_decomp_stats_map(&decomp_dir)?;
     println!("Found {} decomp results", decomp_stats_map.len());
 
-    // Process each sample directory //
+    // Process each sample directory
     println!("\nProcessing sample directories...");
     for sample_entry in fs::read_dir(input_dir)? {
         let sample_entry = sample_entry?;
@@ -77,7 +78,7 @@ fn main() -> std::io::Result<()> {
 
             println!("\nProcessing sample: {}", sample_name);
 
-            // Process each subgraph directory //
+            // Process each subgraph directory in the sample directory
             println!("Processing subgraph directories...");
             for subgraph_entry in fs::read_dir(&sample_path)? {
                 let subgraph_entry = subgraph_entry?;
@@ -98,6 +99,7 @@ fn main() -> std::io::Result<()> {
                 }
             }
             
+            // Also check for files directly in the sample directory
             println!("Checking for root-level alignment files...");
             if let Some(mut stats_vec) = process_files_in_dir(&sample_path, &sample_name, "root", &graphs_dir)? {
                 println!("  Found {} root-level alignment files", stats_vec.len());
@@ -107,7 +109,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    // Sort results by sample, then subgraph, then total parts, then part number //
+    // Sort results by sample, then subgraph, then total parts, then part number
     results.sort_by(|a, b| {
         a.sample_name.cmp(&b.sample_name)
             .then(a.subgraph_name.cmp(&b.subgraph_name))
@@ -115,7 +117,7 @@ fn main() -> std::io::Result<()> {
             .then(a.part_number.cmp(&b.part_number))
     });
 
-    // Write CSV //
+    // Write CSV output
     println!("\nWriting output to {}...", output_path.display());
     write_csv_output(output_path, &results)?;
 
@@ -131,6 +133,7 @@ fn parse_graph_file(file_path: &Path) -> std::io::Result<GraphData> {
     let reader = BufReader::new(file);
     let mut graph_data = GraphData::default();
 
+    // Skip header line
     let mut lines = reader.lines().skip(1);
 
     while let Some(Ok(line)) = lines.next() {
@@ -141,11 +144,11 @@ fn parse_graph_file(file_path: &Path) -> std::io::Result<GraphData> {
                 graph_data.nodes.insert(to_node);
                 graph_data.edges += 1;
                 
-                // Count sources (edges from node 0) //
+                // Count sources (edges from node 0)
                 if from_node == 0 {
                     graph_data.sources += 1;
                 }
-                // Count sinks (edges to node 1) //
+                // Count sinks (edges to node 1)
                 if to_node == 1 {
                     graph_data.sinks += 1;
                 }
@@ -183,11 +186,9 @@ fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str, grap
                         part_numbers
                     )?;
                     
-                    // Find and parse graph file
+                    // Find and parse graph file in the new format: <sample>.super_<num>.dbg
                     let subgraph_num = subgraph_name.trim_start_matches("subgraph_");
-                    let graph_file_path = graphs_dir.join(sample_name)
-                        .join("out.dbg_subgraphs")
-                        .join(format!("graph_{}_compressed.dbg", subgraph_num));
+                    let graph_file_path = graphs_dir.join(format!("{}.super_{}.dbg", sample_name, subgraph_num));
                     
                     if graph_file_path.exists() {
                         println!("        Parsing graph file: {}", graph_file_path.display());
@@ -220,6 +221,11 @@ fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str, grap
         Ok(Some(stats_vec))
     }
 }
+
+// [Rest of the functions remain exactly the same as in previous implementation...]
+// [build_decomp_stats_map, parse_decomp_filename, add_decomp_stats, parse_decomp_file]
+// [extract_part_numbers, parse_alignment_file, parse_percentage, parse_count]
+// [write_csv_output]
 
 fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String, String), DecompStats>> {
     let mut map = HashMap::new();
