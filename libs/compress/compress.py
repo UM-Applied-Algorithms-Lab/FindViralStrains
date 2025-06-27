@@ -128,9 +128,6 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
     # Find initial merge candidates
     candidates = find_merge_candidates(forward_edges, reverse_edges)
 
-    print(f"Initial candidates: {len(candidates)}")
-    
-        
     for node in candidates:
 
         # Get the source and target nodes
@@ -233,7 +230,6 @@ def main():
     forward_edges, reverse_edges, edge_seqs, kmer_length = read_graph(input_file)
 
     # merge the nodes
-    print("Merging nodes...")
     merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length)
     
 
@@ -242,10 +238,7 @@ def main():
   
 
     #
-    print("Writing merged graph...")
     write_merged_graph(output_file, forward_edges)
     
-    print(f"Merged graph written to {output_file}")
-
 if __name__ == "__main__":
     main()

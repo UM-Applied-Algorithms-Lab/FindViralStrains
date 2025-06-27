@@ -119,7 +119,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, objective_value, 
             
             f.write(f"{path_weight:.6f} {path_str}\n")
     
-    print(f"INFO: Path details saved to {output_path}")
+
 
 
 def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None):
@@ -267,7 +267,7 @@ def visualize_and_save_graph(graph, output_path, num_paths, base_size=10, paths 
     
     visualization_file = f"{output_path}_visualization.pdf"
     plt.savefig(visualization_file, dpi=300, bbox_inches='tight')
-    print(f"INFO: Visualization saved to {visualization_file}")
+
 
 
 def get_all_edges_for_node(graph, node):
@@ -314,9 +314,6 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
         objective_value = k_least.get_objective_value()
 
-        print(f'objective: {type(objective_value)}')
-
-
         if visualize:
             # Visualize the graph
             visualize_and_save_graph(graph, output_path, num_paths, paths = paths)
@@ -345,8 +342,5 @@ if __name__ == '__main__':
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
-
     # Generate output files for all path counts from max_paths down to 1
     generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
-
-    print("INFO: Processing completed.")

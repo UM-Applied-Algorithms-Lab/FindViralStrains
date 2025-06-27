@@ -72,7 +72,6 @@ def main(path_file, edge_file, bd_outfile):
                     print(f"Skipping path - not enough nodes: {nodes}")
                     continue
 
-                print(f"\nProcessing path {counter} of {total_paths}:")
                 genome = ""
                 is_first_node = True
 
@@ -83,16 +82,13 @@ def main(path_file, edge_file, bd_outfile):
                     
                     # Check if this is a special source/sink edge
                     if (from_node, to_node) in special_edges:
-                        print(f"Edge {from_node}->{to_node}: special source/sink edge - no sequence added")
                         continue
                     
                     # Try forward direction first
                     if to_node in sequences.get(from_node, {}):
                         sequence = sequences[from_node][to_node]
-                        print(f"Edge {from_node}->{to_node}: found sequence (length {len(sequence)})")
                         if not is_first_node and len(sequence) > 27:
                             sequence = sequence[27:]
-                            print(f"  Trimmed to {len(sequence)} bases")
                         genome += sequence
                     else:
                         # Try reverse complement
@@ -100,13 +96,10 @@ def main(path_file, edge_file, bd_outfile):
                         rev_to = from_node
                         if rev_to in sequences.get(rev_from, {}):
                             sequence = reverse_complement(sequences[rev_from][rev_to])
-                            print(f"Edge {from_node}->{to_node}: found reverse complement (length {len(sequence)})")
                             if not is_first_node and len(sequence) > 27:
                                 sequence = sequence[27:]
-                                print(f"  Trimmed to {len(sequence)} bases")
                             genome += sequence
                         else:
-                            print(f"WARNING: Edge {from_node}->{to_node} not found in either direction")
                             # Add gap of Ns proportional to expected length
                             gap_size = 100 if (from_node == '0' or to_node == '1') else 30
                             genome += "N" * gap_size
@@ -117,7 +110,6 @@ def main(path_file, edge_file, bd_outfile):
                 output_file = f"{bd_outfile.rsplit('.', 1)[0]}_{counter}_of_{total_paths}.fasta"
                 with open(output_file, 'w') as out_f:
                     out_f.write(f">Weight: {weight}\n{genome}\n")
-                print(f"Generated {output_file} with {len(genome)} bases")
                 
                 counter += 1
 
