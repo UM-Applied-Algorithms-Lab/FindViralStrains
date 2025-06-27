@@ -84,7 +84,7 @@ fastq_filenames = set(fastq_filenames) # Deletes duplicate file entrys by conver
 fastq_filenames = list(fastq_filenames)
 
 fastq_filenames = [entry for entry in fastq_filenames if entry != ""] # Remake list with only populated values #
-print(fastq_filenames)
+
 
 ######################
 ## HELPER FUNCTIONS ##
