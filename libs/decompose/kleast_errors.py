@@ -287,7 +287,7 @@ def get_all_edges_for_node(graph, node):
     return edges
 
 
-def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visualize=False):
+def generate_output_files(base_output_path, graph, time_limit, max_paths, min_paths=1, visualize=False):
     """Generate output files for all path counts from max_paths down to min_paths."""
     # Extract the base filename without extension
     base_name = os.path.splitext(base_output_path)[0]
@@ -303,7 +303,7 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
     
         # Perform k-least errors analysis for current number of paths
-        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
+        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
 
@@ -343,4 +343,4 @@ if __name__ == '__main__':
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
     # Generate output files for all path counts from max_paths down to 1
-    generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
+    generate_output_files(args.output, graph, args.timelimit, args.maxpaths, args.minpaths, visualize=args.visualize)
