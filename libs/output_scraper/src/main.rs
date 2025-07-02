@@ -222,12 +222,7 @@ fn process_files_in_dir(dir: &Path, sample_name: &str, subgraph_name: &str, grap
     }
 }
 
-// [Rest of the functions remain exactly the same as in previous implementation...]
-// [build_decomp_stats_map, parse_decomp_filename, add_decomp_stats, parse_decomp_file]
-// [extract_part_numbers, parse_alignment_file, parse_percentage, parse_count]
-// [write_csv_output]
-
-fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String, String), DecompStats>> {
+fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String, String, usize), DecompStats>> {
     let mut map = HashMap::new();
     
     println!("Scanning decomp directory: {}", decomp_dir.display());
@@ -240,11 +235,11 @@ fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String,
             let file_name = file_name.to_string_lossy();
             if file_name.ends_with(".paths") {
                 println!("  Found decomp file: {}", file_name);
-                if let Some((sample_name, subgraph_name)) = parse_decomp_filename(&file_name) {
-                    println!("    Sample: {}, Subgraph: {}", sample_name, subgraph_name);
+                if let Some((sample_name, subgraph_name, total_parts)) = parse_decomp_filename(&file_name) {
+                    println!("    Sample: {}, Subgraph: {}, Total Parts: {}", sample_name, subgraph_name, total_parts);
                     if let Some(stats) = parse_decomp_file(&path)? {
                         println!("    Runtime: {:.4}s, Objective: {:.6}", stats.runtime, stats.objective_value);
-                        map.insert((sample_name, subgraph_name), stats);
+                        map.insert((sample_name, subgraph_name, total_parts), stats);
                     }
                 }
             }
@@ -254,23 +249,34 @@ fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String,
     Ok(map)
 }
 
-fn parse_decomp_filename(filename: &str) -> Option<(String, String)> {
+fn parse_decomp_filename(filename: &str) -> Option<(String, String, usize)> {
     let parts: Vec<&str> = filename.split('_').collect();
     if parts.len() >= 4 {
         let sample_end = parts.len() - 3;
         let sample_name = parts[..sample_end].join("_");
         let subgraph_name = format!("{}_{}", parts[sample_end], parts[sample_end + 1]);
-        return Some((sample_name, subgraph_name));
+        
+        // Extract total parts from filename (assuming format like "XXX_YYY_Z.paths")
+        let total_parts = parts.last()
+            .and_then(|s| s.split('.').next())
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(1);
+            
+        return Some((sample_name, subgraph_name, total_parts));
     }
     None
 }
 
 fn add_decomp_stats(
-    decomp_stats_map: &HashMap<(String, String), DecompStats>,
+    decomp_stats_map: &HashMap<(String, String, usize), DecompStats>,
     stats_vec: &mut Vec<AlignmentStats>
 ) {
     for stat in stats_vec {
-        let key = (stat.sample_name.clone(), stat.subgraph_name.clone());
+        let key = (
+            stat.sample_name.clone(), 
+            stat.subgraph_name.clone(),
+            stat.total_parts
+        );
         if let Some(decomp_stats) = decomp_stats_map.get(&key) {
             stat.runtime = decomp_stats.runtime;
             stat.objective_value = decomp_stats.objective_value;
