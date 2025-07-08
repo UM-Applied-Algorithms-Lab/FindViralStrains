@@ -24,12 +24,14 @@ struct AlignmentStats {
     edges: usize,
     sources: usize,
     sinks: usize,
+    total_flow: f64, 
 }
 
 #[derive(Debug, Clone)]
 struct DecompStats {
     runtime: f64,
     objective_value: f64,
+    total_flow: f64, 
 }
 
 #[derive(Debug, Default)]
@@ -117,6 +119,7 @@ fn main() -> std::io::Result<()> {
             .then(a.part_number.cmp(&b.part_number))
     });
 
+    
     // Write CSV output
     println!("\nWriting output to {}...", output_path.display());
     write_csv_output(output_path, &results)?;
@@ -127,6 +130,8 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
+
+
 
 fn parse_graph_file(file_path: &Path) -> std::io::Result<GraphData> {
     let file = File::open(file_path)?;
@@ -236,9 +241,12 @@ fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String,
             if file_name.ends_with(".paths") {
                 println!("  Found decomp file: {}", file_name);
                 if let Some((sample_name, subgraph_name, total_parts)) = parse_decomp_filename(&file_name) {
-                    println!("    Sample: {}, Subgraph: {}, Total Parts: {}", sample_name, subgraph_name, total_parts);
+                    println!("    Sample: {}, Subgraph: {}, Total Parts: {}", 
+                        sample_name, subgraph_name, total_parts);
+
                     if let Some(stats) = parse_decomp_file(&path)? {
-                        println!("    Runtime: {:.4}s, Objective: {:.6}", stats.runtime, stats.objective_value);
+                        println!("    Runtime: {:.4}s, Objective: {:.6}, Total Flow: {:.6}", 
+                            stats.runtime, stats.objective_value, stats.total_flow);
                         map.insert((sample_name, subgraph_name, total_parts), stats);
                     }
                 }
@@ -280,6 +288,7 @@ fn add_decomp_stats(
         if let Some(decomp_stats) = decomp_stats_map.get(&key) {
             stat.runtime = decomp_stats.runtime;
             stat.objective_value = decomp_stats.objective_value;
+            stat.total_flow = decomp_stats.total_flow;
         }
     }
 }
@@ -290,6 +299,7 @@ fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
 
     let mut runtime = 0.0;
     let mut objective_value = 0.0;
+    let mut total_flow = 0.0; 
 
     for line in reader.lines() {
         let line = line?;
@@ -299,12 +309,16 @@ fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
         } else if line.starts_with("Objective Value: ") {
             objective_value = line.split_whitespace().nth(2).and_then(|s| s.parse().ok()).unwrap_or(0.0);
         }
+        else if line.starts_with("Total Flow: ") {
+            total_flow = line.split_whitespace().nth(2).and_then(|s| s.parse().ok()).unwrap_or(0.0);
+        }
     }
 
-    if runtime > 0.0 || objective_value > 0.0 {
+    if runtime > 0.0 || objective_value > 0.0 || total_flow > 0.0 {
         Ok(Some(DecompStats {
             runtime,
             objective_value,
+            total_flow,
         }))
     } else {
         Ok(None)
@@ -354,6 +368,8 @@ fn parse_alignment_file(
         edges: 0,
         sources: 0,
         sinks: 0,
+        total_flow: 0.0,
+
     };
 
     for line in reader.lines() {
@@ -402,6 +418,9 @@ fn parse_count(s: &str) -> usize {
         .unwrap_or(0)
 }
 
+
+
+
 fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::Result<()> {
     let mut writer = Writer::from_path(output_path)?;
 
@@ -425,6 +444,7 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
         "Edges",
         "Sources (from 0)",
         "Sinks (to 1)",
+        "Total Flow",
     ])?;
 
     for stats in results {
@@ -449,6 +469,7 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
             &stats.edges.to_string(),
             &stats.sources.to_string(),
             &stats.sinks.to_string(),
+            &format!("{:.6}", stats.total_flow),
         ])?;
     }
 
