@@ -96,10 +96,14 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, objective_value, 
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
+
+    # sum of all weights on all edges of original graph
+    total_weight_graph = sum(data['flow'] for u, v, data in graph.edges(data=True))
     
     with open(output_path, 'w') as f:
         f.write(f"Decomposition into {num_paths} paths\n")
         f.write(f"Runtime: {runtime:.2f} seconds\n")
+        f.write(f"Total Flow: {total_weight_graph}\n")
         f.write(f"Objective Value: {objective_value}\n")
         f.write(f"Number of Paths: {num_paths}\n")
         f.write("Paths and Weights:\n")
@@ -307,7 +311,9 @@ def generate_output_files(base_output_path, graph, time_limit, threads,  max_pat
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
 
-  
+        
+
+
 
         # Get solver statistics
         runtime = time.time() - start_time
