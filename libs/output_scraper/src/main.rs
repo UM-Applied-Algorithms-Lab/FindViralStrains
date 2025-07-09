@@ -25,6 +25,7 @@ struct AlignmentStats {
     sources: usize,
     sinks: usize,
     total_flow: f64, 
+    explained_flow: f64, 
 }
 
 #[derive(Debug, Clone)]
@@ -32,6 +33,7 @@ struct DecompStats {
     runtime: f64,
     objective_value: f64,
     total_flow: f64, 
+    explained_flow: f64, 
 }
 
 #[derive(Debug, Default)]
@@ -245,8 +247,8 @@ fn build_decomp_stats_map(decomp_dir: &Path) -> std::io::Result<HashMap<(String,
                         sample_name, subgraph_name, total_parts);
 
                     if let Some(stats) = parse_decomp_file(&path)? {
-                        println!("    Runtime: {:.4}s, Objective: {:.6}, Total Flow: {:.6}", 
-                            stats.runtime, stats.objective_value, stats.total_flow);
+                        println!("    Runtime: {:.4}s, Objective: {:.6}, Total Flow: {:.6}, Explained Flow: {:.6}", 
+                            stats.runtime, stats.objective_value, stats.total_flow, stats.explained_flow);
                         map.insert((sample_name, subgraph_name, total_parts), stats);
                     }
                 }
@@ -289,17 +291,19 @@ fn add_decomp_stats(
             stat.runtime = decomp_stats.runtime;
             stat.objective_value = decomp_stats.objective_value;
             stat.total_flow = decomp_stats.total_flow;
+            stat.explained_flow = decomp_stats.explained_flow;
+
+          
         }
     }
 }
-
 fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
 
     let mut runtime = 0.0;
     let mut objective_value = 0.0;
-    let mut total_flow = 0.0; 
+    let mut total_flow = 0.0;
 
     for line in reader.lines() {
         let line = line?;
@@ -315,16 +319,22 @@ fn parse_decomp_file(file_path: &Path) -> std::io::Result<Option<DecompStats>> {
     }
 
     if runtime > 0.0 || objective_value > 0.0 || total_flow > 0.0 {
+        let explained_flow = if total_flow > 0.0 {
+            (total_flow - objective_value) / total_flow
+        } else {
+            0.0
+        };
+        
         Ok(Some(DecompStats {
             runtime,
             objective_value,
             total_flow,
+            explained_flow,
         }))
     } else {
         Ok(None)
     }
 }
-
 fn extract_part_numbers(filename: &str) -> (usize, usize) {
     let parts: Vec<&str> = filename.split('_').collect();
     for i in 0..parts.len() {
@@ -369,6 +379,7 @@ fn parse_alignment_file(
         sources: 0,
         sinks: 0,
         total_flow: 0.0,
+        explained_flow: 0.0,    
 
     };
 
@@ -445,6 +456,7 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
         "Sources (from 0)",
         "Sinks (to 1)",
         "Total Flow",
+        "Explained Flow",
     ])?;
 
     for stats in results {
@@ -470,6 +482,7 @@ fn write_csv_output(output_path: &Path, results: &[AlignmentStats]) -> std::io::
             &stats.sources.to_string(),
             &stats.sinks.to_string(),
             &format!("{:.6}", stats.total_flow),
+            &format!("{:.6}", stats.explained_flow),
         ])?;
     }
 
