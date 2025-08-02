@@ -140,8 +140,5 @@ fn main() {
     )
     .expect("unable to create super sources and sinks");
 
-    println!(
-        "New nodes and edges with weights written to: {}",
-        output_file_path.display()
-    );
+
 }

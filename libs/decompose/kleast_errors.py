@@ -92,16 +92,19 @@ def create_k_least_graph(graph, paths):
     
     return k_least_graph
 
-def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objective_value, multigraph_decomposer=None):
+def save_paths_to_file(paths, output_path, num_paths, runtime, objective_value, multigraph_decomposer=None):
     """Save path information to a text file in the specified format."""
     # Calculate total flow through all paths
     total_flow = sum(paths['weights'])
+
+    # sum of all weights on all edges of original graph
+    total_weight_graph = sum(data['flow'] for u, v, data in graph.edges(data=True))
     
     with open(output_path, 'w') as f:
         f.write(f"Decomposition into {num_paths} paths\n")
         f.write(f"Runtime: {runtime:.2f} seconds\n")
-        f.write(f"MIP Gap: {mip_gap:.6f}\n")
-        f.write(f"Objective Value: {objective_value:.6f}\n")
+        f.write(f"Total Flow: {total_weight_graph}\n")
+        f.write(f"Objective Value: {objective_value}\n")
         f.write(f"Number of Paths: {num_paths}\n")
         f.write("Paths and Weights:\n")
 
@@ -120,7 +123,7 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, mip_gap, objectiv
             
             f.write(f"{path_weight:.6f} {path_str}\n")
     
-    print(f"INFO: Path details saved to {output_path}")
+
 
 
 def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None):
@@ -268,7 +271,7 @@ def visualize_and_save_graph(graph, output_path, num_paths, base_size=10, paths 
     
     visualization_file = f"{output_path}_visualization.pdf"
     plt.savefig(visualization_file, dpi=300, bbox_inches='tight')
-    print(f"INFO: Visualization saved to {visualization_file}")
+
 
 
 def get_all_edges_for_node(graph, node):
@@ -288,7 +291,7 @@ def get_all_edges_for_node(graph, node):
     return edges
 
 
-def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visualize=False):
+def generate_output_files(base_output_path, graph, time_limit, threads,  max_paths, min_paths=1, visualize=False):
     """Generate output files for all path counts from max_paths down to min_paths."""
     # Extract the base filename without extension
     base_name = os.path.splitext(base_output_path)[0]
@@ -304,16 +307,18 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
         edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
     
         # Perform k-least errors analysis for current number of paths
-        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
+        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit, threads = threads)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_paths=True)
+
         
+
+
 
         # Get solver statistics
         runtime = time.time() - start_time
-        mip_gap = k_least.model.MIPGap if hasattr(k_least, 'model') else 1.0
-        objective_value = k_least.model.ObjVal if hasattr(k_least, 'model') else 0.0
-
+        #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
+        objective_value = k_least.get_objective_value()
 
         if visualize:
             # Visualize the graph
@@ -330,7 +335,6 @@ def generate_output_files(base_output_path, graph, max_paths, min_paths=1, visua
             output_path, 
             num_paths,
             runtime,
-            mip_gap,
             objective_value,
             multigraph_decomposer=decomposer
         )
@@ -344,8 +348,5 @@ if __name__ == '__main__':
     # Read the input graph
     graph = read_graph_to_networkx(args.input, min_edge_weight=args.mincount)
 
-
     # Generate output files for all path counts from max_paths down to 1
-    generate_output_files(args.output, graph, args.maxpaths, args.minpaths, visualize=args.visualize)
-
-    print("INFO: Processing completed.")
+    generate_output_files(args.output, graph, args.timelimit, args.threads, args.maxpaths, args.minpaths, visualize=args.visualize)
