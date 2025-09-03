@@ -62,4 +62,9 @@ read_data (intermittent data files from your fastq files)
 ```
 
 # How to contribute to this repository
-Todo, but generally: make a branch for your new feature, make changes, commit them, merge into main, then make a pull request.
+this needs more detail, but basically:
+
+* make a branch for your feature
+* implement
+* merge into dev main
+* tests will run when you do this
