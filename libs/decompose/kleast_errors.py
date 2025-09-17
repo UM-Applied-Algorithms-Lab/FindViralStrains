@@ -101,15 +101,15 @@ def save_paths_to_file(paths, output_path, num_paths, runtime, objective_value, 
     total_weight_graph = sum(data['flow'] for u, v, data in graph.edges(data=True))
     
     with open(output_path, 'w') as f:
-        f.write(f"Decomposition into {num_paths} paths\n")
+        f.write(f"Decomposition into {num_paths} walks\n")
         f.write(f"Runtime: {runtime:.2f} seconds\n")
         f.write(f"Total Flow: {total_weight_graph}\n")
         f.write(f"Objective Value: {objective_value}\n")
-        f.write(f"Number of Paths: {num_paths}\n")
-        f.write("Paths and Weights:\n")
+        f.write(f"Number of Walks: {num_paths}\n")
+        f.write("Walks and Weights:\n")
 
         
-        for index, path in enumerate(paths['paths']):
+        for index, path in enumerate(paths['walks']):
             path_weight = paths['weights'][index] if total_flow > 0 else 0
 
             
@@ -307,14 +307,12 @@ def generate_output_files(base_output_path, graph, time_limit, threads,  max_pat
         edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
     
         # Perform k-least errors analysis for current number of paths
-        k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit, threads = threads)
+        # k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit, threads = threads)
+        k_least = fp.kLeastAbsErrorsCycles(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
         k_least.solve()
-        paths = k_least.get_solution(remove_empty_paths=True)
+        paths = k_least.get_solution(remove_empty_walks=True)
 
         
-
-
-
         # Get solver statistics
         runtime = time.time() - start_time
         #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
