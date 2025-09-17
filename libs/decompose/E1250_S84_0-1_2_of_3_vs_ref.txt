@@ -1,0 +1,1406 @@
+########################################
+# Program: water
+# Rundate: Mon  7 Jul 2025 14:49:26
+# Commandline: water
+#    -asequence BGD_2022_ref.fasta
+#    -bsequence E1250_S84_0-1_2_of_3.fasta
+#    -gapopen 10
+#    -gapextend 0.5
+#    -outfile E1250_S84_0-1_2_of_3_vs_ref.txt
+# Align_format: srspair
+# Report_file: E1250_S84_0-1_2_of_3_vs_ref.txt
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: 
+# 2: Weight
+# Matrix: EDNAFULL
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 17128
+# Identity:   16796/17128 (98.1%)
+# Similarity: 16796/17128 (98.1%)
+# Gaps:         290/17128 ( 1.7%)
+# Score: 83287.0
+# 
+#
+#=======================================
+
+                6999 aggcatgccttcttactgtactggttacagagaaggctatttgaactcta   7048
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight             1 AGGCATGCCTTCTTACTGTACTGGTTACAGAGAAGGCTATTTGAACTCTA     50
+
+                7049 ctaatgtcactattgcaacctactgtactggttctataccttgtagtgtt   7098
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight            51 CTAATGTCACTATTGCAACCTACTGTACTGGTTCTATACCTTGTAGTGTT    100
+
+                7099 tgtcttagtggtttagattctttagacacctatccttctttagaaactat   7148
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           101 TGTCTTAGTGGTTTAGATTCTTTAGACACCTATCCTTCTTTAGAAACTAT    150
+
+                7149 acaaattaccatttcatcttttaaatgggatttaactgcttttggcttag   7198
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           151 ACAAATTACCATTTCATCTTTTAAATGGGATTTAACTGCTTTTGGCTTAG    200
+
+                7199 ttgcagagtggtttttggcatatattcttttcactaggtttttctatgta   7248
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           201 TTGCAGAGTGGTTTTTGGCATATATTCTTTTCACTAGGTTTTTCTATGTA    250
+
+                7249 cttggattggctgcaatcatgcaattgtttttcagctattttgcagtaca   7298
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           251 CTTGGATTGGCTGCAATCATGCAATTGTTTTTCAGCTATTTTGCAGTACA    300
+
+                7299 ttttattagtaattcttggcttatgtggttaataattaatcttgtacaaa   7348
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           301 TTTTATTAGTAATTCTTGGCTTATGTGGTTAATAATTAATCTTGTACAAA    350
+
+                7349 tggccccgatttcagctatggttagaatgtacatcttctttgcatcattt   7398
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           351 TGGCCCCGATTTCAGCTATGGTTAGAATGTACATCTTCTTTGCATCATTT    400
+
+                7399 tattatgtatggaaaagttatgtgcatgttgtagacggttgtaattcatc   7448
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           401 TATTATGTATGGAAAAGTTATGTGCATGTTGTAGACGGTTGTAATTCATC    450
+
+                7449 aacttgtatgatgtgttacaaacgtaatagagcaacaagagtcgaatgta   7498
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           451 AACTTGTATGATGTGTTACAAACGTAATAGAGCAACAAGAGTCGAATGTA    500
+
+                7499 caactattgttaatggtgttagaaggtccttttatgtctatgctaatgga   7548
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           501 CAACTATTGTTAATGGTGTTAGAAGGTCCTTTTATGTCTATGCTAATGGA    550
+
+                7549 ggtaaaggcttttgcaaactacacaattggaattgtgttaattgtgatac   7598
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           551 GGTAAAGGCTTTTGCAAACTACACAATTGGAATTGTGTTAATTGTGATAC    600
+
+                7599 attctgtgctggtagtacatttattagtgatgaagttgcgagagacttgt   7648
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           601 ATTCTGTGCTGGTAGTACATTTATTAGTGATGAAGTTGCGAGAGACTTGT    650
+
+                7649 cactacagtttaaaagaccaataaatcctactgaccagtcttcttacatc   7698
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           651 CACTACAGTTTAAAAGACCAATAAATCCTACTGACCAGTCTTCTTACATC    700
+
+                7699 gttgatagtgttacagtgaagaatggttccatccatctttactttgataa   7748
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           701 GTTGATAGTGTTACAGTGAAGAATGGTTCCATCCATCTTTACTTTGATAA    750
+
+                7749 agctggtcaaaagacttatgaaagacattctctctctcattttgttaact   7798
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           751 AGCTGGTCAAAAGACTTATGAAAGACATTCTCTCTCTCATTTTGTTAACT    800
+
+                7799 tagacaacctgagagctaataacactaaaggttcattgcctattaatgtt   7848
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           801 TAGACAACCTGAGAGCTAATAACACTAAAGGTTCATTGCCTATTAATGTT    850
+
+                7849 atagtttttgatggtaaatcaaaatgtgaagaatcatctgcaaaatcagc   7898
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           851 ATAGTTTTTGATGGTAAATCAAAATGTGAAGAATCATCTGCAAAATCAGC    900
+
+                7899 gtctgtttactacagtcagcttatgtgtcaacctatactgttactagatc   7948
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           901 GTCTGTTTACTACAGTCAGCTTATGTGTCAACCTATACTGTTACTAGATC    950
+
+                7949 aggcattagtgtctgatgttggtgatagtgcggaagttgcagttaaaatg   7998
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           951 AGGCATTAGTGTCTGATGTTGGTGATAGTGCGGAAGTTGCAGTTAAAATG   1000
+
+                7999 tttgatgcttacgttaatacgttttcatcaacttttaacgtaccaatgga   8048
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1001 TTTGATGCTTACGTTAATACGTTTTCATCAACTTTTAACGTACCAATGGA   1050
+
+                8049 aaaactcaaaacactagttgcaactgcagaagctgaacttgcaaagaatg   8098
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1051 AAAACTCAAAACACTAGTTGCAACTGCAGAAGCTGAACTTGCAAAGAATG   1100
+
+                8099 tgtccttagacaatgtcttatctacttttatttcagcagctcggcaaggg   8148
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1101 TGTCCTTAGACAATGTCTTATCTACTTTTATTTCAGCAGCTCGGCAAGGG   1150
+
+                8149 tttgttgattcagatgtagaaactaaagatgttgttgaatgtcttaaatt   8198
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1151 TTTGTTGATTCAGATGTAGAAACTAAAGATGTTGTTGAATGTCTTAAATT   1200
+
+                8199 gtcacatcaatctgacatagaagttactggcgatagttgtaataactata   8248
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1201 GTCACATCAATCTGACATAGAAGTTACTGGCGATAGTTGTAATAACTATA   1250
+
+                8249 tgctcacctataacaaagttgaaaacatgacaccccgtgaccttggtgct   8298
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1251 TGCTCACCTATAACAAAGTTGAAAACATGACACCCCGTGACCTTGGTGCT   1300
+
+                8299 tgtattgactgtagtgcgcgtcatattaatgcgcaggtagcaaaaagtca   8348
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1301 TGTATTGACTGTAGTGCGCGTCATATTAATGCGCAGGTAGCAAAAAGTCA   1350
+
+                8349 caacattactttgatatggaacgttaaagatttcatgtcattgtctgaac   8398
+                     |||||||.||||||||||||||||||||||||||||||||||||||||||
+Weight          1351 CAACATTGCTTTGATATGGAACGTTAAAGATTTCATGTCATTGTCTGAAC   1400
+
+                8399 aactacgaaaacaaatacgtagtgctgctaaaaagaataacttacctttt   8448
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1401 AACTACGAAAACAAATACGTAGTGCTGCTAAAAAGAATAACTTACCTTTT   1450
+
+                8449 aagttgacatgtgcaactactagacaagttgttaatgttgtaacaacaaa   8498
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1451 AAGTTGACATGTGCAACTACTAGACAAGTTGTTAATGTTGTAACAACAAA   1500
+
+                8499 gatagcacttaagggtggtaaaattgttaataattggttgaagcagttaa   8548
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1501 GATAGCACTTAAGGGTGGTAAAATTGTTAATAATTGGTTGAAGCAGTTAA   1550
+
+                8549 ttaaagttacacttgtgttcctttttgttgctgctattttctatttaata   8598
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1551 TTAAAGTTACACTTGTGTTCCTTTTTGTTGCTGCTATTTTCTATTTAATA   1600
+
+                8599 acacctgttcatgtcatgtctaaacatactgacttttcaagtgaaatcat   8648
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1601 ACACCTGTTCATGTCATGTCTAAACATACTGACTTTTCAAGTGAAATCAT   1650
+
+                8649 aggatacaaggctattgatggtggtgtcactcgtgacatagcatctacag   8698
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1651 AGGATACAAGGCTATTGATGGTGGTGTCACTCGTGACATAGCATCTACAG   1700
+
+                8699 atacttgttttgctaacaaacatgctgattttgacacatggtttagccag   8748
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1701 ATACTTGTTTTGCTAACAAACATGCTGATTTTGACACATGGTTTAGCCAG   1750
+
+                8749 cgtggtggtagttatactaatgacaaagcttgcccattgattgctgcagt   8798
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1751 CGTGGTGGTAGTTATACTAATGACAAAGCTTGCCCATTGATTGCTGCAGT   1800
+
+                8799 cataacaagagaagtgggttttgtcgtgcctggtttgcctggcacgatat   8848
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1801 CATAACAAGAGAAGTGGGTTTTGTCGTGCCTGGTTTGCCTGGCACGATAT   1850
+
+                8849 tacgcacaactaatggtgactttttgcatttcttacctagagtttttagt   8898
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1851 TACGCACAACTAATGGTGACTTTTTGCATTTCTTACCTAGAGTTTTTAGT   1900
+
+                8899 gcagttggtaacatctgttacacaccatcaaaacttatagagtacactga   8948
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1901 GCAGTTGGTAACATCTGTTACACACCATCAAAACTTATAGAGTACACTGA   1950
+
+                8949 ctttgcaacatcagcttgtgttttggctgctgaatgtacaatttttaaag   8998
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1951 CTTTGCAACATCAGCTTGTGTTTTGGCTGCTGAATGTACAATTTTTAAAG   2000
+
+                8999 atgcttctggtaagccagtaccatattgttatgataccaatgtactagaa   9048
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2001 ATGCTTCTGGTAAGCCAGTACCATATTGTTATGATACCAATGTACTAGAA   2050
+
+                9049 ggttctgttgcttatgaaagtttacgccctgacacacgttatgtgctcat   9098
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2051 GGTTCTGTTGCTTATGAAAGTTTACGCCCTGACACACGTTATGTGCTCAT   2100
+
+                9099 ggatggctctattattcaatttcctaacacctaccttgaaggttctgtta   9148
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2101 GGATGGCTCTATTATTCAATTTCCTAACACCTACCTTGAAGGTTCTGTTA   2150
+
+                9149 gagtggtaacaacttttgattctgagtactgtaggcacggcacttgtgaa   9198
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2151 GAGTGGTAACAACTTTTGATTCTGAGTACTGTAGGCACGGCACTTGTGAA   2200
+
+                9199 agatcagaagctggtgtttgtgtatctactagtggtagatgggtacttaa   9248
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2201 AGATCAGAAGCTGGTGTTTGTGTATCTACTAGTGGTAGATGGGTACTTAA   2250
+
+                9249 caatgattattacagatctttaccaggagttttctgtggtgtagatgctg   9298
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2251 CAATGATTATTACAGATCTTTACCAGGAGTTTTCTGTGGTGTAGATGCTG   2300
+
+                9299 taaatttacttactaatatgtttacaccactaattcaacctattggtgct   9348
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2301 TAAATTTACTTACTAATATGTTTACACCACTAATTCAACCTATTGGTGCT   2350
+
+                9349 ttggacatatcagcatctatagtagctggtggtattgtagctatcgtagt   9398
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2351 TTGGACATATCAGCATCTATAGTAGCTGGTGGTATTGTAGCTATCGTAGT   2400
+
+                9399 aacatgccttgcctactattttatgaggtttagaagagcttttggtgaat   9448
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2401 AACATGCCTTGCCTACTATTTTATGAGGTTTAGAAGAGCTTTTGGTGAAT   2450
+
+                9449 acagtcatgtagttgcctttaatactttactattccttatgtcattcact   9498
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2451 ACAGTCATGTAGTTGCCTTTAATACTTTACTATTCCTTATGTCATTCACT   2500
+
+                9499 gtactctgtttaacaccagtttactcattcttacctggtgtttattctgt   9548
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2501 GTACTCTGTTTAACACCAGTTTACTCATTCTTACCTGGTGTTTATTCTGT   2550
+
+                9549 tatttacttgtacttgacattttatcttactaatgatgtttcttttttag   9598
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2551 TATTTACTTGTACTTGACATTTTATCTTACTAATGATGTTTCTTTTTTAG   2600
+
+                9599 cacatattcagtggatggttatgttcacacctttagtacctttctggata   9648
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2601 CACATATTCAGTGGATGGTTATGTTCACACCTTTAGTACCTTTCTGGATA   2650
+
+                9649 acaattgcttatatcatttgtatttccacaaagcatttctattggttctt   9698
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2651 ACAATTGCTTATATCATTTGTATTTCCACAAAGCATTTCTATTGGTTCTT   2700
+
+                9699 tagtaattacctaaagagacgtgtagtctttaatggtgtttcctttagta   9748
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2701 TAGTAATTACCTAAAGAGACGTGTAGTCTTTAATGGTGTTTCCTTTAGTA   2750
+
+                9749 cttttgaagaagctgcgctgtgcacctttttgttaaataaagaaatgtat   9798
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2751 CTTTTGAAGAAGCTGCGCTGTGCACCTTTTTGTTAAATAAAGAAATGTAT   2800
+
+                9799 ctaaagttgcgtagtgatgtgctattacctcttacgcaatataatagata   9848
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2801 CTAAAGTTGCGTAGTGATGTGCTATTACCTCTTACGCAATATAATAGATA   2850
+
+                9849 cttagctctttataataagtacaagtattttagtggagcaatggatacaa   9898
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2851 CTTAGCTCTTTATAATAAGTACAAGTATTTTAGTGGAGCAATGGATACAA   2900
+
+                9899 ctagctacagagaagctgcttgttgtcatctcgcaaaggctctcaatgac   9948
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          2901 CTAGCTACAGAGAAGCTGCTTGTTGTCATCTCGCAAAGGCTCTCAATGAC   2950
+
+                9949 ttcagtaactcaggttctgatgttctttaccaaccaccacaaatctctat   9998
+                     |||||||||||||||||||||||||||||||||||||||||||.||||||
+Weight          2951 TTCAGTAACTCAGGTTCTGATGTTCTTTACCAACCACCACAAACCTCTAT   3000
+
+                9999 cacctcagctgttttgcagagtggttttagaaaaatggcattcccatctg  10048
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3001 CACCTCAGCTGTTTTGCAGAGTGGTTTTAGAAAAATGGCATTCCCATCTG   3050
+
+               10049 gtaaagttgagggttgtatggtacaagtaacttgtggtacaactacactt  10098
+                     |||||.||||||||||||||||||||||||||||||||||||||||||||
+Weight          3051 GTAAAATTGAGGGTTGTATGGTACAAGTAACTTGTGGTACAACTACACTT   3100
+
+               10099 aacggtctttggcttgatgacgtagtttactgtccaagacatgtgatctg  10148
+                     ||||||||||||||||||||||||||||||||||||              
+Weight          3101 AACGGTCTTTGGCTTGATGACGTAGTTTACTGTCCA--------------   3136
+
+               10149 cacctctgaagacatgcttaaccctaattatgaagatttactcattcgta  10198
+                                                                       
+Weight          3136 --------------------------------------------------   3136
+
+               10199 agtctaatcataatttcttggtacaggctggtaatgttcaactcagggtt  10248
+                                                                       
+Weight          3136 --------------------------------------------------   3136
+
+               10249 attggacattctatgcaaaattgtgtacttaagcttaaggttgatacagc  10298
+                                                                       
+Weight          3136 --------------------------------------------------   3136
+
+               10299 caatcctaagacacctaagtataagtttgttcgcattcaaccaggacaga  10348
+                                                                       
+Weight          3136 --------------------------------------------------   3136
+
+               10349 ctttttcagtgttagcttgttacaatggttcaccatctggtgtttaccaa  10398
+                         ||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3137 ----TTCAGTGTTAGCTTGTTACAATGGTTCACCATCTGGTGTTTACCAA   3182
+
+               10399 tgtgctatgaggcacaatttcactattaagggttcattccttaatggttc  10448
+                     |||||||||||||.||||||||||||||||||||||||||||||||||||
+Weight          3183 TGTGCTATGAGGCCCAATTTCACTATTAAGGGTTCATTCCTTAATGGTTC   3232
+
+               10449 atgtggtagtgttggttttaacatagattatgactgtgtctctttttgtt  10498
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3233 ATGTGGTAGTGTTGGTTTTAACATAGATTATGACTGTGTCTCTTTTTGTT   3282
+
+               10499 acatgcaccatatggaattaccaactggagttcatgctggcacagactta  10548
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3283 ACATGCACCATATGGAATTACCAACTGGAGTTCATGCTGGCACAGACTTA   3332
+
+               10549 gaaggtaacttttatggaccttttgttgacaggcaaacagcacaagcagc  10598
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3333 GAAGGTAACTTTTATGGACCTTTTGTTGACAGGCAAACAGCACAAGCAGC   3382
+
+               10599 tggtacggacacaactattacagttaatgttttagcttggttgtacgctg  10648
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3383 TGGTACGGACACAACTATTACAGTTAATGTTTTAGCTTGGTTGTACGCTG   3432
+
+               10649 ctgttataaatggagacaggtggtttctcaatcgatttaccacaactctt  10698
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3433 CTGTTATAAATGGAGACAGGTGGTTTCTCAATCGATTTACCACAACTCTT   3482
+
+               10699 aatgactttaaccttgtggctatgaagtacaattatgaacctctaacaca  10748
+                     ||||||||||||||||||||||||||||||||||||||| ||||||||||
+Weight          3483 AATGACTTTAACCTTGTGGCTATGAAGTACAATTATGAA-CTCTAACACA   3531
+
+               10749 agaccatgttgacatactaggacctctttctgctcaaactggaattgccg  10798
+                     ||||||||||||||||| ||||||||||||||||||||||||||||||||
+Weight          3532 AGACCATGTTGACATAC-AGGACCTCTTTCTGCTCAAACTGGAATTGCCG   3580
+
+               10799 ttttagatatgtgtgcttcattaaaagaattactgcaaaatggtatgaat  10848
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3581 TTTTAGATATGTGTGCTTCATTAAAAGAATTACTGCAAAATGGTATGAAT   3630
+
+               10849 ggacgtaccatattgggtagtgctttattagaagatgaatttacaccttt  10898
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3631 GGACGTACCATATTGGGTAGTGCTTTATTAGAAGATGAATTTACACCTTT   3680
+
+               10899 tgatgttgttagacaatgctcaggtgttactttccaaagtgcagtgaaaa  10948
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3681 TGATGTTGTTAGACAATGCTCAGGTGTTACTTTCCAAAGTGCAGTGAAAA   3730
+
+               10949 gaacaatcaagggtacacaccactggttgttactcacaattttgacttca  10998
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3731 GAACAATCAAGGGTACACACCACTGGTTGTTACTCACAATTTTGACTTCA   3780
+
+               10999 cttttagttttagtccagagtactcaatggtctttgttcttttttttgta  11048
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3781 CTTTTAGTTTTAGTCCAGAGTACTCAATGGTCTTTGTTCTTTTTTTTGTA   3830
+
+               11049 tgaaaatgcctttttaccttttgctatgggtattattgctatgtctgctt  11098
+                     |||||||||||||||| |||||||||||||||||||||||||||||||||
+Weight          3831 TGAAAATGCCTTTTTA-CTTTTGCTATGGGTATTATTGCTATGTCTGCTT   3879
+
+               11099 ttgcaatgatgtttgtcaaacataagcatgcatttctctgtttgtttttg  11148
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3880 TTGCAATGATGTTTGTCAAACATAAGCATGCATTTCTCTGTTTGTTTTTG   3929
+
+               11149 ttaccttctcttgccactgtagcttattttaatatggtctatatgcctgc  11198
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          3930 TTACCTTCTCTTGCCACTGTAGCTTATTTTAATATGGTCTATATGCCTGC   3979
+
+               11199 tagttgggtgatgcgtattatgacatggttggatatggttgatacta---  11245
+                     |||||||||||||||||||||||||||||||||||||||||||||||   
+Weight          3980 TAGTTGGGTGATGCGTATTATGACATGGTTGGATATGGTTGATACTAGTT   4029
+
+               11246 ------gttttaagctaaaagactgtgttatgtatgcatcagctgtagtg  11289
+                           ||||||||||||||||||||||||||||||||||||||||||||
+Weight          4030 TGTCTGGTTTTAAGCTAAAAGACTGTGTTATGTATGCATCAGCTGTAGTG   4079
+
+               11290 ttactaatccttatgacagcaagaactgtgtatgatgatggtgctaggag  11339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4080 TTACTAATCCTTATGACAGCAAGAACTGTGTATGATGATGGTGCTAGGAG   4129
+
+               11340 agtgtggacacttatgaatgtcttgacactcgtttataaagtttattatg  11389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4130 AGTGTGGACACTTATGAATGTCTTGACACTCGTTTATAAAGTTTATTATG   4179
+
+               11390 gtaatgctttagatcaagccatttccatgtgggctcttataatctctgtt  11439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4180 GTAATGCTTTAGATCAAGCCATTTCCATGTGGGCTCTTATAATCTCTGTT   4229
+
+               11440 acttctaactactcaggtgtagttacaactgtcatgtttttggccagagg  11489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4230 ACTTCTAACTACTCAGGTGTAGTTACAACTGTCATGTTTTTGGCCAGAGG   4279
+
+               11490 tgttgtttttatgtgtgttgagtattgccctattttcttcataactggta  11539
+                     |.||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4280 TATTGTTTTTATGTGTGTTGAGTATTGCCCTATTTTCTTCATAACTGGTA   4329
+
+               11540 atacacttcagtgtataatgctagtttattgtttcttaggctatttttgt  11589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4330 ATACACTTCAGTGTATAATGCTAGTTTATTGTTTCTTAGGCTATTTTTGT   4379
+
+               11590 acttgttactttggcctcttttgtttactcaaccgctactttagactgac  11639
+                     ||||||| |||||||||||||||||||||||||| |||||||||||||||
+Weight          4380 ACTTGTT-CTTTGGCCTCTTTTGTTTACTCAACC-CTACTTTAGACTGAC   4427
+
+               11640 tcttggtgtttatgattacttagtttctacacaggagtttagatatatga  11689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4428 TCTTGGTGTTTATGATTACTTAGTTTCTACACAGGAGTTTAGATATATGA   4477
+
+               11690 attcacagggactactcccacccaagaatagcatagatgccttcaaactc  11739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4478 ATTCACAGGGACTACTCCCACCCAAGAATAGCATAGATGCCTTCAAACTC   4527
+
+               11740 aacattaaattgttgggtgttggtggcaaaccttgtatcaaagtagccac  11789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4528 AACATTAAATTGTTGGGTGTTGGTGGCAAACCTTGTATCAAAGTAGCCAC   4577
+
+               11790 tgtacagtctaaaatgtcagatgtaaagtgcacatcagtagtcttactct  11839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4578 TGTACAGTCTAAAATGTCAGATGTAAAGTGCACATCAGTAGTCTTACTCT   4627
+
+               11840 cagttttgcaacaactcagagtagaatcatcatctaaattgtgggctcaa  11889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4628 CAGTTTTGCAACAACTCAGAGTAGAATCATCATCTAAATTGTGGGCTCAA   4677
+
+               11890 tgtgtccagttacacaatgacattctcttagctaaagatactactgaagc  11939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4678 TGTGTCCAGTTACACAATGACATTCTCTTAGCTAAAGATACTACTGAAGC   4727
+
+               11940 ctttgaaaaaatggtttcactactttctgttttgctttccatgcagggtg  11989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4728 CTTTGAAAAAATGGTTTCACTACTTTCTGTTTTGCTTTCCATGCAGGGTG   4777
+
+               11990 ctgtagacataaacaagctttgtgaagaaatgctggacaacagggcaacc  12039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4778 CTGTAGACATAAACAAGCTTTGTGAAGAAATGCTGGACAACAGGGCAACC   4827
+
+               12040 ttacaagctatagcctcagagtttagttcccttccatcatatgcagcttt  12089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4828 TTACAAGCTATAGCCTCAGAGTTTAGTTCCCTTCCATCATATGCAGCTTT   4877
+
+               12090 tgctactgctcaagaagcttatgagcaggctgttgctaatggtgattctg  12139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4878 TGCTACTGCTCAAGAAGCTTATGAGCAGGCTGTTGCTAATGGTGATTCTG   4927
+
+               12140 aagttgttcttaaaaagttgaagaagtctttgaatgtggctaaatctgaa  12189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4928 AAGTTGTTCTTAAAAAGTTGAAGAAGTCTTTGAATGTGGCTAAATCTGAA   4977
+
+               12190 tttgaccgtgatgcagccatgcaacgtaagttggaaaagatggctgatca  12239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          4978 TTTGACCGTGATGCAGCCATGCAACGTAAGTTGGAAAAGATGGCTGATCA   5027
+
+               12240 agctatgacccaaatgtataaacaggctagatctgaggacaagagggcaa  12289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5028 AGCTATGACCCAAATGTATAAACAGGCTAGATCTGAGGACAAGAGGGCAA   5077
+
+               12290 aagttactagtgctatgcagacaatgcttttcactatgcttagaaagttg  12339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5078 AAGTTACTAGTGCTATGCAGACAATGCTTTTCACTATGCTTAGAAAGTTG   5127
+
+               12340 gataatgatgcactcaacaacattatcaacaatgcaagagatggttgtgt  12389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5128 GATAATGATGCACTCAACAACATTATCAACAATGCAAGAGATGGTTGTGT   5177
+
+               12390 tcccttgaacataatacctcttacaacagcagccaaactaatggttgtca  12439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5178 TCCCTTGAACATAATACCTCTTACAACAGCAGCCAAACTAATGGTTGTCA   5227
+
+               12440 taccagactataacacatataaaaatacgtgtgatggtacaacatttact  12489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5228 TACCAGACTATAACACATATAAAAATACGTGTGATGGTACAACATTTACT   5277
+
+               12490 tatgcatcagcattgtgggaaatccaacaggttgtagatgcagatagtaa  12539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5278 TATGCATCAGCATTGTGGGAAATCCAACAGGTTGTAGATGCAGATAGTAA   5327
+
+               12540 aattgttcaacttagtgaaattagtatggacaattcacctaatttagcat  12589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5328 AATTGTTCAACTTAGTGAAATTAGTATGGACAATTCACCTAATTTAGCAT   5377
+
+               12590 ggcctcttattgtaacagctttaagggccaattctgctgtcaaattacag  12639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5378 GGCCTCTTATTGTAACAGCTTTAAGGGCCAATTCTGCTGTCAAATTACAG   5427
+
+               12640 aataatgagcttagtcctgttgcactacgacagatgtcttgtgctgccgg  12689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5428 AATAATGAGCTTAGTCCTGTTGCACTACGACAGATGTCTTGTGCTGCCGG   5477
+
+               12690 tactacacaaactgcttgcactgatgacaatgcgttagcttactacaaca  12739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5478 TACTACACAAACTGCTTGCACTGATGACAATGCGTTAGCTTACTACAACA   5527
+
+               12740 caacaaagggaggtaggtttgtacttgcactgttatccgatttacaggat  12789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5528 CAACAAAGGGAGGTAGGTTTGTACTTGCACTGTTATCCGATTTACAGGAT   5577
+
+               12790 ttgaaatgggctagattccctaagagtgatggaactggtactatctatac  12839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5578 TTGAAATGGGCTAGATTCCCTAAGAGTGATGGAACTGGTACTATCTATAC   5627
+
+               12840 agaactggaaccaccttgtaggtttgttacagacacacctaaaggtccta  12889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5628 AGAACTGGAACCACCTTGTAGGTTTGTTACAGACACACCTAAAGGTCCTA   5677
+
+               12890 aagtgaagtatttatactttattaaaggattaaacaacctaaatagaggt  12939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5678 AAGTGAAGTATTTATACTTTATTAAAGGATTAAACAACCTAAATAGAGGT   5727
+
+               12940 atggtacttggtagtttagctgccacagtacgtctacaagctggtaatgc  12989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5728 ATGGTACTTGGTAGTTTAGCTGCCACAGTACGTCTACAAGCTGGTAATGC   5777
+
+               12990 aacagaagtgcctgccaattcaactgtattatctttctgtgcttttgctg  13039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5778 AACAGAAGTGCCTGCCAATTCAACTGTATTATCTTTCTGTGCTTTTGCTG   5827
+
+               13040 tagatgctgctaaagcttacaaagattatctagctagtgggggacaacca  13089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5828 TAGATGCTGCTAAAGCTTACAAAGATTATCTAGCTAGTGGGGGACAACCA   5877
+
+               13090 atcactaattgtgttaagatgttgtgtacacacactggtactggtcaggc  13139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5878 ATCACTAATTGTGTTAAGATGTTGTGTACACACACTGGTACTGGTCAGGC   5927
+
+               13140 aataacagtcacaccggaagccaatatggatcaagaatcctttggtggtg  13189
+                     |||||||||.||||||||||||||||||||||||||||||||||||||||
+Weight          5928 AATAACAGTTACACCGGAAGCCAATATGGATCAAGAATCCTTTGGTGGTG   5977
+
+               13190 catcgtgttgtctgtactgccgttgccacatagatcatccaaatcctaaa  13239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          5978 CATCGTGTTGTCTGTACTGCCGTTGCCACATAGATCATCCAAATCCTAAA   6027
+
+               13240 ggattttgtgacttaaaaggtaagtatgtacaaatacctacaacttgtgc  13289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6028 GGATTTTGTGACTTAAAAGGTAAGTATGTACAAATACCTACAACTTGTGC   6077
+
+               13290 taatgaccctgtgggttttacacttaaaaacacagtctgtaccgtctgcg  13339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6078 TAATGACCCTGTGGGTTTTACACTTAAAAACACAGTCTGTACCGTCTGCG   6127
+
+               13340 gtatgtggaaaggttatggctgtagttgtgatcaactccgcgaacccatg  13389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6128 GTATGTGGAAAGGTTATGGCTGTAGTTGTGATCAACTCCGCGAACCCATG   6177
+
+               13390 cttcagtcagctgatgcacaatcgtttttaaacgggtttgcggtgtaagt  13439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6178 CTTCAGTCAGCTGATGCACAATCGTTTTTAAACGGGTTTGCGGTGTAAGT   6227
+
+               13440 gcagcccgtcttacaccgtgcggcacaggcactagtactgatgtcgtata  13489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6228 GCAGCCCGTCTTACACCGTGCGGCACAGGCACTAGTACTGATGTCGTATA   6277
+
+               13490 cagggcttttgacatctacaatgataaagtagctggttttgctaaattcc  13539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6278 CAGGGCTTTTGACATCTACAATGATAAAGTAGCTGGTTTTGCTAAATTCC   6327
+
+               13540 taaaaactaattgttgtcgcttccaagaaaaggacgaagatgacaattta  13589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6328 TAAAAACTAATTGTTGTCGCTTCCAAGAAAAGGACGAAGATGACAATTTA   6377
+
+               13590 attgattcttactttgtagttaagagacacactttctctaactaccaaca  13639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6378 ATTGATTCTTACTTTGTAGTTAAGAGACACACTTTCTCTAACTACCAACA   6427
+
+               13640 tgaagaaacaatttataatttacttaaggattgtccagctgttgctaaac  13689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6428 TGAAGAAACAATTTATAATTTACTTAAGGATTGTCCAGCTGTTGCTAAAC   6477
+
+               13690 atgacttctttaagtttagaatagacggtgacatggtaccacatatatca  13739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6478 ATGACTTCTTTAAGTTTAGAATAGACGGTGACATGGTACCACATATATCA   6527
+
+               13740 cgtcaacgtcttactaaatacacaatggcagacctcgtctatgctttaag  13789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6528 CGTCAACGTCTTACTAAATACACAATGGCAGACCTCGTCTATGCTTTAAG   6577
+
+               13790 gcattttgatgaaggtaattgtgacacattaaaagaaatacttgtcacat  13839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6578 GCATTTTGATGAAGGTAATTGTGACACATTAAAAGAAATACTTGTCACAT   6627
+
+               13840 acaattgttgtgatgatgattatttcaataaaaaggactggtatgatttt  13889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6628 ACAATTGTTGTGATGATGATTATTTCAATAAAAAGGACTGGTATGATTTT   6677
+
+               13890 gtagaaaacccagatatattacgcgtatacgccaacttaggtgaacgtgt  13939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6678 GTAGAAAACCCAGATATATTACGCGTATACGCCAACTTAGGTGAACGTGT   6727
+
+               13940 acgccaagctttgttaaaaacagtacaattctgtgatgccatgcgaaatg  13989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6728 ACGCCAAGCTTTGTTAAAAACAGTACAATTCTGTGATGCCATGCGAAATG   6777
+
+               13990 ctggtattgttggtgtactgacattagataatcaagatctcaatggtaac  14039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6778 CTGGTATTGTTGGTGTACTGACATTAGATAATCAAGATCTCAATGGTAAC   6827
+
+               14040 tggtatgatttcggtgatttcatacaaaccacgccaggtagtggagttcc  14089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6828 TGGTATGATTTCGGTGATTTCATACAAACCACGCCAGGTAGTGGAGTTCC   6877
+
+               14090 tgttgtagattcttattattcattgttaatgcctatattaaccttgacca  14139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6878 TGTTGTAGATTCTTATTATTCATTGTTAATGCCTATATTAACCTTGACCA   6927
+
+               14140 gggctttaactgcagagtcacatgttgacactgacttaacaaagccttac  14189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6928 GGGCTTTAACTGCAGAGTCACATGTTGACACTGACTTAACAAAGCCTTAC   6977
+
+               14190 attaagtgggatttgttaaaatatgacttcacggaagagaggttaaaact  14239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          6978 ATTAAGTGGGATTTGTTAAAATATGACTTCACGGAAGAGAGGTTAAAACT   7027
+
+               14240 ctttgaccgttattttaaatattgggatcagacataccacccaaattgtg  14289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7028 CTTTGACCGTTATTTTAAATATTGGGATCAGACATACCACCCAAATTGTG   7077
+
+               14290 ttaactgtttggatgacagatgcattctgcattgtgcaaactttaatgtt  14339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7078 TTAACTGTTTGGATGACAGATGCATTCTGCATTGTGCAAACTTTAATGTT   7127
+
+               14340 ttattctctacagtgttcccacttacaagttttggaccactagtgagaaa  14389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7128 TTATTCTCTACAGTGTTCCCACTTACAAGTTTTGGACCACTAGTGAGAAA   7177
+
+               14390 aatatttgttgatggtgttccatttgtagtttcaactggataccacttca  14439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7178 AATATTTGTTGATGGTGTTCCATTTGTAGTTTCAACTGGATACCACTTCA   7227
+
+               14440 gagagctaggtgttgtacataatcaggatgtaaacttacatagctctaga  14489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7228 GAGAGCTAGGTGTTGTACATAATCAGGATGTAAACTTACATAGCTCTAGA   7277
+
+               14490 cttagttttaaggaattacttgtgtatgctgctgaccctgctatgcacgc  14539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7278 CTTAGTTTTAAGGAATTACTTGTGTATGCTGCTGACCCTGCTATGCACGC   7327
+
+               14540 tgcttctggtaatctattactagataaacgcactacgtgcttttcagtag  14589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7328 TGCTTCTGGTAATCTATTACTAGATAAACGCACTACGTGCTTTTCAGTAG   7377
+
+               14590 ctgcacttactaacaatgttgcttttcaaactgtcaaacccggtaatttt  14639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7378 CTGCACTTACTAACAATGTTGCTTTTCAAACTGTCAAACCCGGTAATTTT   7427
+
+               14640 aacaaagacttctatgactttgctgtgtctaagggtttctttaaggaagg  14689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7428 AACAAAGACTTCTATGACTTTGCTGTGTCTAAGGGTTTCTTTAAGGAAGG   7477
+
+               14690 aagttctgttgaattaaaacacttcttctttgctcaggatggtaatgctg  14739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7478 AAGTTCTGTTGAATTAAAACACTTCTTCTTTGCTCAGGATGGTAATGCTG   7527
+
+               14740 ctatcagcgattatgactactatcgttataatctaccaacaatgtgtgat  14789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7528 CTATCAGCGATTATGACTACTATCGTTATAATCTACCAACAATGTGTGAT   7577
+
+               14790 atcagacaactactatttgtagttgaagttgttgataagtactttgattg  14839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7578 ATCAGACAACTACTATTTGTAGTTGAAGTTGTTGATAAGTACTTTGATTG   7627
+
+               14840 ttacgatggtggctgtattaatgctaaccaagtcatcgtcaacaacctag  14889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7628 TTACGATGGTGGCTGTATTAATGCTAACCAAGTCATCGTCAACAACCTAG   7677
+
+               14890 acaaatcagctggttttccatttaataaatggggtaaggctagactttat  14939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7678 ACAAATCAGCTGGTTTTCCATTTAATAAATGGGGTAAGGCTAGACTTTAT   7727
+
+               14940 tatgattcaatgagttatgaggatcaagatgcacttttcgcatatacaaa  14989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7728 TATGATTCAATGAGTTATGAGGATCAAGATGCACTTTTCGCATATACAAA   7777
+
+               14990 acgtaatgtcatccctactataactcaaatgaatcttaagtatgccatta  15039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          7778 ACGTAATGTCATCCCTACTATAACTCAAATGAATCTTAAGTATGCCATTA   7827
+
+               15040 gtgcaaagaatagagctcgcaccgtagctggtgtctctatctgtagtact  15089
+                     |||||||||||||||||||||||||||||||| ||| |||||||||||||
+Weight          7828 GTGCAAAGAATAGAGCTCGCACCGTAGCTGGT-TCT-TATCTGTAGTACT   7875
+
+               15090 atgaccaatagacagtttcatcaaaaattattgaaatcaatagccgccac  15139
+                     |  .|||||||||||||||||||||||||||  ||||||||||||||| |
+Weight          7876 A--GCCAATAGACAGTTTCATCAAAAATTAT--AAATCAATAGCCGCC-C   7920
+
+               15140 tagaggagctactgtagtaattggaacaagcaaattctatggtggttggc  15189
+                     ||||||||| |||| ||| |||||||||||||||||||||||||||||||
+Weight          7921 TAGAGGAGC-ACTG-AGT-ATTGGAACAAGCAAATTCTATGGTGGTTGGC   7967
+
+               15190 acaatatgttaaaaactgtttatagtgatgtagaaaaccctcaccttatg  15239
+                     ||||.|||||||||||||||||||||||||||||||||||||||||||||
+Weight          7968 ACAACATGTTAAAAACTGTTTATAGTGATGTAGAAAACCCTCACCTTATG   8017
+
+               15240 ggttgggattatcctaaatgtgatagagccatgcctaacatgcttagaat  15289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8018 GGTTGGGATTATCCTAAATGTGATAGAGCCATGCCTAACATGCTTAGAAT   8067
+
+               15290 tatggcctcacttgttcttgctcgcaaacatacaacgtgttgtagcttgt  15339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8068 TATGGCCTCACTTGTTCTTGCTCGCAAACATACAACGTGTTGTAGCTTGT   8117
+
+               15340 cacaccgtttctatagattagctaatgagtgtgctcaagtattgagtgaa  15389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8118 CACACCGTTTCTATAGATTAGCTAATGAGTGTGCTCAAGTATTGAGTGAA   8167
+
+               15390 atggtcatgtgtggcggttcactatatgttaaaccaggtggaacctcatc  15439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8168 ATGGTCATGTGTGGCGGTTCACTATATGTTAAACCAGGTGGAACCTCATC   8217
+
+               15440 aggagatgccacaactgcttatgctaatagtgtttttaacatttgtcaag  15489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8218 AGGAGATGCCACAACTGCTTATGCTAATAGTGTTTTTAACATTTGTCAAG   8267
+
+               15490 ctgtcacggccaatgttaatgcacttttatctactgatggtaacaaaatt  15539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8268 CTGTCACGGCCAATGTTAATGCACTTTTATCTACTGATGGTAACAAAATT   8317
+
+               15540 gccgataagtatgtccgcaatttacaacacagactttatgagtgtctcta  15589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8318 GCCGATAAGTATGTCCGCAATTTACAACACAGACTTTATGAGTGTCTCTA   8367
+
+               15590 tagaaatagagatgttgacacagactttgtgaatgagttttacgcatatt  15639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8368 TAGAAATAGAGATGTTGACACAGACTTTGTGAATGAGTTTTACGCATATT   8417
+
+               15640 tgcgtaaacatttctcaatgatgatactctctgacgatgctgttgtgtgt  15689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8418 TGCGTAAACATTTCTCAATGATGATACTCTCTGACGATGCTGTTGTGTGT   8467
+
+               15690 ttcaatagcacttatgcatctcaaggtctagtggctagcataaagaactt  15739
+                     ||||||||||||||||||||||||||||||.|||||||||||||||||||
+Weight          8468 TTCAATAGCACTTATGCATCTCAAGGTCTATTGGCTAGCATAAAGAACTT   8517
+
+               15740 taagtcagttctttattatcaaaacaatgtttttatgtctgaagcaaaat  15789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8518 TAAGTCAGTTCTTTATTATCAAAACAATGTTTTTATGTCTGAAGCAAAAT   8567
+
+               15790 gttggactgagactgaccttactaaaggacctcatgaattttgctctcaa  15839
+                     |||||||||||||||||||||| ||||| |||||||||||||||||||||
+Weight          8568 GTTGGACTGAGACTGACCTTAC-AAAGG-CCTCATGAATTTTGCTCTCAA   8615
+
+               15840 catacaatgctagttaaacagggtgatgattatgtgtaccttccttaccc  15889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8616 CATACAATGCTAGTTAAACAGGGTGATGATTATGTGTACCTTCCTTACCC   8665
+
+               15890 agatccatcaagaatcctaggggccggctgttttgtagatgatatcgtaa  15939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8666 AGATCCATCAAGAATCCTAGGGGCCGGCTGTTTTGTAGATGATATCGTAA   8715
+
+               15940 aaacagatggtacacttatgattgaacggttcgtgtctttagctatagat  15989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8716 AAACAGATGGTACACTTATGATTGAACGGTTCGTGTCTTTAGCTATAGAT   8765
+
+               15990 gcttacccacttactaaacatcctaatcaggagtatgctgatgtctttca  16039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8766 GCTTACCCACTTACTAAACATCCTAATCAGGAGTATGCTGATGTCTTTCA   8815
+
+               16040 tttgtacttacaatacataagaaagctacatgatgagttaacaggacaca  16089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8816 TTTGTACTTACAATACATAAGAAAGCTACATGATGAGTTAACAGGACACA   8865
+
+               16090 tgttagacatgtattctgttatgcttactaatgataacacttcaaggtat  16139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8866 TGTTAGACATGTATTCTGTTATGCTTACTAATGATAACACTTCAAGGTAT   8915
+
+               16140 tgggaacctgagttttatgaggctatgtacacaccgcatacagtcttaca  16189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8916 TGGGAACCTGAGTTTTATGAGGCTATGTACACACCGCATACAGTCTTACA   8965
+
+               16190 ggctgttggggcttgtgttctttgcaattcacagacttcattaagatgtg  16239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          8966 GGCTGTTGGGGCTTGTGTTCTTTGCAATTCACAGACTTCATTAAGATGTG   9015
+
+               16240 gtgcttgcatacgtagaccattcttatgttgtaaatgctgttacgaccat  16289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9016 GTGCTTGCATACGTAGACCATTCTTATGTTGTAAATGCTGTTACGACCAT   9065
+
+               16290 gtcatatcaacatcacataaattagtcttgtctgttaatccgtatgtttg  16339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9066 GTCATATCAACATCACATAAATTAGTCTTGTCTGTTAATCCGTATGTTTG   9115
+
+               16340 caatgctccaggttgtgatgtcacagatgtgactcaactttacttaggag  16389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9116 CAATGCTCCAGGTTGTGATGTCACAGATGTGACTCAACTTTACTTAGGAG   9165
+
+               16390 gtatgagctattattgtaaatcacataaaccacccattagttttccattg  16439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9166 GTATGAGCTATTATTGTAAATCACATAAACCACCCATTAGTTTTCCATTG   9215
+
+               16440 tgtgctaatggacaagtttttggtttatataaaaatacatgtgttggtag  16489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9216 TGTGCTAATGGACAAGTTTTTGGTTTATATAAAAATACATGTGTTGGTAG   9265
+
+               16490 cgataatgttactgactttaatgcaattgcaacatgtgactggacaaatg  16539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9266 CGATAATGTTACTGACTTTAATGCAATTGCAACATGTGACTGGACAAATG   9315
+
+               16540 ctggtgattacattttagctaacacctgtactgaaagactcaagcttttt  16589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9316 CTGGTGATTACATTTTAGCTAACACCTGTACTGAAAGACTCAAGCTTTTT   9365
+
+               16590 gcagcagaaacgctcaaagctactgaggagacatttaaactgtcttatgg  16639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9366 GCAGCAGAAACGCTCAAAGCTACTGAGGAGACATTTAAACTGTCTTATGG   9415
+
+               16640 tattgctactgtacgtgaagtgctgtctgacagagaattacatctttcat  16689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9416 TATTGCTACTGTACGTGAAGTGCTGTCTGACAGAGAATTACATCTTTCAT   9465
+
+               16690 gggaagttggtaaacctagaccaccacttaaccgaaattatgtctttact  16739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9466 GGGAAGTTGGTAAACCTAGACCACCACTTAACCGAAATTATGTCTTTACT   9515
+
+               16740 ggttatcgtgtaactaaaaacagtaaagtacaaataggagagtacacctt  16789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9516 GGTTATCGTGTAACTAAAAACAGTAAAGTACAAATAGGAGAGTACACCTT   9565
+
+               16790 tgaaaaaggtgactatggtgatgctgttgtttaccgaggtacaacaactt  16839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9566 TGAAAAAGGTGACTATGGTGATGCTGTTGTTTACCGAGGTACAACAACTT   9615
+
+               16840 acaaattaaatgttggtgattattttgtgctgacatcacatacagtaatg  16889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9616 ACAAATTAAATGTTGGTGATTATTTTGTGCTGACATCACATACAGTAATG   9665
+
+               16890 ccattaagtgcacctacactagtgccacaagagcactatgttagaattac  16939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9666 CCATTAAGTGCACCTACACTAGTGCCACAAGAGCACTATGTTAGAATTAC   9715
+
+               16940 tggcttatacccaacactcaatatctcagatgagttttctagcaatgttg  16989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9716 TGGCTTATACCCAACACTCAATATCTCAGATGAGTTTTCTAGCAATGTTG   9765
+
+               16990 caaattatcaaaaggttggtatgcaaaagtattctacactccagggacca  17039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9766 CAAATTATCAAAAGGTTGGTATGCAAAAGTATTCTACACTCCAGGGACCA   9815
+
+               17040 cctggtactggtaagagtcattttgctattggcctagctctctactaccc  17089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9816 CCTGGTACTGGTAAGAGTCATTTTGCTATTGGCCTAGCTCTCTACTACCC   9865
+
+               17090 ttctgctcgcatagtgtatacagcttgctctcatgccgctgttgatgcac  17139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9866 TTCTGCTCGCATAGTGTATACAGCTTGCTCTCATGCCGCTGTTGATGCAC   9915
+
+               17140 tatgtgagaaggcattaaaatatttgcctatagataaatgtagtagaatt  17189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9916 TATGTGAGAAGGCATTAAAATATTTGCCTATAGATAAATGTAGTAGAATT   9965
+
+               17190 atacctgcacgtgctcgtgtagagtgttttgataaattcaaagtgaattc  17239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          9966 ATACCTGCACGTGCTCGTGTAGAGTGTTTTGATAAATTCAAAGTGAATTC  10015
+
+               17240 aacattagaacagtatgtcttttgtactgtaaatgcattgcctgagacga  17289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10016 AACATTAGAACAGTATGTCTTTTGTACTGTAAATGCATTGCCTGAGACGA  10065
+
+               17290 cagcagatatagttgtctttgatgaaatttcaatggccacaaattatgat  17339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10066 CAGCAGATATAGTTGTCTTTGATGAAATTTCAATGGCCACAAATTATGAT  10115
+
+               17340 ttgagtgttgtcaatgccagattacgtgctaagcactatgtgtacattgg  17389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10116 TTGAGTGTTGTCAATGCCAGATTACGTGCTAAGCACTATGTGTACATTGG  10165
+
+               17390 cgaccctgctcaattacctgcaccacgcacattgctaactaagggcacac  17439
+                     ||| ||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10166 CGA-CCTGCTCAATTACCTGCACCACGCACATTGCTAACTAAGGGCACAC  10214
+
+               17440 tagaaccagaatatttcaattcagtgtgtagacttatgaaaactataggt  17489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10215 TAGAACCAGAATATTTCAATTCAGTGTGTAGACTTATGAAAACTATAGGT  10264
+
+               17490 ccagacatgttcctcggaacttgtcggcgttgtcctgctgaaattgttga  17539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10265 CCAGACATGTTCCTCGGAACTTGTCGGCGTTGTCCTGCTGAAATTGTTGA  10314
+
+               17540 cactgtgagtgctttggtttatgataataagcttaaagcacataaagaca  17589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10315 CACTGTGAGTGCTTTGGTTTATGATAATAAGCTTAAAGCACATAAAGACA  10364
+
+               17590 aatcagctcaatgctttaaaatgttttataagggtgttatcacgcatgat  17639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10365 AATCAGCTCAATGCTTTAAAATGTTTTATAAGGGTGTTATCACGCATGAT  10414
+
+               17640 gtttcatctgcaattaacaggccacaaataggcgtggtaagagaattcct  17689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10415 GTTTCATCTGCAATTAACAGGCCACAAATAGGCGTGGTAAGAGAATTCCT  10464
+
+               17690 tacacgtaaccctgcttggagaaaagctgtctttatttcaccttataatt  17739
+                     ||||||||||||||||||||| ||||||||||||||||||||||||||||
+Weight         10465 TACACGTAACCCTGCTTGGAG-AAAGCTGTCTTTATTTCACCTTATAATT  10513
+
+               17740 cacagaatgctgtagcctcaaagattttgggactaccaactcaaactgtt  17789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10514 CACAGAATGCTGTAGCCTCAAAGATTTTGGGACTACCAACTCAAACTGTT  10563
+
+               17790 gattcatcacagggctcagaatatgactatgtcatattcactcaaaccac  17839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10564 GATTCATCACAGGGCTCAGAATATGACTATGTCATATTCACTCAAACCAC  10613
+
+               17840 tgaaacagctcactcttgtaatgtaaacagatttaatgttgctattacca  17889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10614 TGAAACAGCTCACTCTTGTAATGTAAACAGATTTAATGTTGCTATTACCA  10663
+
+               17890 gagcaaaagtaggcatactttgcataatgtctgatagagacctttatgac  17939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10664 GAGCAAAAGTAGGCATACTTTGCATAATGTCTGATAGAGACCTTTATGAC  10713
+
+               17940 aagttgcaatttacaagtcttgaaattccacgtaggaatgtggcaacttt  17989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10714 AAGTTGCAATTTACAAGTCTTGAAATTCCACGTAGGAATGTGGCAACTTT  10763
+
+               17990 acaagctgaaaatgtaacaggactctttaaagattgtagtaaggtaatca  18039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10764 ACAAGCTGAAAATGTAACAGGACTCTTTAAAGATTGTAGTAAGGTAATCA  10813
+
+               18040 ctgggttacatcctacacaggcacctacacacctcagtgttgacactaaa  18089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10814 CTGGGTTACATCCTACACAGGCACCTACACACCTCAGTGTTGACACTAAA  10863
+
+               18090 ttcaaaactgaaggtttatgtgttgacgtacctggcatacctaaggacat  18139
+                     |||||||||||||||||||||||||||.||||||||||||||||||||||
+Weight         10864 TTCAAAACTGAAGGTTTATGTGTTGACATACCTGGCATACCTAAGGACAT  10913
+
+               18140 gacctatagaagactcatctctatgatgggttttaaaatgaattatcaag  18189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10914 GACCTATAGAAGACTCATCTCTATGATGGGTTTTAAAATGAATTATCAAG  10963
+
+               18190 ttaatggttaccctaacatgtttatcacccgcgaagaagctataagacat  18239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         10964 TTAATGGTTACCCTAACATGTTTATCACCCGCGAAGAAGCTATAAGACAT  11013
+
+               18240 gtacgtgcatggattggcttcgatgtcgaggggtgtcatgctactagaga  18289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11014 GTACGTGCATGGATTGGCTTCGATGTCGAGGGGTGTCATGCTACTAGAGA  11063
+
+               18290 agctgttggtaccaatttacctttacagctaggtttttctacaggtgtta  18339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11064 AGCTGTTGGTACCAATTTACCTTTACAGCTAGGTTTTTCTACAGGTGTTA  11113
+
+               18340 acctagttgctgtacctacaggttatgttgatacacctaataatacagat  18389
+                     ||||||||||||||||||||||||||||||||||||||.|||||||||||
+Weight         11114 ACCTAGTTGCTGTACCTACAGGTTATGTTGATACACCTGATAATACAGAT  11163
+
+               18390 ttttccagagttagtgctaaaccaccgcctggagatcaatttaaacacct  18439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11164 TTTTCCAGAGTTAGTGCTAAACCACCGCCTGGAGATCAATTTAAACACCT  11213
+
+               18440 cataccacttatgtacaaaggacttccttggaatgtagtgcgtataaaga  18489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11214 CATACCACTTATGTACAAAGGACTTCCTTGGAATGTAGTGCGTATAAAGA  11263
+
+               18490 ttgtacaaatgttaagtgacacacttaaaaatctctctgacagagtcgta  18539
+                     ||.|||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11264 TTTTACAAATGTTAAGTGACACACTTAAAAATCTCTCTGACAGAGTCGTA  11313
+
+               18540 tttgtcttatgggcacatggctttgagttgacatctatgaagtattttgt  18589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11314 TTTGTCTTATGGGCACATGGCTTTGAGTTGACATCTATGAAGTATTTTGT  11363
+
+               18590 gaaaataggacctgagcgcacctgttgtctatgtgatagacgtgccacat  18639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11364 GAAAATAGGACCTGAGCGCACCTGTTGTCTATGTGATAGACGTGCCACAT  11413
+
+               18640 gcttttccactgcttcagacacttatgcctgttggcatcattctattgga  18689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11414 GCTTTTCCACTGCTTCAGACACTTATGCCTGTTGGCATCATTCTATTGGA  11463
+
+               18690 tttgattacgtctataatccgtttatgattgatgttcaacaatggggttt  18739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11464 TTTGATTACGTCTATAATCCGTTTATGATTGATGTTCAACAATGGGGTTT  11513
+
+               18740 tacaggtaacctacaaagcaaccatgatctgtattgtcaagtccatggta  18789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11514 TACAGGTAACCTACAAAGCAACCATGATCTGTATTGTCAAGTCCATGGTA  11563
+
+               18790 atgcacatgtagctagttgtgatgcaatcatgactaggtgtctagctgtc  18839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11564 ATGCACATGTAGCTAGTTGTGATGCAATCATGACTAGGTGTCTAGCTGTC  11613
+
+               18840 cacgagtgctttgttaagcgtgttgactggactattgaatatcctataat  18889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11614 CACGAGTGCTTTGTTAAGCGTGTTGACTGGACTATTGAATATCCTATAAT  11663
+
+               18890 tggtgatgaactgaagattaatgcggcttgtagaaaggttcaacacatgg  18939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11664 TGGTGATGAACTGAAGATTAATGCGGCTTGTAGAAAGGTTCAACACATGG  11713
+
+               18940 ttgttaaagctgcattattagcagacaaattcccagttcttcacgacatt  18989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11714 TTGTTAAAGCTGCATTATTAGCAGACAAATTCCCAGTTCTTCACGACATT  11763
+
+               18990 ggtaaccctaaagctattaagtgtgtacctcaagctgatgtagaatggaa  19039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11764 GGTAACCCTAAAGCTATTAAGTGTGTACCTCAAGCTGATGTAGAATGGAA  11813
+
+               19040 gttctatgatgcacagccttgtagtgacaaagcttataaaatagaagaat  19089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11814 GTTCTATGATGCACAGCCTTGTAGTGACAAAGCTTATAAAATAGAAGAAT  11863
+
+               19090 tattctattcttatgccacacattctgacaaattcacagatggtgtatgc  19139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11864 TATTCTATTCTTATGCCACACATTCTGACAAATTCACAGATGGTGTATGC  11913
+
+               19140 ctattttggaattgcaatgtcgatagatatcctgctaattccattgtttg  19189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11914 CTATTTTGGAATTGCAATGTCGATAGATATCCTGCTAATTCCATTGTTTG  11963
+
+               19190 tagatttgacactagagtgctatctaaccttaacttgcctggttgtgatg  19239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         11964 TAGATTTGACACTAGAGTGCTATCTAACCTTAACTTGCCTGGTTGTGATG  12013
+
+               19240 gtggcagtttgtatgtaaataaacatgcattccacacaccagcttttgat  19289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12014 GTGGCAGTTTGTATGTAAATAAACATGCATTCCACACACCAGCTTTTGAT  12063
+
+               19290 aaaagtgcttttgttaatttaaaacaattaccatttttctattactctga  19339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12064 AAAAGTGCTTTTGTTAATTTAAAACAATTACCATTTTTCTATTACTCTGA  12113
+
+               19340 cagtccatgtgagtctcatggaaaacaagtagtgtcagatatagattatg  19389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12114 CAGTCCATGTGAGTCTCATGGAAAACAAGTAGTGTCAGATATAGATTATG  12163
+
+               19390 taccactaaagtctgctacgtgtataacacgttgcaatttaggtggtgct  19439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12164 TACCACTAAAGTCTGCTACGTGTATAACACGTTGCAATTTAGGTGGTGCT  12213
+
+               19440 gtctgtagacatcatgctaatgagtacagattgtatctcgatgcttataa  19489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12214 GTCTGTAGACATCATGCTAATGAGTACAGATTGTATCTCGATGCTTATAA  12263
+
+               19490 catgatgatctcagctggctttagcttgtgggtttacaaacaatttgata  19539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12264 CATGATGATCTCAGCTGGCTTTAGCTTGTGGGTTTACAAACAATTTGATA  12313
+
+               19540 cttataacctctggaacacttttacaagacttcagagtttagaaaatgtg  19589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12314 CTTATAACCTCTGGAACACTTTTACAAGACTTCAGAGTTTAGAAAATGTG  12363
+
+               19590 gcttttaatgttgtaaataagggacactttgatggacaacagggtgaagt  19639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12364 GCTTTTAATGTTGTAAATAAGGGACACTTTGATGGACAACAGGGTGAAGT  12413
+
+               19640 accagtttctatcattaataacactgtttacacaaaagttgatggtgttg  19689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12414 ACCAGTTTCTATCATTAATAACACTGTTTACACAAAAGTTGATGGTGTTG  12463
+
+               19690 atgtagaattgtttgaaaataaaacaacattacctgttaatgtagcattt  19739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12464 ATGTAGAATTGTTTGAAAATAAAACAACATTACCTGTTAATGTAGCATTT  12513
+
+               19740 gagctttgggctaagcgcaacattaaaccagtaccagaggtgaaaatact  19789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12514 GAGCTTTGGGCTAAGCGCAACATTAAACCAGTACCAGAGGTGAAAATACT  12563
+
+               19790 caataatttgggtgtggacattgctgctaatactgtgatctgggactaca  19839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12564 CAATAATTTGGGTGTGGACATTGCTGCTAATACTGTGATCTGGGACTACA  12613
+
+               19840 aaagagatgctccagcacatatatctactattggtgtttgttctatgact  19889
+                     ||||||||||||||||||||||||||||||||||||||||||||||| ||
+Weight         12614 AAAGAGATGCTCCAGCACATATATCTACTATTGGTGTTTGTTCTATG-CT  12662
+
+               19890 gacatagccaagaaaccaactgaaacgatttgtgcaccactcactgtctt  19939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12663 GACATAGCCAAGAAACCAACTGAAACGATTTGTGCACCACTCACTGTCTT  12712
+
+               19940 ttttgatggtagagttgatggtcaagtagacttatttagaaatgcccgta  19989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12713 TTTTGATGGTAGAGTTGATGGTCAAGTAGACTTATTTAGAAATGCCCGTA  12762
+
+               19990 atggtgttcttattacagaaggtagtgttaaaggtttacaaccatctgta  20039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12763 ATGGTGTTCTTATTACAGAAGGTAGTGTTAAAGGTTTACAACCATCTGTA  12812
+
+               20040 ggtcccaaacaagctagtcttaatggagtcacattaattggagaagccgt  20089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12813 GGTCCCAAACAAGCTAGTCTTAATGGAGTCACATTAATTGGAGAAGCCGT  12862
+
+               20090 aaaaacacagttcaattattataagaaagttgatggtgttgtccaacaat  20139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12863 AAAAACACAGTTCAATTATTATAAGAAAGTTGATGGTGTTGTCCAACAAT  12912
+
+               20140 tacctgaaacttactttactcagagtagaaatttacaagaatttaaaccc  20189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12913 TACCTGAAACTTACTTTACTCAGAGTAGAAATTTACAAGAATTTAAACCC  12962
+
+               20190 aggagtcaaatggaaattgatttcttagaattagctatggatgaattcat  20239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         12963 AGGAGTCAAATGGAAATTGATTTCTTAGAATTAGCTATGGATGAATTCAT  13012
+
+               20240 tgaacggtataaattagaaggctatgccttcgaacatatcgtttatggag  20289
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13013 TGAACGGTATAAATTAGAAGGCTATGCCTTCGAACATATCGTTTATGGAG  13062
+
+               20290 attttagtcatagtcagttaggtggtttacatctactgattggactagct  20339
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13063 ATTTTAGTCATAGTCAGTTAGGTGGTTTACATCTACTGATTGGACTAGCT  13112
+
+               20340 aaacgttttaaggaatcaccttttgaattagaagattttattcctatgga  20389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13113 AAACGTTTTAAGGAATCACCTTTTGAATTAGAAGATTTTATTCCTATGGA  13162
+
+               20390 cagtacagttaaaaactatttcataacagatgcgcaaacaggttcatcta  20439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13163 CAGTACAGTTAAAAACTATTTCATAACAGATGCGCAAACAGGTTCATCTA  13212
+
+               20440 agtgtgtgtgttctgttattgatttattacttgatgattttgttgaaata  20489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13213 AGTGTGTGTGTTCTGTTATTGATTTATTACTTGATGATTTTGTTGAAATA  13262
+
+               20490 ataaaatcccaagatttatctgtagtttctaaggttgtcaaagtgactat  20539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13263 ATAAAATCCCAAGATTTATCTGTAGTTTCTAAGGTTGTCAAAGTGACTAT  13312
+
+               20540 tgactatacagaaatttcatttatgctttggtgtaaagatggccatgtag  20589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13313 TGACTATACAGAAATTTCATTTATGCTTTGGTGTAAAGATGGCCATGTAG  13362
+
+               20590 aaacattttacccaaaattacaatctagtcaagcgtggcaaccgggtgtt  20639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13363 AAACATTTTACCCAAAATTACAATCTAGTCAAGCGTGGCAACCGGGTGTT  13412
+
+               20640 gctatgcctaatctttacaaaatgcaaagaatgctattagaaaagtgtga  20689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13413 GCTATGCCTAATCTTTACAAAATGCAAAGAATGCTATTAGAAAAGTGTGA  13462
+
+               20690 ccttcaaaattatggtgatagtgcaacattacctaaaggcataatgatga  20739
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13463 CCTTCAAAATTATGGTGATAGTGCAACATTACCTAAAGGCATAATGATGA  13512
+
+               20740 atgtcgcaaaatatactcaactgtgtcaatatttaaacacattaacatta  20789
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13513 ATGTCGCAAAATATACTCAACTGTGTCAATATTTAAACACATTAACATTA  13562
+
+               20790 gctgtaccctataatatgagagttatacattttggtgctggttctgataa  20839
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13563 GCTGTACCCTATAATATGAGAGTTATACATTTTGGTGCTGGTTCTGATAA  13612
+
+               20840 aggagttgcaccaggtacagctgttttaagacagtggttgcctacgggta  20889
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13613 AGGAGTTGCACCAGGTACAGCTGTTTTAAGACAGTGGTTGCCTACGGGTA  13662
+
+               20890 cgctgcttgtcgattcagatcttaatgactttgtctctgatgcagattca  20939
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13663 CGCTGCTTGTCGATTCAGATCTTAATGACTTTGTCTCTGATGCAGATTCA  13712
+
+               20940 actttgattggtgattgtgcaactgtacatacagctaataaatgggatct  20989
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13713 ACTTTGATTGGTGATTGTGCAACTGTACATACAGCTAATAAATGGGATCT  13762
+
+               20990 cattattagtgatatgtacgaccctaagactaaaaatgttacaaaagaaa  21039
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13763 CATTATTAGTGATATGTACGACCCTAAGACTAAAAATGTTACAAAAGAAA  13812
+
+               21040 atgactctaaagagggttttttcacttacatttgtgggtttatacaacaa  21089
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13813 ATGACTCTAAAGAGGGTTTTTTCACTTACATTTGTGGGTTTATACAACAA  13862
+
+               21090 aagctagctcttggaggttccgtggctataaagataacagaacattcttg  21139
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13863 AAGCTAGCTCTTGGAGGTTCCGTGGCTATAAAGATAACAGAACATTCTTG  13912
+
+               21140 gaatgctgatctttataagctcatgggacacttcgcatggtggacagcct  21189
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13913 GAATGCTGATCTTTATAAGCTCATGGGACACTTCGCATGGTGGACAGCCT  13962
+
+               21190 ttgttactaatgtgaatgcgtcatcatctgaagcatttttaattggatgt  21239
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         13963 TTGTTACTAATGTGAATGCGTCATCATCTGAAGCATTTTTAATTGGATGT  14012
+
+               21240 aattatcttggcaaaccacgcgaacaaatagatggttatgtcatgcatgc  21289
+                     ||||||||||||||||||.|||||||||||||||||||||||||||||||
+Weight         14013 AATTATCTTGGCAAACCATGCGAACAAATAGATGGTTATGTCATGCATGC  14062
+
+               21290 aaattacatattttggaggaatacaaatccaattcagttgtcttcctatt  21339
+                     |||||||||| |||||||||||||||||||||||||||||||||||||||
+Weight         14063 AAATTACATA-TTTGGAGGAATACAAATCCAATTCAGTTGTCTTCCTATT  14111
+
+               21340 ctttatttgacatgagtaaatttccccttaaattaaggggtactgctgtt  21389
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14112 CTTTATTTGACATGAGTAAATTTCCCCTTAAATTAAGGGGTACTGCTGTT  14161
+
+               21390 atgtctttaaaagaaggtcaaatcaatgatatgattttatctcttcttag  21439
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14162 ATGTCTTTAAAAGAAGGTCAAATCAATGATATGATTTTATCTCTTCTTAG  14211
+
+               21440 taaaggtagacttataattagagaaaacaacagagttgttatttctagtg  21489
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14212 TAAAGGTAGACTTATAATTAGAGAAAACAACAGAGTTGTTATTTCTAGTG  14261
+
+               21490 atgttcttgttaacaactaaacgaacaatgtttgtttttcttgttttatt  21539
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14262 ATGTTCTTGTTAACAACTAAACGAACAATGTTTGTTTTTCTTGTTTTATT  14311
+
+               21540 gccactagtctctagtcagtgtgttaatcttacaaccagaactcaattac  21589
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14312 GCCACTAGTCTCTAGTCAGTGTGTTAATCTTACAACCAGAACTCAATTAC  14361
+
+               21590 cccctgcatacactaattctttcacacgtggtgtttattaccctgacaaa  21639
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14362 CCCCTGCATACACTAATTCTTTCACACGTGGTGTTTATTACCCTGACAAA  14411
+
+               21640 gttttcagatcctcagttttacattcaactcaggacttgttcttaccttt  21689
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14412 GTTTTCAGATCCTCAGTTTTACATTCAACTCAGGACTTGTTCTTACCTTT  14461
+
+               21690 cttttccaatgttacttggttccatgtta------tctctgggaccaatg  21733
+                     ||||||||||||||||||||||||||.||      |||||||||||||||
+Weight         14462 CTTTTCCAATGTTACTTGGTTCCATGCTATACATGTCTCTGGGACCAATG  14511
+
+               21734 gtactaagaggtttgataaccctgtcctaccatttaatgatggtgtttat  21783
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14512 GTACTAAGAGGTTTGATAACCCTGTCCTACCATTTAATGATGGTGTTTAT  14561
+
+               21784 tttgcttccattgagaagtctaacataataagaggctggatttttggtac  21833
+                     ||||||||||.|||||||||||||||||||||||||||||||||||||||
+Weight         14562 TTTGCTTCCACTGAGAAGTCTAACATAATAAGAGGCTGGATTTTTGGTAC  14611
+
+               21834 tactttagattcgaagacccagtccctacttattgttaataacgctacta  21883
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14612 TACTTTAGATTCGAAGACCCAGTCCCTACTTATTGTTAATAACGCTACTA  14661
+
+               21884 atgttgttattaaagtctgtgaatttcaattttgtaatgatccatttttg  21933
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14662 ATGTTGTTATTAAAGTCTGTGAATTTCAATTTTGTAATGATCCATTTTTG  14711
+
+               21934 g------accacaaaaacaacaaaagttggatggaaagtgagttcagagt  21977
+                     |      |||||||||||||||||||||||||||||||||||||||||||
+Weight         14712 GGTGTTTACCACAAAAACAACAAAAGTTGGATGGAAAGTGAGTTCAGAGT  14761
+
+               21978 ttattctagtgcgaataattgcacttttgaatatgtctctcagccttttc  22027
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14762 TTATTCTAGTGCGAATAATTGCACTTTTGAATATGTCTCTCAGCCTTTTC  14811
+
+               22028 ttatggaccttgaaggaaaacagggtaatttcaaaaatcttagggaattt  22077
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14812 TTATGGACCTTGAAGGAAAACAGGGTAATTTCAAAAATCTTAGGGAATTT  14861
+
+               22078 gtgtttaagaatattgatggttattttaaaatatattctaagcacacgcc  22127
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         14862 GTGTTTAAGAATATTGATGGTTATTTTAAAATATATTCTAAGCACACGCC  14911
+
+               22128 tatta---tagtgcgtgagccagaagatctccctcagggtttttcggctt  22174
+                     |||||   ||||||||         |||||||||||||||||||||||||
+Weight         14912 TATTAATTTAGTGCGT---------GATCTCCCTCAGGGTTTTTCGGCTT  14952
+
+               22175 tagaaccattggtagatttgccaataggtattaacatcactaggtttcaa  22224
+                     |||||||||||||||||||||||||.||||||||||||||||||||||||
+Weight         14953 TAGAACCATTGGTAGATTTGCCAATTGGTATTAACATCACTAGGTTTCAA  15002
+
+               22225 actttacttgctttacatagaagttatttgactcctggtgattcttcttc  22274
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15003 ACTTTACTTGCTTTACATAGAAGTTATTTGACTCCTGGTGATTCTTCTTC  15052
+
+               22275 aggttggacagctggtgctgcagcttattatgtgggttatcttcaaccta  22324
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15053 AGGTTGGACAGCTGGTGCTGCAGCTTATTATGTGGGTTATCTTCAACCTA  15102
+
+               22325 ggacttttctattaaaatataatgaaaatggaaccattacagatgctgta  22374
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15103 GGACTTTTCTATTAAAATATAATGAAAATGGAACCATTACAGATGCTGTA  15152
+
+               22375 gactgtgcacttgaccctctctcagaaacaaagtgtacgttgaaatcctt  22424
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15153 GACTGTGCACTTGACCCTCTCTCAGAAACAAAGTGTACGTTGAAATCCTT  15202
+
+               22425 cactgtagaaaaaggaatctatcaaacttctaactttagagtccaaccaa  22474
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15203 CACTGTAGAAAAAGGAATCTATCAAACTTCTAACTTTAGAGTCCAACCAA  15252
+
+               22475 cagaatctattgttagatttcctaatattacaaacttgtgcccttttgat  22524
+                     ||||||||||||||||||||||||||||||||||||||||||||||||.|
+Weight         15253 CAGAATCTATTGTTAGATTTCCTAATATTACAAACTTGTGCCCTTTTGGT  15302
+
+               22525 gaagtttttaacgccaccagatttgcatctgtttatgcttggaacaggaa  22574
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15303 GAAGTTTTTAACGCCACCAGATTTGCATCTGTTTATGCTTGGAACAGGAA  15352
+
+               22575 gagaatcagcaactgtgttgctgattattctgtcctatataatctcgcac  22624
+                     |||||||||||||||||||||||||||||||||||||||||||..||||.
+Weight         15353 GAGAATCAGCAACTGTGTTGCTGATTATTCTGTCCTATATAATTCCGCAT  15402
+
+               22625 catttttcacttttaagtgttatggagtgtctcctactaaattaaatgat  22674
+                     ||||||.|||||||||||||||||||||||||||||||||||||||||||
+Weight         15403 CATTTTCCACTTTTAAGTGTTATGGAGTGTCTCCTACTAAATTAAATGAT  15452
+
+               22675 ctctgctttactaatgtctatgcagattcatttgtaattagaggtgatga  22724
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15453 CTCTGCTTTACTAATGTCTATGCAGATTCATTTGTAATTAGAGGTGATGA  15502
+
+               22725 agtcagacaaatcgctccagggcaaactggaaatattgctgattataatt  22774
+                     |||||||||||||||||||||||||||||||||.||||||||||||||||
+Weight         15503 AGTCAGACAAATCGCTCCAGGGCAAACTGGAAAGATTGCTGATTATAATT  15552
+
+               22775 ataaattaccagatgattttacaggctgcgttatagcttggaattctaac  22824
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15553 ATAAATTACCAGATGATTTTACAGGCTGCGTTATAGCTTGGAATTCTAAC  15602
+
+               22825 aagcttgattctaaggttagtggtaattataattacctgtatagattgtt  22874
+                     ||.|||||||||||||||.|||||||||||||||||||||||||||||||
+Weight         15603 AATCTTGATTCTAAGGTTGGTGGTAATTATAATTACCTGTATAGATTGTT  15652
+
+               22875 taggaagtctaatctcaaaccttttgagagagatatttcaactgaaatct  22924
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15653 TAGGAAGTCTAATCTCAAACCTTTTGAGAGAGATATTTCAACTGAAATCT  15702
+
+               22925 atcaggccggtaacaaaccttgtaatggtgttgcaggttttaattgttac  22974
+                     ||||||||||||.||.|||||||||||||||||.||||||||||||||||
+Weight         15703 ATCAGGCCGGTAGCACACCTTGTAATGGTGTTGAAGGTTTTAATTGTTAC  15752
+
+               22975 tttcctttacgatcatatagtttccgacccacttatggtgttggtcacca  23024
+                     ||||||||||.|||||||.||||||.|||||||.|||||||||||.||||
+Weight         15753 TTTCCTTTACAATCATATGGTTTCCAACCCACTAATGGTGTTGGTTACCA  15802
+
+               23025 accatacagagtagtagtactttcttttgaacttctacatgcaccagcaa  23074
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15803 ACCATACAGAGTAGTAGTACTTTCTTTTGAACTTCTACATGCACCAGCAA  15852
+
+               23075 ctgtttgtggacctaaaaagtctactaatttggttaaaaacaaatgtgtc  23124
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15853 CTGTTTGTGGACCTAAAAAGTCTACTAATTTGGTTAAAAACAAATGTGTC  15902
+
+               23125 aatttcaacttcaatggtttaaaaggcacaggtgttcttactgagtctaa  23174
+                     ||||||||||||||||||||||.|||||||||||||||||||||||||||
+Weight         15903 AATTTCAACTTCAATGGTTTAACAGGCACAGGTGTTCTTACTGAGTCTAA  15952
+
+               23175 caaaaagtttctgcctttccaacaatttggcagagacattgctgacacta  23224
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         15953 CAAAAAGTTTCTGCCTTTCCAACAATTTGGCAGAGACATTGCTGACACTA  16002
+
+               23225 ctgatgctgtccgtgatccacagacacttgagattcttgacattacacca  23274
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16003 CTGATGCTGTCCGTGATCCACAGACACTTGAGATTCTTGACATTACACCA  16052
+
+               23275 tgttcttttggtggtgtcagtgttataacaccaggaacaaatacttctaa  23324
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16053 TGTTCTTTTGGTGGTGTCAGTGTTATAACACCAGGAACAAATACTTCTAA  16102
+
+               23325 ccaggttgctgttctttatcagggtgttaactgcacagaagtccctgttg  23374
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16103 CCAGGTTGCTGTTCTTTATCAGGGTGTTAACTGCACAGAAGTCCCTGTTG  16152
+
+               23375 ctattcatgcagatcaacttactcctacttggcgtgtttattctacaggt  23424
+                     ||||||||||||||||||||||||||||||||||||||||||||||||| 
+Weight         16153 CTATTCATGCAGATCAACTTACTCCTACTTGGCGTGTTTATTCTACAGG-  16201
+
+               23425 tctaatgtttttcaaacacgtgcaggctgtttaataggggctgaatatgt  23474
+                     |||||||||||||||||||||||||| ||||||||||||||||||.||||
+Weight         16202 TCTAATGTTTTTCAAACACGTGCAGG-TGTTTAATAGGGGCTGAACATGT  16250
+
+               23475 caacaactcatatgagtgtgacatacccattggtgcaggtatatgcgcta  23524
+                     ||||||||||||||||||||||||||||||||| ||||| ||||||||||
+Weight         16251 CAACAACTCATATGAGTGTGACATACCCATTGG-GCAGG-ATATGCGCTA  16298
+
+               23525 gttatcagactcagactaagtctcatcggcgggcacgtagtgtagctagt  23574
+                     |||||||||||||||| ||.||||.|||||||||||| ||||||||||||
+Weight         16299 GTTATCAGACTCAGAC-AATTCTCCTCGGCGGGCACG-AGTGTAGCTAGT  16346
+
+               23575 caatccatcattgcctacactatgtcacttggtgcagaaaattcagttgc  23624
+                     |||  |.||||| |||||||||||||||||||||||||||  |.||||||
+Weight         16347 CAA--CCTCATT-CCTACACTATGTCACTTGGTGCAGAAA--TTAGTTGC  16391
+
+               23625 ttactctaataactctattgccatacccacaaattttactattagtgtta  23674
+                     || ||||||||||||||||||||||||  ||||.||||| ||||||||||
+Weight         16392 TT-CTCTAATAACTCTATTGCCATACC--CAAAATTTAC-ATTAGTGTTA  16437
+
+               23675 ccacagaaattctaccagtgtctatgaccaagacatcagtagattgtaca  23724
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16438 CCACAGAAATTCTACCAGTGTCTATGACCAAGACATCAGTAGATTGTACA  16487
+
+               23725 atgtacatttgtggtgattcaactgaatgcagcaatcttttgttgcaata  23774
+                     ||||||||||||||||||||||||||||||||||||||||| ||||||||
+Weight         16488 ATGTACATTTGTGGTGATTCAACTGAATGCAGCAATCTTTT-TTGCAATA  16536
+
+               23775 tggcagtttttgtacacaattaaaacgtgctttaactggaatagctgttg  23824
+                     ||||||||||||||||||||||||.|||||||||||||||||||||||||
+Weight         16537 TGGCAGTTTTTGTACACAATTAAACCGTGCTTTAACTGGAATAGCTGTTG  16586
+
+               23825 aacaagacaaaaacacccaagaagtttttgcacaagtcaaacaaatttac  23874
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16587 AACAAGACAAAAACACCCAAGAAGTTTTTGCACAAGTCAAACAAATTTAC  16636
+
+               23875 aaaacaccaccaattaaatattttggtggttttaatttttcacaaatatt  23924
+                     ||||||||||||||||||.|||||||||||||||||||||||||||||||
+Weight         16637 AAAACACCACCAATTAAAGATTTTGGTGGTTTTAATTTTTCACAAATATT  16686
+
+               23925 accagatccatcaaaaccaagcaagaggtcatttattgaagatctacttt  23974
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16687 ACCAGATCCATCAAAACCAAGCAAGAGGTCATTTATTGAAGATCTACTTT  16736
+
+               23975 tcaacaaagtgacacttgcagatgctggcttcatcaaacaatatggtgat  24024
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight         16737 TCAACAAAGTGACACTTGCAGATGCTGGCTTCATCAAACAATATGGTGAT  16786
+
+               24025 tgccttggtgatattgctgctagagacctcatttgtgcacaaaagtttaa  24074
+                     |||| |||||||||||||||||||||||||||||||||||||||||||||
+Weight         16787 TGCC-TGGTGATATTGCTGCTAGAGACCTCATTTGTGCACAAAAGTTTAA  16835
+
+               24075 aggccttactgttttgccacctttgctc  24102
+                     .||||||||||||||||| |||||||||
+Weight         16836 CGGCCTTACTGTTTTGCC-CCTTTGCTC  16862
+
+
+#---------------------------------------
+#---------------------------------------

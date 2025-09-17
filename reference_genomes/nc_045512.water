@@ -1,0 +1,127 @@
+########################################
+# Program: water
+# Rundate: Fri 18 Jul 2025 19:11:59
+# Commandline: water
+#    -asequence covid19ref.fasta
+#    -bsequence /home/mikhailu/Backups/prune_25_all/output_genomes/54954649_S26_L001/subgraph_5/54954649_S26_L001_1_of_3.fasta
+# Align_format: srspair
+# Report_file: nc_045512.water
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: NC_045512.2
+# 2: Weight
+# Matrix: EDNAFULL
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 1157
+# Identity:    1137/1157 (98.3%)
+# Similarity:  1137/1157 (98.3%)
+# Gaps:          10/1157 ( 0.9%)
+# Score: 5583.0
+# 
+#
+#=======================================
+
+NC_045512.2    28225 ATCATGACGTTCGTGTTGTTTTAGAT---TTCATCTAAACGAACAAACTA  28271
+                     |.||  ||.||||...|.||.|||||   ||| |||||||||||  ||||
+Weight             5 ACCA--ACTTTCGATCTCTTGTAGATCTGTTC-TCTAAACGAAC--ACTA     49
+
+NC_045512.2    28272 AAATGTCTGATAATGGACCCCAAAATCAGCGAAATGCACCCCGCATTACG  28321
+                     .|||||||| ||||||||||||||||||||||||||||||||||||||||
+Weight            50 TAATGTCTG-TAATGGACCCCAAAATCAGCGAAATGCACCCCGCATTACG     98
+
+NC_045512.2    28322 TTTGGTGGACCCTCAGATTCAACTGGCAGTAACCAGAATGGAGAACGCAG  28371
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight            99 TTTGGTGGACCCTCAGATTCAACTGGCAGTAACCAGAATGGAGAACGCAG    148
+
+NC_045512.2    28372 TGGGGCGCGATCAAAACAACGTCGGCCCCAAGGTTTACCCAATAATACTG  28421
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           149 TGGGGCGCGATCAAAACAACGTCGGCCCCAAGGTTTACCCAATAATACTG    198
+
+NC_045512.2    28422 CGTCTTGGTTCACCGCTCTCACTCAACATGGCAAGGAAGACCTTAAATTC  28471
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           199 CGTCTTGGTTCACCGCTCTCACTCAACATGGCAAGGAAGACCTTAAATTC    248
+
+NC_045512.2    28472 CCTCGAGGACAAGGCGTTCCAATTAACACCAATAGCAGTCCAGATGACCA  28521
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           249 CCTCGAGGACAAGGCGTTCCAATTAACACCAATAGCAGTCCAGATGACCA    298
+
+NC_045512.2    28522 AATTGGCTACTACCGAAGAGCTACCAGACGAATTCGTGGTGGTGACGGTA  28571
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           299 AATTGGCTACTACCGAAGAGCTACCAGACGAATTCGTGGTGGTGACGGTA    348
+
+NC_045512.2    28572 AAATGAAAGATCTCAGTCCAAGATGGTATTTCTACTACCTAGGAACTGGG  28621
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           349 AAATGAAAGATCTCAGTCCAAGATGGTATTTCTACTACCTAGGAACTGGG    398
+
+NC_045512.2    28622 CCAGAAGCTGGACTTCCCTATGGTGCTAACAAAGACGGCATCATATGGGT  28671
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           399 CCAGAAGCTGGACTTCCCTATGGTGCTAACAAAGACGGCATCATATGGGT    448
+
+NC_045512.2    28672 TGCAACTGAGGGAGCCTTGAATACACCAAAAGATCACATTGGCACCCGCA  28721
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           449 TGCAACTGAGGGAGCCTTGAATACACCAAAAGATCACATTGGCACCCGCA    498
+
+NC_045512.2    28722 ATCCTGCTAACAATGCTGCAATCGTGCTACAACTTCCTCAAGGAACAACA  28771
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           499 ATCCTGCTAACAATGCTGCAATCGTGCTACAACTTCCTCAAGGAACAACA    548
+
+NC_045512.2    28772 TTGCCAAAAGGCTTCTACGCAGAAGGGAGCAGAGGCGGCAGTCAAGCCTC  28821
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           549 TTGCCAAAAGGCTTCTACGCAGAAGGGAGCAGAGGCGGCAGTCAAGCCTC    598
+
+NC_045512.2    28822 TTCTCGTTCCTCATCACGTAGTCGCAACAGTTCAAGAAATTCAACTCCAG  28871
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           599 TTCTCGTTCCTCATCACGTAGTCGCAACAGTTCAAGAAATTCAACTCCAG    648
+
+NC_045512.2    28872 GCAGCAGTAGGGGAACTTCTCCTGCTAGAATGGCTGGCAATGGCGGTGAT  28921
+                     |||||||||||||||.||||||||||||||||||||||||||||||||||
+Weight           649 GCAGCAGTAGGGGAATTTCTCCTGCTAGAATGGCTGGCAATGGCGGTGAT    698
+
+NC_045512.2    28922 GCTGCTCTTGCTTTGCTGCTGCTTGACAGATTGAACCAGCTTGAGAGCAA  28971
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           699 GCTGCTCTTGCTTTGCTGCTGCTTGACAGATTGAACCAGCTTGAGAGCAA    748
+
+NC_045512.2    28972 AATGTCTGGTAAAGGCCAACAACAACAAGGCCAAACTGTCACTAAGAAAT  29021
+                     |||.||||||||||||||||||||||||||||||||||||||||||||||
+Weight           749 AATTTCTGGTAAAGGCCAACAACAACAAGGCCAAACTGTCACTAAGAAAT    798
+
+NC_045512.2    29022 CTGCTGCTGAGGCTTCTAAGAAGCCTCGGCAAAAACGTACTGCCACTAAA  29071
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           799 CTGCTGCTGAGGCTTCTAAGAAGCCTCGGCAAAAACGTACTGCCACTAAA    848
+
+NC_045512.2    29072 GCATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCA  29121
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           849 GCATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCA    898
+
+NC_045512.2    29122 AGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAAC  29171
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           899 AGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAAC    948
+
+NC_045512.2    29172 ATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGA  29221
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           949 ATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGA    998
+
+NC_045512.2    29222 ATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTA  29271
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight           999 ATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTA   1048
+
+NC_045512.2    29272 CACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAG  29321
+                     ||||||||||||||||||||||||||||||||||||||||||||||||||
+Weight          1049 CACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAG   1098
+
+NC_045512.2    29322 TCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACA  29371
+                     |||||||||||||||||||||||||||||||||||||||| |||||||||
+Weight          1099 TCATTTTGCTGAATAAGCATATTGACGCATACAAAACATT-CCACCAACA   1147
+
+NC_045512.2    29372 GAGCCTA  29378
+                     |||||||
+Weight          1148 GAGCCTA   1154
+
+
+#---------------------------------------
+#---------------------------------------
