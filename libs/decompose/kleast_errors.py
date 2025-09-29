@@ -305,10 +305,16 @@ def generate_output_files(base_output_path, graph, time_limit, threads,  max_pat
 
         # Get all edges to ignore for the current number of edges for source and sink nodes
         edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
+
+        # make a opimization dictionary
+        optimization_dict = {
+            'time_limit': time_limit,
+            'threads': threads,
+        }
     
         # Perform k-least errors analysis for current number of paths
         # k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit, threads = threads)
-        k_least = fp.kLeastAbsErrorsCycles(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
+        k_least = fp.kLeastAbsErrorsCycles(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, optimization_options=optimization_dict)
         k_least.solve()
         paths = k_least.get_solution(remove_empty_walks=True)
 
