@@ -50,18 +50,20 @@ fastq_filenames = []
 
 for root, dirs, files in os.walk(READ_DIR):
     for name in files:
-        # Remove the last 13 characters from each filename, will make it check for the .fastq ending later #
-        sample_name = name[:-13]
-        samples.append(sample_name)
-        fastq_fullpath.append(os.path.join(root, name))
-        fastq_filenames.append(sample_name)
-
+        # Remove the last 13 characters from each filename, will make it check for the .fastq ending later
+        if name[-6:] == ".fastq":
+            sample_name = name[:-13]
+            samples.append(sample_name)
+            fastq_fullpath.append(os.path.join(root, name))
+            fastq_filenames.append(sample_name)
+	
 if len(fastq_fullpath) < 1:
     raise OSError("\nNo .fastq files matching Illumina naming scheme found in input dir:\n" + READ_DIR + "\n")
 
 # Get unique sample IDs
 samples = list(set(samples))
 samples.sort()
+
 
 # Get expected number of lane files
 # based on the sequencer type
@@ -84,7 +86,6 @@ fastq_filenames = set(fastq_filenames) # Deletes duplicate file entrys by conver
 fastq_filenames = list(fastq_filenames)
 
 fastq_filenames = [entry for entry in fastq_filenames if entry != ""] # Remake list with only populated values #
-
 
 ######################
 ## HELPER FUNCTIONS ##
