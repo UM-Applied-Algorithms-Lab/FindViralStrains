@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 import re
 import csv
@@ -31,6 +32,7 @@ GUROBI_THREADS = config["gurobi_threads"]
 RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"]
 PRUNE_COUNT = config["prune"]
 VISUALIZE = config["visualize"]
+RUN_DIRECTORY = config["run_directory"]
 ###############
 ##   SETUP   ##
 ###############
@@ -209,8 +211,9 @@ rule Create_graph:
         dbg = bd("graphs/{sample}/original.dbg"),
     params:
         pairdir = bd("read_data/trimmed/{sample}/"),
+        run_script = RUN_DIRECTORY + ("target/release/assembly_graph_generator") # add userarg for run directory etc #
     shell:
-        "target/release/assembly_graph_generator --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
+        "{params.run_script} --input-dir {params.pairdir} --output-path {output.dbg} --kmer-len 27"
 
 #Prune edges with small counts
 rule Prune:
