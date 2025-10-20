@@ -188,7 +188,7 @@ rule trim_and_merge_raw_reads:
 		trim_r2_nopair= (bd("read_data/trimmed/{sample}.nopair.R2.fq.gz")),
 		rep_html= bd(".fastp_logs/fastp/{sample}_trim_fastp.html"),
 		rep_json= bd(".fastp_logs/fastp/{sample}_trim_fastp.json")
-#	threads: trim_threads # Unsure if this is needed #
+#	threads: trim_threads # To be finished later when set up for clusters #
 	shell:
 		"""
 		fastp -i {input.raw_r1} -I {input.raw_r2} -m --merged_out {output.trim_merged} --out1 {output.trim_r1_pair} --out2 {output.trim_r2_pair} --unpaired1 {output.trim_r1_nopair} --unpaired2 {output.trim_r2_nopair} --detect_adapter_for_pe --cut_front --cut_front_window_size 5 --cut_front_mean_quality 20 -l 25 -j {output.rep_json} -h {output.rep_html} -w 1 2

@@ -9,7 +9,7 @@ analysis_ID: path_test
 
 # Folder/Directory where where reads are stored.
 read_dir: /home/mikhailu/Projects/research/create_graph/temp/
-
+run_directory: /home/mikhailu/Projects/research/FindViralStrainsStable/
 # Output directory
 # The pipeline will create a folder, analysis_ID, within this output directory.
 output_dir: output

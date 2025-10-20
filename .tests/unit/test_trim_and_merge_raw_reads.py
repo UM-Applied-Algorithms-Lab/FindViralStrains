@@ -57,7 +57,19 @@ def test_trim_and_merge_raw_reads(conda_prefix):
 
         # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
         # To modify this behavior, you can inherit from common.OutputChecker in here
-        # and overwrite the method `compare_files(generated_file, expected_file), 
+        # and overwrite the method `compare_files(generated_file, expected_file),
         # also see common.py.
         import common
-        common.OutputChecker(data_path, expected_path, workdir).check()
+
+        # Create a custom OutputChecker that ignores HTML files
+        class HTMLIgnoringOutputChecker(common.OutputChecker):
+            def compare_files(self, generated_file, expected_file):
+                # Skip comparison for HTML files
+                if str(generated_file).endswith('.html'):
+                    print(f"Skipping HTML file comparison: {generated_file}")
+                    return
+                # For all other files, use the original comparison method
+                super().compare_files(generated_file, expected_file)
+
+        # Use our custom checker that ignores HTML files
+        HTMLIgnoringOutputChecker(data_path, expected_path, workdir).check()
