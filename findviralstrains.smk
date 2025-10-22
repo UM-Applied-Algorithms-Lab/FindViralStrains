@@ -217,12 +217,14 @@ rule Create_graph:
 
 #Prune edges with small counts
 rule Prune:
-	input:
-		dbg = bd("graphs/{sample}/original.dbg"),
-	output:
-		pruned_dbg = bd("graphs/{sample}/pruned.dbg"),
-	shell:
-		"python3 libs/prune/filter_reads.py {input.dbg} {output.pruned_dbg} {PRUNE_COUNT}"
+    input:
+        dbg = bd("graphs/{sample}/original.dbg"),
+    output:
+        pruned_dbg = bd("graphs/{sample}/pruned.dbg"),
+    params:
+        script = RUN_DIRECTORY + "libs/prune/filter_reads.py"
+    shell:
+        "python3 {params.script} {input.dbg} {output.pruned_dbg} {PRUNE_COUNT}"
 
 rule Create_subgraphs:
     input:
@@ -232,6 +234,8 @@ rule Create_subgraphs:
         sources = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sources"),
         sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_0.sinks"),
         stats = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_stats.txt"),
+    params:
+        script = RUN_DIRECTORY + "target/release/graph_analyzer"
     shell:
-        "target/release/graph_analyzer --dbg-file-name {input.dbg} --stats-output-file {output.stats} -x"
+        "{params.script} --dbg-file-name {input.dbg} --stats-output-file {output.stats} -x"
 

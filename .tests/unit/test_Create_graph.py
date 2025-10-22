@@ -27,6 +27,17 @@ def test_Create_graph(conda_prefix):
         # Copy data to the temporary workdir.
         shutil.copytree(data_path, workdir, dirs_exist_ok=True)
 
+        # Create symlink to libs directory
+        libs_path = Path("libs")
+        if libs_path.exists():
+            # Create the libs symlink in the workdir
+            workdir_libs = workdir / "libs"
+            if not workdir_libs.exists():
+                os.symlink(libs_path.absolute(), workdir_libs)
+                print(f"Created symlink: {workdir_libs} -> {libs_path.absolute()}")
+        else:
+            print(f"Warning: libs directory not found at {libs_path.absolute()}")
+
         # Run the test job.
         check_output(
             [
@@ -51,7 +62,7 @@ def test_Create_graph(conda_prefix):
 
         # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
         # To modify this behavior, you can inherit from common.OutputChecker in here
-        # and overwrite the method `compare_files(generated_file, expected_file), 
+        # and overwrite the method `compare_files(generated_file, expected_file),
         # also see common.py.
         import common
         common.OutputChecker(data_path, expected_path, workdir).check()
