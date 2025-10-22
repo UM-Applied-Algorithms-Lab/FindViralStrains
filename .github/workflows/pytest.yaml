@@ -1,0 +1,87 @@
+name: Pytest Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev-main
+  pull_request:
+    branches:
+      - main
+  # Optional: Run on schedule or workflow_dispatch for manual triggering
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday at midnight
+  workflow_dispatch:  # Allow manual triggering
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    # Cache Rust dependencies and toolchain
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: ${{ runner.os }}-rust-${{ hashFiles('libs/**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-rust-
+
+    # Set up Rust toolchain
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    # Cache Conda environment
+    - name: Cache Conda environment
+      uses: actions/cache@v3
+      with:
+        path: ~/.conda/envs/Test
+        key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-conda-
+
+    # Install Miniconda
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: 3.9
+
+    # Create and activate Conda environment
+    - name: Create and activate Conda environment
+      run: |
+        eval "$(conda shell.bash hook)"
+        conda env create --file environment.yml --name Test || conda env update --file environment.yml --name Test
+        conda init bash
+        eval "$(conda shell.bash hook)"
+        conda activate Test
+
+    - name: Build with Cargo
+      run: |
+        cargo build --release
+
+    - name: Run unit tests with pytest
+      run: |
+        eval "$(conda shell.bash hook)"
+        conda activate Test
+        pytest .tests/unit/ -vv --tb=short
+
+    # Optional: Upload test results as artifact
+    - name: Upload test results
+      if: always()  # Run this step even if tests fail
+      uses: actions/upload-artifact@v3
+      with:
+        name: pytest-results
+        path: |
+          .tests/unit/
+        retention-days: 7
