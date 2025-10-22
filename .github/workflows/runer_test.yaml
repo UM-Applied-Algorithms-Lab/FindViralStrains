@@ -73,4 +73,8 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate Test
           snakemake -s findviralstrains.smk --configfile config_files/build_test.yaml --cores 1 --debug-dag --latency-wait 30
-
+      - name: pytest
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate Test
+          pytest .tests/unit/ -vv
