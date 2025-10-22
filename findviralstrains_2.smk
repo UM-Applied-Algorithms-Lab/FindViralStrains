@@ -32,6 +32,7 @@ GUROBI_THREADS = config["gurobi_threads"]
 RUN_LOCATION = os.getcwd() if config["run_location"] == "." else config["run_location"]
 PRUNE_COUNT = config["prune"]
 VISUALIZE = config["visualize"]
+RUN_DIRECTORY = config["run_directory"]
 ###############
 ##   SETUP   ##
 ###############
@@ -221,6 +222,8 @@ rule Compress:
         dbg = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_{subgraph}.dbg"),
     output:
         comp_dbg = bd("graphs/{sample}/out.dbg_subgraphs/graph_{subgraph}_compressed.dbg"),
+    params:
+        script = RUN_DIRECTORY + "libs/compress/compress.py"
     shell:
         "python3 libs/compress/compress.py {input.dbg} {output.comp_dbg}"
 
@@ -232,13 +235,15 @@ rule Add_super:
         sinks = bd("graphs/{sample}/pruned.dbg_subgraphs/graph_{subgraph}.sinks"),
     output:
         swg = bd("graphs/{sample}.super_{subgraph}.dbg"),
+    params:
+        script = RUN_DIRECTORY + "target/release/super_source_and_sink"
     shell:
         "target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_{wildcards.subgraph}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:
     input:
-        script = "libs/decompose/kleast_errors.py",
+        script = RUN_DIRECTORY + "libs/decompose/kleast_errors.py",
         swg = bd("graphs/{sample}.super_{subgraph}.dbg"),
     output:
         flow = bd("decomp_results/{sample}_subgraph_{subgraph}_1.paths"),
@@ -252,7 +257,7 @@ rule Decompose:
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
     input:
-        script = "libs/rebuild/rebuild.py",
+        script = RUN_DIRECTORY + "libs/rebuild/rebuild.py",
         flow = bd("decomp_results/{sample}_subgraph_{subgraph}_1.paths"),
         swg = bd("graphs/{sample}.super_{subgraph}.dbg"),
     output:
@@ -264,7 +269,7 @@ rule Rebuild_1:
 
 rule Rebuild_2:
     input:
-        script = "libs/rebuild/rebuild.py",
+        script = RUN_DIRECTORY + "libs/rebuild/rebuild.py",
         flow = bd("decomp_results/{sample}_subgraph_{subgraph}_2.paths"),
         swg = bd("graphs/{sample}.super_{subgraph}.dbg"),
     output:
@@ -277,7 +282,7 @@ rule Rebuild_2:
 
 rule Rebuild_3:
     input:
-        script = "libs/rebuild/rebuild.py",
+        script = RUN_DIRECTORY + "libs/rebuild/rebuild.py",
         flow = bd("decomp_results/{sample}_subgraph_{subgraph}_3.paths"),
         swg = bd("graphs/{sample}.super_{subgraph}.dbg"),
     output:
