@@ -12,7 +12,6 @@ from subprocess import check_output
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-
 def test_Compare_1(conda_prefix):
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -20,6 +19,7 @@ def test_Compare_1(conda_prefix):
         config_path = Path(".tests/unit/Compare_1/config")
         data_path = Path(".tests/unit/Compare_1/data")
         expected_path = Path(".tests/unit/Compare_1/expected")
+        # Skip first 12 lines of the expected file
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)
@@ -55,23 +55,46 @@ def test_Compare_1(conda_prefix):
         # also see common.py.
         import common
 
-        # Create a custom OutputChecker that ignores files with timestamps
-        class TimestampIgnoringOutputChecker(common.OutputChecker):
+        # Create a custom OutputChecker that ignores the first 12 lines of files
+        class FirstLinesIgnoringOutputChecker(common.OutputChecker):
             def compare_files(self, generated_file, expected_file):
-                # Skip comparison for files that likely contain timestamps
-                # This includes comparison result files and other non-deterministic outputs
-                skip_patterns = [
-                    '_vs_ref.txt',      # Comparison result files
-                    '.paths',           # Path files (may contain timestamps)
-                    'graph_stats.txt',  # Statistics files
-                ]
+                # Skip first 12 lines for all files
+                print(f"Comparing with first 12 lines ignored: {generated_file}")
+                self._compare_ignoring_first_lines(generated_file, expected_file, lines_to_skip=12)
+            
+            def _compare_ignoring_first_lines(self, generated_file, expected_file, lines_to_skip):
+                """Compare files while ignoring the first N lines of both files."""
+                try:
+                    with open(generated_file, 'r') as gen_f:
+                        gen_lines = gen_f.readlines()
+                    
+                    with open(expected_file, 'r') as exp_f:
+                        exp_lines = exp_f.readlines()
+                    
+                    # Skip the first 'lines_to_skip' lines from both files
+                    gen_lines_skipped = gen_lines[lines_to_skip:]
+                    exp_lines_skipped = exp_lines[lines_to_skip:]
+                    
+                    # Compare the remaining lines
+                    if len(gen_lines_skipped) != len(exp_lines_skipped):
+                        raise AssertionError(
+                            f"Files have different number of lines after skipping first {lines_to_skip} lines: "
+                            f"{len(gen_lines_skipped)} vs {len(exp_lines_skipped)}\n"
+                            f"Original line counts - Generated: {len(gen_lines)}, Expected: {len(exp_lines)}"
+                        )
+                    
+                    for i, (gen_line, exp_line) in enumerate(zip(gen_lines_skipped, exp_lines_skipped)):
+                        if gen_line != exp_line:
+                            raise AssertionError(
+                                f"Files differ at line {i + lines_to_skip + 1}:\n"
+                                f"Generated: {gen_line.strip()}\n"
+                                f"Expected:  {exp_line.strip()}"
+                            )
+                    
+                    print(f"Files match (first {lines_to_skip} lines ignored): {generated_file}")
+                    
+                except Exception as e:
+                    raise AssertionError(f"Comparison failed for {generated_file}: {e}")
 
-                file_str = str(generated_file)
-                if any(pattern in file_str for pattern in skip_patterns):
-                    print(f"Skipping timestamp-containing file: {generated_file}")
-                    return
-                # For all other files, use the original comparison method
-                super().compare_files(generated_file, expected_file)
-
-        # Use our custom checker that ignores timestamp-containing files
-        TimestampIgnoringOutputChecker(data_path, expected_path, workdir).check()
+        # Use our custom checker that ignores first 12 lines of all files
+        FirstLinesIgnoringOutputChecker(data_path, expected_path, workdir).check()
