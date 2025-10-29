@@ -8,7 +8,7 @@
 analysis_ID: build_test
 
 # Folder/Directory where where reads are stored.
-read_dir: test/data/testdata_L001/
+read_dir: /.test_paths
 
 # Output directory
 # The pipeline will create a folder, analysis_ID, within this output directory.
