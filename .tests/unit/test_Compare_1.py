@@ -19,7 +19,7 @@ def test_Compare_1(conda_prefix):
         config_path = Path(".tests/unit/Compare_1/config")
         data_path = Path(".tests/unit/Compare_1/data")
         expected_path = Path(".tests/unit/Compare_1/expected")
-        # Skip first 12 lines of the expected file
+        # Skip first 12 lines of the expected file #
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)
@@ -49,16 +49,12 @@ def test_Compare_1(conda_prefix):
             + conda_prefix
         )
 
-        # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
-        # To modify this behavior, you can inherit from common.OutputChecker in here
-        # and overwrite the method `compare_files(generated_file, expected_file),
-        # also see common.py.
+        # Imports for checker #
         import common
 
-        # Create a custom OutputChecker that ignores the first 12 lines of files
-        class FirstLinesIgnoringOutputChecker(common.OutputChecker):
+        # ignores the first 12 lines of output file #
+        class FirstLinesIgnore(common.OutputChecker):
             def compare_files(self, generated_file, expected_file):
-                # Skip first 12 lines for all files
                 print(f"Comparing with first 12 lines ignored: {generated_file}")
                 self._compare_ignoring_first_lines(generated_file, expected_file, lines_to_skip=12)
             
@@ -71,11 +67,9 @@ def test_Compare_1(conda_prefix):
                     with open(expected_file, 'r') as exp_f:
                         exp_lines = exp_f.readlines()
                     
-                    # Skip the first 'lines_to_skip' lines from both files
                     gen_lines_skipped = gen_lines[lines_to_skip:]
                     exp_lines_skipped = exp_lines[lines_to_skip:]
                     
-                    # Compare the remaining lines
                     if len(gen_lines_skipped) != len(exp_lines_skipped):
                         raise AssertionError(
                             f"Files have different number of lines after skipping first {lines_to_skip} lines: "
@@ -96,5 +90,4 @@ def test_Compare_1(conda_prefix):
                 except Exception as e:
                     raise AssertionError(f"Comparison failed for {generated_file}: {e}")
 
-        # Use our custom checker that ignores first 12 lines of all files
-        FirstLinesIgnoringOutputChecker(data_path, expected_path, workdir).check()
+        FirstLinesIgnore(data_path, expected_path, workdir).check()
