@@ -61,7 +61,6 @@ def test_trim_and_merge_raw_reads(conda_prefix):
         # also see common.py.
         import common
 
-        # Create a custom OutputChecker that ignores HTML files
         class HTMLIgnoringOutputChecker(common.OutputChecker):
             def compare_files(self, generated_file, expected_file):
                 # Skip comparison for HTML files
@@ -71,5 +70,4 @@ def test_trim_and_merge_raw_reads(conda_prefix):
                 # For all other files, use the original comparison method
                 super().compare_files(generated_file, expected_file)
 
-        # Use our custom checker that ignores HTML files
         HTMLIgnoringOutputChecker(data_path, expected_path, workdir).check()
