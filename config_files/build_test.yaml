@@ -20,7 +20,7 @@ sequencer: MiSeq
 
 # Where you are running these files from (. is fine for most use cases)
 run_location: /home/runner/work/FindViralStrains/FindViralStrains/
-
+run_directory: /home/runner/work/FindViralStrains/FindViralStrains/
 # How long Gurobi will run before stopping itself
 decomp_time_limit: 60
 
