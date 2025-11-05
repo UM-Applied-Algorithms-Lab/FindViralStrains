@@ -8,7 +8,7 @@
 analysis_ID: build_test
 
 # Folder/Directory where where reads are stored.
-read_dir: test/data/testdata_L001/
+read_dir: .test_paths/
 
 # Output directory
 # The pipeline will create a folder, analysis_ID, within this output directory.
@@ -19,8 +19,8 @@ output_dir: output
 sequencer: MiSeq
 
 # Where you are running these files from (. is fine for most use cases)
-run_location: .
-
+run_location: /home/runner/work/FindViralStrains/FindViralStrains/
+run_directory: /home/runner/work/FindViralStrains/FindViralStrains/
 # How long Gurobi will run before stopping itself
 decomp_time_limit: 60
 

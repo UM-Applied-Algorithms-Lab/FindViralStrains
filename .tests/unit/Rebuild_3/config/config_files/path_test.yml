@@ -5,11 +5,11 @@
 # Analysis ID
 # Give a name/ID that is unique to a given analysis
 # This will be the name of the folder into which all files are placed
-analysis_ID: all_samples_omi
+analysis_ID: path_test
 
 # Folder/Directory where where reads are stored.
-read_dir: /home/mikhailu/Data
-
+read_dir: /home/mikhailu/Projects/research/create_graph/temp/
+run_directory: /home/mikhailu/Projects/research/FindViralStrainsStable/
 # Output directory
 # The pipeline will create a folder, analysis_ID, within this output directory.
 output_dir: output
@@ -19,24 +19,24 @@ output_dir: output
 sequencer: MiSeq
 
 # Where you are running these files from (. is fine for most use cases)
-run_location: /home/mikhailu/Projects/FindViralStrains
+run_location: /home/mikhailu/Projects/research/FindViralStrainsStable
 
 # How long Gurobi will run before stopping itself
-decomp_time_limit: 120
+decomp_time_limit: 30
 
 # Size (of total percent) subgraphs that will automatically be deleted
-read_purge_percent: 5
+read_purge_percent: 0
 
 # Threads used by solver (unique from cores called for snakemake).
 # If you run snakemake with 2 cores and gurobi with 4, your total will be 8 used cores
-gurobi_threads: 4
+gurobi_threads: 1
 
 # All edges with weights at or below this number will be deleted
 # See documentation to better understand what averages are
-prune: 25
+prune: 0
+
 
 visualize: True
-
 #######################
 ## Optional settings ##
 #######################

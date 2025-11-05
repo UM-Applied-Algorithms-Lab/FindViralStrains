@@ -238,7 +238,7 @@ rule Add_super:
     params:
         script = RUN_DIRECTORY + "target/release/super_source_and_sink"
     shell:
-        "target/release/super_source_and_sink {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_{wildcards.subgraph}"
+        "{params.script} {input.sources} {input.sinks} {input.comp_dbg} {output.swg} graph_{wildcards.subgraph}"
 
 # Uses Gurobi to try and sift our samples into different groups based on their reads #
 rule Decompose:

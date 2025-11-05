@@ -1,0 +1,1082 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.9, pytest-8.4.2, pluggy-1.5.0 -- /home/mikhailu/anaconda3/envs/fvs/bin/python
+cachedir: .pytest_cache
+rootdir: /home/mikhailu/Projects/research/FindViralStrainsStable
+configfile: pytest.ini
+plugins: workflow-2.1.0
+collecting ... 
+collected 12 items
+
+.tests/unit/test_Add_super.py::test_Add_super FAILED                     [  8%]
+.tests/unit/test_Compare_1.py::test_Compare_1 <- ../FindViralStrains/.tests/unit/test_Compare_1.py FAILED [ 16%]
+.tests/unit/test_Compare_2.py::test_Compare_2 FAILED                     [ 25%]
+.tests/unit/test_Compare_3.py::test_Compare_3 FAILED                     [ 33%]
+.tests/unit/test_Compress.py::test_Compress FAILED                       [ 41%]
+.tests/unit/test_Decompose.py::test_Decompose FAILED                     [ 50%]
+.tests/unit/test_Prune.py::test_Prune <- ../FindViralStrains/.tests/unit/test_Prune.py PASSED [ 58%]
+.tests/unit/test_Rebuild_1.py::test_Rebuild_1 <- ../FindViralStrains/.tests/unit/test_Rebuild_1.py FAILED [ 66%]
+.tests/unit/test_Rebuild_2.py::test_Rebuild_2 PASSED                     [ 75%]
+.tests/unit/test_Rebuild_3.py::test_Rebuild_3 PASSED                     [ 83%]
+.tests/unit/test_Unzip.py::test_Unzip <- ../FindViralStrains/.tests/unit/test_Unzip.py PASSED [ 91%]
+.tests/unit/test_trim_and_merge_raw_reads.py::test_trim_and_merge_raw_reads <- ../FindViralStrains/.tests/unit/test_trim_and_merge_raw_reads.py PASSED [100%]
+
+=================================== FAILURES ===================================
+________________________________ test_Add_super ________________________________
+
+conda_prefix = []
+
+    def test_Add_super(conda_prefix):
+    
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workdir = Path(tmpdir) / "workdir"
+            config_path = Path(".tests/unit/Add_super/config")
+            data_path = Path(".tests/unit/Add_super/data")
+            expected_path = Path(".tests/unit/Add_super/expected")
+    
+            # Copy config to the temporary workdir.
+            shutil.copytree(config_path, workdir)
+    
+            # Copy data to the temporary workdir.
+            shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Run the test job.
+            check_output(
+                [
+                    "python",
+                    "-m",
+                    "snakemake",
+                    "output/path_test/graphs/simulated.super_0.dbg",
+                    "--snakefile",
+                    "findviralstrains_2.smk",
+                    "-f",
+                    "--notemp",
+                    "--show-failed-logs",
+                    "-j1",
+                    "--target-files-omit-workdir-adjustment",
+                    "--configfile",
+                    "config_files/path_test.yml",
+                    "--directory",
+                    workdir,
+                ]
+                + conda_prefix
+            )
+    
+            # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
+            # To modify this behavior, you can inherit from common.OutputChecker in here
+            # and overwrite the method `compare_files(generated_file, expected_file),
+            # also see common.py.
+            import common
+>           common.OutputChecker(data_path, expected_path, workdir).check()
+
+.tests/unit/test_Add_super.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.tests/unit/common.py:45: in check
+    self.compare_files(self.expected_path / f, self.workdir / f)
+.tests/unit/common.py:57: in compare_files
+    check_output([cmp, expected_file, generated_file])
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Add_super/expecte...>
+stdout = b'.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg /tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg differ: byte 5426, line 71\n'
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stdout call -----------------------------
+input: {PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks'), PosixPath('output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources')}
+workdir: {PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9ncmFwaHMvc2ltdWxhdGVkLnN1cGVyXzAuZGJn'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('config_files/example_config.yaml'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg'), PosixPath('.snakemake/log/2025-11-05T131045.997170.snakemake.log'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources')}
+expected: {PosixPath('output/path_test/graphs/simulated.super_0.dbg')}
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count
+---------  -------
+Add_super        1
+total            1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Wed Nov  5 13:10:46 2025]
+localrule Add_super:
+    input: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg, output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources, output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks
+    output: output/path_test/graphs/simulated.super_0.dbg
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample=simulated, subgraph=0
+    resources: tmpdir=/tmp
+[Wed Nov  5 13:10:46 2025]
+Finished jobid: 0 (Rule: Add_super)
+1 of 1 steps (100%) done
+Complete log(s): /tmp/tmpdn4y4med/workdir/.snakemake/log/2025-11-05T131045.997170.snakemake.log
+cp: cannot stat 'findviralstrains.smk': No such file or directory
+________________________________ test_Compare_1 ________________________________
+
+conda_prefix = []
+
+>   ???
+
+/home/mikhailu/Projects/research/FindViralStrains/.tests/unit/test_Compare_1.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', ...],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['python', '-m', 'snakemake', 'output/path_test/...>
+stdout = b"Set parameter Username\nAcademic license - for non-commercial use only - expires 2026-03-13\n  ______ _           __... \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ \n"
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpceu06qhz/workdir')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+MissingInputException in rule Compress in file "/home/mikhailu/Projects/research/FindViralStrainsStable/findviralstrains_2.smk", line 220:
+Missing input files for rule Compress:
+    output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+    wildcards: sample=simulated, subgraph=0
+    affected files:
+        output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
+________________________________ test_Compare_2 ________________________________
+
+conda_prefix = []
+
+    def test_Compare_2(conda_prefix):
+    
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workdir = Path(tmpdir) / "workdir"
+            config_path = Path(".tests/unit/Compare_2/config")
+            data_path = Path(".tests/unit/Compare_2/data")
+            expected_path = Path(".tests/unit/Compare_2/expected")
+    
+            # Copy config to the temporary workdir.
+            shutil.copytree(config_path, workdir)
+    
+            # Copy data to the temporary workdir.
+            shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Run the test job.
+            check_output(
+                [
+                    "python",
+                    "-m",
+                    "snakemake",
+                    "output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt",
+                    "output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt",
+                    "--snakefile",
+                    "findviralstrains_2.smk",
+                    "-f",
+                    "--notemp",
+                    "--show-failed-logs",
+                    "-j1",
+                    "--target-files-omit-workdir-adjustment",
+                    "--configfile",
+                    "config_files/path_test.yml",
+                    "--directory",
+                    workdir,
+                ]
+                + conda_prefix
+            )
+    
+            # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
+            # To modify this behavior, you can inherit from common.OutputChecker in here
+            # and overwrite the method `compare_files(generated_file, expected_file),
+            # also see common.py.
+            import common
+>           common.OutputChecker(data_path, expected_path, workdir).check()
+
+.tests/unit/test_Compare_2.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.tests/unit/common.py:45: in check
+    self.compare_files(self.expected_path / f, self.workdir / f)
+.tests/unit/common.py:57: in compare_files
+    check_output([cmp, expected_file, generated_file])
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of...sixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Compare_2/expecte...>
+stdout = b'.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt /tmp...2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt differ: byte 87, line 3\n'
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stdout call -----------------------------
+input: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('reference_genomes/covid19ref.fasta')}
+workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt'), PosixPath('config_files/example_config.yaml'), PosixPath('config_files/build_test.yaml'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8yX3ZzX3JlZi50eHQ='), PosixPath('.snakemake/log/2025-11-05T131047.901022.snakemake.log'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8yX3ZzX3JlZi50eHQ=')}
+expected: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt')}
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count
+---------  -------
+Compare_2        1
+total            1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Wed Nov  5 13:10:47 2025]
+localrule Compare_2:
+    input: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta, reference_genomes/covid19ref.fasta
+    output: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample=simulated, subgraph=0
+    resources: tmpdir=/tmp
+Smith-Waterman local alignment of sequences
+Smith-Waterman local alignment of sequences
+[Wed Nov  5 13:10:49 2025]
+Finished jobid: 0 (Rule: Compare_2)
+1 of 1 steps (100%) done
+Complete log(s): /tmp/tmpxdsxd2io/workdir/.snakemake/log/2025-11-05T131047.901022.snakemake.log
+cp: cannot stat 'findviralstrains.smk': No such file or directory
+________________________________ test_Compare_3 ________________________________
+
+conda_prefix = []
+
+    def test_Compare_3(conda_prefix):
+    
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workdir = Path(tmpdir) / "workdir"
+            config_path = Path(".tests/unit/Compare_3/config")
+            data_path = Path(".tests/unit/Compare_3/data")
+            expected_path = Path(".tests/unit/Compare_3/expected")
+    
+            # Copy config to the temporary workdir.
+            shutil.copytree(config_path, workdir)
+    
+            # Copy data to the temporary workdir.
+            shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Run the test job.
+            check_output(
+                [
+                    "python",
+                    "-m",
+                    "snakemake",
+                    "output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt",
+                    "output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt",
+                    "output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt",
+                    "--snakefile",
+                    "findviralstrains_2.smk",
+                    "-f",
+                    "--notemp",
+                    "--show-failed-logs",
+                    "-j1",
+                    "--target-files-omit-workdir-adjustment",
+                    "--configfile",
+                    "config_files/path_test.yml",
+                    "--directory",
+                    workdir,
+                ]
+                + conda_prefix
+            )
+    
+            # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
+            # To modify this behavior, you can inherit from common.OutputChecker in here
+            # and overwrite the method `compare_files(generated_file, expected_file),
+            # also see common.py.
+            import common
+>           common.OutputChecker(data_path, expected_path, workdir).check()
+
+.tests/unit/test_Compare_3.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.tests/unit/common.py:45: in check
+    self.compare_files(self.expected_path / f, self.workdir / f)
+.tests/unit/common.py:57: in compare_files
+    check_output([cmp, expected_file, generated_file])
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of...sixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Compare_3/expecte...>
+stdout = b'.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt /tmp...wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt differ: byte 87, line 3\n'
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stdout call -----------------------------
+input: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta')}
+workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfM19vZl8zX3ZzX3JlZi50eHQ='), PosixPath('config_files/example_config.yaml'), PosixPath('.snakemake/log/2025-11-05T131049.561024.snakemake.log'), PosixPath('config_files/build_test.yaml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta')}
+expected: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt')}
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count
+---------  -------
+Compare_3        1
+total            1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Wed Nov  5 13:10:49 2025]
+localrule Compare_3:
+    input: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta, reference_genomes/covid19ref.fasta
+    output: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample=simulated, subgraph=0
+    resources: tmpdir=/tmp
+Smith-Waterman local alignment of sequences
+Smith-Waterman local alignment of sequences
+Smith-Waterman local alignment of sequences
+[Wed Nov  5 13:10:50 2025]
+Finished jobid: 0 (Rule: Compare_3)
+1 of 1 steps (100%) done
+Complete log(s): /tmp/tmpai267wdh/workdir/.snakemake/log/2025-11-05T131049.561024.snakemake.log
+cp: cannot stat 'findviralstrains.smk': No such file or directory
+________________________________ test_Compress _________________________________
+
+conda_prefix = []
+
+    def test_Compress(conda_prefix):
+    
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workdir = Path(tmpdir) / "workdir"
+            config_path = Path(".tests/unit/Compress/config")
+            data_path = Path(".tests/unit/Compress/data")
+            expected_path = Path(".tests/unit/Compress/expected")
+    
+            # Copy config to the temporary workdir.
+            shutil.copytree(config_path, workdir)
+    
+            # Copy data to the temporary workdir.
+            shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Run the test job.
+>           check_output(
+                [
+                    "python",
+                    "-m",
+                    "snakemake",
+                    "output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg",
+                    "--snakefile",
+                    "findviralstrains_2.smk",
+                    "-f",
+                    "--notemp",
+                    "--show-failed-logs",
+                    "-j1",
+                    "--target-files-omit-workdir-adjustment",
+                    "--configfile",
+                    "config_files/path_test.yml",
+                    "--directory",
+                    workdir,
+                ]
+                + conda_prefix
+            )
+
+.tests/unit/test_Compress.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', ...],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['python', '-m', 'snakemake', 'output/path_test/...>
+stdout = b"Set parameter Username\nAcademic license - for non-commercial use only - expires 2026-03-13\n  ______ _           __... \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ \n"
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp675jwypp/workdir')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job         count
+--------  -------
+Compress        1
+total           1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Wed Nov  5 13:10:51 2025]
+localrule Compress:
+    input: output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
+    output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample=simulated, subgraph=0
+    resources: tmpdir=/tmp
+python3: can't open file '/tmp/tmp675jwypp/workdir/libs/compress/compress.py': [Errno 2] No such file or directory
+RuleException:
+CalledProcessError in file "/home/mikhailu/Projects/research/FindViralStrainsStable/findviralstrains_2.smk", line 228:
+Command 'set -euo pipefail;  python3 libs/compress/compress.py output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg' returned non-zero exit status 2.
+[Wed Nov  5 13:10:51 2025]
+Error in rule Compress:
+    message: None
+    jobid: 0
+    input: output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
+    output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+    shell:
+        python3 libs/compress/compress.py output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Wed Nov  5 13:10:51 2025]
+Error in rule Compress:
+    message: None
+    jobid: 0
+    input: output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
+    output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+    shell:
+        python3 libs/compress/compress.py output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+        (command exited with non-zero exit code)
+Complete log(s): /tmp/tmp675jwypp/workdir/.snakemake/log/2025-11-05T131051.267091.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.
+________________________________ test_Decompose ________________________________
+
+conda_prefix = []
+
+    def test_Decompose(conda_prefix):
+    
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workdir = Path(tmpdir) / "workdir"
+            config_path = Path(".tests/unit/Decompose/config")
+            data_path = Path(".tests/unit/Decompose/data")
+            expected_path = Path(".tests/unit/Decompose/expected")
+    
+            # Copy config to the temporary workdir.
+            shutil.copytree(config_path, workdir)
+    
+            # Copy data to the temporary workdir.
+            shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Run the test job.
+            check_output(
+                [
+                    "python",
+                    "-m",
+                    "snakemake",
+                    "output/path_test/decomp_results/simulated_subgraph_0_1.paths",
+                    "output/path_test/decomp_results/simulated_subgraph_0_2.paths",
+                    "output/path_test/decomp_results/simulated_subgraph_0_3.paths",
+                    "--snakefile",
+                    "findviralstrains_2.smk",
+                    "-f",
+                    "--notemp",
+                    "--show-failed-logs",
+                    "-j1",
+                    "--target-files-omit-workdir-adjustment",
+                    "--configfile",
+                    "config_files/path_test.yml",
+                    "--directory",
+                    workdir,
+                ]
+                + conda_prefix
+            )
+    
+            # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
+            # To modify this behavior, you can inherit from common.OutputChecker in here
+            # and overwrite the method `compare_files(generated_file, expected_file),
+            # also see common.py.
+            import common
+>           common.OutputChecker(data_path, expected_path, workdir).check()
+
+.tests/unit/test_Decompose.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.tests/unit/common.py:45: in check
+    self.compare_files(self.expected_path / f, self.workdir / f)
+.tests/unit/common.py:57: in compare_files
+    check_output([cmp, expected_file, generated_file])
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Decompose/expecte...>
+stdout = b'.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths /tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths differ: byte 40, line 2\n'
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stdout call -----------------------------
+input: {PosixPath('libs/decompose/kleast_errors.py'), PosixPath('home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py'), PosixPath('output/path_test/graphs/simulated.super_0.dbg')}
+workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('libs/decompose/kleast_errors.py'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths'), PosixPath('config_files/example_config.yaml'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths_visualization.pdf'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths_visualization.pdf'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8xLnBhdGhz'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8yLnBhdGhz'), PosixPath('home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py'), PosixPath('.snakemake/log/2025-11-05T131052.750202.snakemake.log'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths_visualization.pdf'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8zLnBhdGhz')}
+expected: {PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths')}
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count
+---------  -------
+Decompose        1
+total            1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Wed Nov  5 13:10:52 2025]
+localrule Decompose:
+    input: /home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py, output/path_test/graphs/simulated.super_0.dbg
+    output: output/path_test/decomp_results/simulated_subgraph_0_1.paths, output/path_test/decomp_results/simulated_subgraph_0_2.paths, output/path_test/decomp_results/simulated_subgraph_0_3.paths
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample=simulated, subgraph=0
+    resources: tmpdir=/tmp
+[Wed Nov  5 13:10:58 2025]
+Finished jobid: 0 (Rule: Decompose)
+1 of 1 steps (100%) done
+Complete log(s): /tmp/tmpo8jlguge/workdir/.snakemake/log/2025-11-05T131052.750202.snakemake.log
+cp: cannot stat 'findviralstrains.smk': No such file or directory
+________________________________ test_Rebuild_1 ________________________________
+
+conda_prefix = []
+
+>   ???
+
+/home/mikhailu/Projects/research/FindViralStrains/.tests/unit/test_Rebuild_1.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', ...],)
+kwargs = {'stdout': -1}
+process = <Popen: returncode: 1 args: ['python', '-m', 'snakemake', 'output/path_test/...>
+stdout = b"Set parameter Username\nAcademic license - for non-commercial use only - expires 2026-03-13\n  ______ _           __... \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_|_| |_|___/     \\/ \\___|_|  |___/_|\\___/|_| |_|  \\___(_)_(_)___/ \n"
+stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmppxb8bil_/workdir')]' returned non-zero exit status 1.
+
+../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Assuming unrestricted shared filesystem usage.
+host: a-wing-02
+Building DAG of jobs...
+MissingInputException in rule Compress in file "/home/mikhailu/Projects/research/FindViralStrainsStable/findviralstrains_2.smk", line 220:
+Missing input files for rule Compress:
+    output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
+    wildcards: sample=simulated, subgraph=0
+    affected files:
+        output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
+=========================== short test summary info ============================
+FAILED .tests/unit/test_Add_super.py::test_Add_super - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_1.py::test_Compare_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpceu06qhz/workdir')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_2.py::test_Compare_2 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_3.py::test_Compare_3 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compress.py::test_Compress - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp675jwypp/workdir')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Decompose.py::test_Decompose - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Rebuild_1.py::test_Rebuild_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmppxb8bil_/workdir')]' returned non-zero exit status 1.
+========================= 7 failed, 5 passed in 21.34s =========================
