@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 
 
 
-
 def read_graph_to_networkx(file_path, min_edge_weight=0):
     """
     Reads a graph from a file and returns it as a NetworkX MultiDiGraph with flow attributes.
@@ -179,8 +178,8 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
             connectionstyle=style
         )
 
-    # === Highlight paths if provided ===
-    if paths and 'paths' in paths:
+   # === Highlight paths if provided ===
+    if paths and 'walks' in paths:
         colors = [
             "red", "blue", "green", "purple", "orange",
             "cyan", "magenta", "lime", "brown", "pink",
@@ -190,13 +189,28 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
         line_styles = ['solid', 'dashed', 'dotted', 'dashdot']
         line_widths = [5.00, 4.00, 3.00, 2.00]
 
-        for idx, path in enumerate(paths['paths']):
+        # First pass: count edge usages per walk
+        walk_edge_counts = []
+        for idx, path in enumerate(paths['walks']):
             if all(isinstance(p, tuple) and len(p) == 3 for p in path):
                 edge_list = path
             else:
-                # Assume it's a list of nodes, default edge key 0
                 edge_list = [(path[i], path[i+1], 0) for i in range(len(path)-1)]
+            
+            edge_counts = {}
+            for u, v, k in edge_list:
+                edge_key = (min(u, v), max(u, v), k)
+                edge_counts[edge_key] = edge_counts.get(edge_key, 0) + 1
+            walk_edge_counts.append(edge_counts)
 
+        # Second pass: draw edges with labels
+        for idx, (path, edge_counts) in enumerate(zip(paths['walks'], walk_edge_counts)):
+            if all(isinstance(p, tuple) and len(p) == 3 for p in path):
+                edge_list = path
+            else:
+                edge_list = [(path[i], path[i+1], 0) for i in range(len(path)-1)]
+            
+            # Draw the edges
             for u, v, k in edge_list:
                 rad = 0.15 * (k if k % 2 == 1 else -k)
                 style = f"arc3,rad={rad}"
@@ -215,6 +229,49 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
                     arrowstyle='-|>',
                     arrowsize=15
                 )
+            
+            # Add text labels for edge counts with connecting lines
+            for edge_key, count in edge_counts.items():
+                if count > 1:  # Only label if edge is repeated
+                    u, v, k = edge_key
+                    # Calculate midpoint for label position
+                    edge_mid_x = (pos[u][0] + pos[v][0]) / 2
+                    edge_mid_y = (pos[u][1] + pos[v][1]) / 2
+                    
+                    # Calculate label position (offset from edge midpoint)
+                    offset = 10
+                    # Get edge direction vector
+                    dx = pos[v][0] - pos[u][0]
+                    dy = pos[v][1] - pos[u][1]
+                    
+                    # Calculate perpendicular direction for offset
+                    length = (dx**2 + dy**2)**0.5
+                    if length > 0:
+                        perp_x = -dy / length * offset
+                        perp_y = dx / length * offset
+                    else:
+                        perp_x, perp_y = offset, offset
+                    
+                    # Label position
+                    label_x = edge_mid_x + perp_x
+                    label_y = edge_mid_y + perp_y
+                    
+                    # Draw connecting line from label to edge midpoint
+                    ax.plot([edge_mid_x, label_x], [edge_mid_y, label_y], 
+                           color=colors[idx % len(colors)], 
+                           linestyle='--', 
+                           alpha=0.6, 
+                           linewidth=1)
+                    
+                    # Add the label with connecting line
+                    ax.text(label_x, label_y, f'×{count}', 
+                           fontsize=14, 
+                           color=colors[idx % len(colors)],
+                           ha='center', va='center',
+                           bbox=dict(boxstyle="round,pad=0.3", 
+                                   facecolor='white', 
+                                   alpha=0.9, 
+                                   edgecolor=colors[idx % len(colors)]))
 
     # === Edge Labels ===
     edge_labels = {}
@@ -250,7 +307,6 @@ def draw_labeled_multigraph(G, attr_name, ax=None, decimal_places=2, paths=None)
 
     ax.autoscale_view()
     plt.tight_layout()
-
 
 
 
@@ -307,20 +363,61 @@ def generate_output_files(base_output_path, graph, time_limit, threads,  max_pat
         edges_to_ignore = get_all_edges_for_node(graph, "0") + get_all_edges_for_node(graph, "1")
 
         # make a opimization dictionary
-        optimization_dict = {
+        solver_dict = {
             'time_limit': time_limit,
             'threads': threads,
+            'external_solver': 'gurobi',
         }
+
+        optimization_options = {
+            "optimize_with_safe_paths": True,
+            "optimize_with_safe_sequences": False,
+            "optimize_with_safe_zero_edges": True,
+            "optimize_with_subpath_constraints_as_safe_sequences": True,
+            "optimize_with_safety_as_subpath_constraints": False,
+            "optimize_with_safety_from_largest_antichain": False,
+        }
+
+        '''
+        optimizer = fp.NumPathsOptimization(model_type=fp.kLeastAbsErrorsCycles,
+                    stop_on_first_feasible=True,  # Stop at first feasible solution
+                    min_num_paths= min_paths,  # Minimum k to try
+                    max_num_paths= max_paths,  # Maximum k to try
+                    time_limit=time_limit,   
+                    G=graph,
+                    flow_attr='flow',
+                    elements_to_ignore=edges_to_ignore,
+                    optimization_options=optimization_dict)
+        
+        # Solve the optimization
+        if optimizer.solve():
+            print("Optimization successful!")
+            print(f"Optimal number of paths: {optimizer.model.k}")
+            print(f"Objective value (total error): {optimizer.get_objective_value()}")
+            print(f"Solve status: {optimizer.solve_statistics['solve_status']}")
+            print(f"Total solve time: {optimizer.solve_statistics['solve_time']:.2f}s")
+            
+            # Get the solution paths
+            objective_value = optimizer.get_objective_value()
+            paths = optimizer.model.get_solution(remove_empty_walks=True)
+            print(f"Found {len(paths)} paths with total error {objective_value}")
+        '''
+        
     
+        
         # Perform k-least errors analysis for current number of paths
-        # k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, time_limit = time_limit, threads = threads)
-        k_least = fp.kLeastAbsErrorsCycles(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, optimization_options=optimization_dict)
+        #k_least = fp.kLeastAbsErrors(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore)
+        k_least = fp.kLeastAbsErrorsCycles(G=graph, k=num_paths, flow_attr='flow', elements_to_ignore=edges_to_ignore, solver_options=solver_dict)
         k_least.solve()
+        #paths = k_least.get_solution(remove_empty_paths=True)
         paths = k_least.get_solution(remove_empty_walks=True)
+        
+        
 
         
         # Get solver statistics
         runtime = time.time() - start_time
+
         #mip_gap = k_least.model.MIPGap #if hasattr(k_least, 'model') else 1.0
         objective_value = k_least.get_objective_value()
 
@@ -331,6 +428,7 @@ def generate_output_files(base_output_path, graph, time_limit, threads,  max_pat
 
         # see the type of graph
         decomposer = isinstance(graph, nx.MultiDiGraph)
+
 
 
         # Save path information

@@ -21,6 +21,7 @@ print(" |_|    |_|_| |_|\\__,_|   \\/   |_|_|  \\__,_|_|_____/ \\__|_|  \\__,_|_
 #################
 ##   GLOBALS   ##
 #################
+
 # Main config settings
 ANALYSIS = config["analysis_ID"]
 READ_DIR = config["read_dir"]
@@ -248,7 +249,6 @@ rule Decompose:
         decomp = bd("decomp_results/{sample}_subgraph_{subgraph}.txt"),
     shell:
         "python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS} --visualize {VISUALIZE}"
-
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:
     input:

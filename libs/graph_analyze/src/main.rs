@@ -155,9 +155,9 @@ fn write_subgraph_files(
 ) {
     for (subgraph_idx, subgraph) in significant_subgraph_list.iter().enumerate() {
         // Skip cyclic graphs if the flag is set
-        if exclude_cyclic_graphs && !graph_is_acyclic(subgraph) {
-            continue;
-        }
+        //if exclude_cyclic_graphs && !graph_is_acyclic(subgraph) {
+         //   continue;
+        //}
 
         let subgraph_sub_dir = base_file_name.to_string() + "_subgraphs";
         let subgraph_directory_name = match output_dir {
@@ -487,7 +487,5 @@ fn graph_is_acyclic(node_map: &HashMap<Rc<str>, NodeEdges>) -> bool {
                 acyclic_nodes.insert(current_node);
             }
         }
-    }
-
-    return true;
+    }   return true;
 }

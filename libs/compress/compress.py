@@ -2,7 +2,7 @@ from collections import defaultdict, namedtuple
 import sys
 import time
 
-Edge = namedtuple('Edge', ['to', 'weight', 'seq', 'min_weight', 'max_weight'])
+Edge = namedtuple('Edge', ['to', 'weight', 'id', 'seq', 'min_weight', 'max_weight'])
 
 def read_graph(filename):
     forward_edges = defaultdict(list)  # node -> [Edge]
@@ -28,8 +28,8 @@ def read_graph(filename):
                 # Take the first sequence part only 
                 seq = parts[3]
 
-                
-                edge = Edge(to_node, weight, seq, weight, weight)
+                edge_id = 0  # Placeholder for edge ID if needed
+                edge = Edge(to_node, weight, edge_id, seq, weight, weight)
                 forward_edges[from_node].append(edge)
                 reverse_edges[to_node].append(from_node)
 
@@ -179,9 +179,12 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
         # Remove the merged node from reverse_edges
         del reverse_edges[node]
         reverse_edges[target] = [n for n in reverse_edges[target] if n != node]
+
+        # add id for the new edge between the source and target starting form 0
+        edge_id = 0
         
         # Add new edge
-        new_edge = Edge(target, new_weight, new_seq, new_min, new_max)
+        new_edge = Edge(target, new_weight, edge_id, new_seq, new_min, new_max)
         forward_edges[source].append(new_edge)
         reverse_edges[target].append(source)
         
@@ -194,8 +197,31 @@ def merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length):
         del edge_seqs[f'{source}_seq_{node}']
         del edge_seqs[f'{node}_seq_{target}']
 
+
+
+def assign_edge_ids(forward_edges):
+    edge_map = {}
     
+    for from_node, edges in forward_edges.items():
+        for edge in edges:
+            
+            node_pair = (from_node, edge.to)
+            
+            
+            if node_pair not in edge_map:
+                edge_map[node_pair] = 0
+            else:
+                
+                edge_map[node_pair] += 1
+            
+            # 
+            new_edge = Edge(edge.to, edge.weight, edge_map[node_pair], edge.seq, edge.min_weight, edge.max_weight)
+            
+            # Replace the old edge with the new one
+            edges[edges.index(edge)] = new_edge
     
+    return forward_edges
+
 
 def write_merged_graph(filename, forward_edges):
     """
@@ -206,12 +232,14 @@ def write_merged_graph(filename, forward_edges):
 
 
     with open(filename, 'w') as f:
-        f.write("from_node\tto_node\tseq\t\tavg_weight\tmax_weight\tmin_weight\n")
+        # assigned an id to the for the edge starting from 0, incrementing by 1 for each repeated distinct edge and is printed in the third column of the output file
+        
+        f.write("from_node\tto_node\tedge_ID\tseq\t\tavg_weight\tmax_weight\tmin_weight\n")
         for from_node, edges in forward_edges.items():
             for edge in edges:
                 # Pad shorter sequences with an extra tab
                 seq_pad = '\t' if len(str(edge.seq)) < 8 else ''
-                line = f"{from_node}\t{edge.to}\t{edge.seq}\t{seq_pad}{edge.weight}\t\t{edge.max_weight}\t\t{edge.min_weight}\n"
+                line = f"{from_node}\t{edge.to}\t{edge.id}\t{edge.seq}\t{seq_pad}{edge.weight}\t\t{edge.max_weight}\t\t{edge.min_weight}\n"
                 f.write(line)
 
 
@@ -231,11 +259,10 @@ def main():
 
     # merge the nodes
     merge_nodes(forward_edges, reverse_edges, edge_seqs, kmer_length)
-    
 
-    #print("Splitting edges...")
-    #new_forward_edges, reverse_edges, edge_seqs = split_edges(forward_edges, reverse_edges, edge_seqs)
-  
+    # assign edge ids
+    forward_edges = assign_edge_ids(forward_edges)
+
 
     #
     write_merged_graph(output_file, forward_edges)
