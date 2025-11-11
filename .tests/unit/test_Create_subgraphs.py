@@ -102,7 +102,19 @@ def test_Create_subgraphs(conda_prefix):
                 or filename.endswith(".sinks")
             )
 
-        def _extract_weight_and_sequence(line):
+        def _extract_weight_and_sequence_for_sorting(line):
+            """Extract weight and sequence, but sort primarily by sequence."""
+            parts = line.strip().split()
+            if len(parts) >= 4:
+                weight = parts[2]  # Keep as string, don't convert to int
+                sequence = parts[3]
+                return (sequence, weight)  # Sort by sequence first, then weight
+            elif len(parts) >= 3:
+                return (parts[2], "0")  # No weight, just sequence
+            else:
+                return (line.strip(), "0")  # Fallback
+
+        def _extract_weight_and_sequence_for_comparison(line):
             """Extract only the weight (3rd column) and sequence (4th column) from a line."""
             parts = line.strip().split()
             if len(parts) >= 4:
@@ -136,18 +148,30 @@ def test_Create_subgraphs(conda_prefix):
                         f"Extracting only weight and sequence for: {generated_file.name}"
                     )
 
-                    # Extract weight and sequence from each line
-                    gen_extracted = [
-                        _extract_weight_and_sequence(line) for line in gen_content
+                    # Extract weight and sequence tuples for sorting (sequence first)
+                    gen_tuples = [
+                        _extract_weight_and_sequence_for_sorting(line)
+                        for line in gen_content
                     ]
-                    exp_extracted = [
-                        _extract_weight_and_sequence(_strip_ansi_codes(line))
+                    exp_tuples = [
+                        _extract_weight_and_sequence_for_sorting(
+                            _strip_ansi_codes(line)
+                        )
                         for line in exp_content
                     ]
 
-                    # Sort by the extracted content
-                    gen_content_sorted = sorted(gen_extracted)
-                    exp_content_sorted = sorted(exp_extracted)
+                    # Sort by sequence first, then weight
+                    gen_tuples_sorted = sorted(gen_tuples)
+                    exp_tuples_sorted = sorted(exp_tuples)
+
+                    # Convert back to strings for comparison (weight first, then sequence)
+                    gen_content_sorted = [
+                        f"{weight} {sequence}" for sequence, weight in gen_tuples_sorted
+                    ]
+                    exp_content_sorted = [
+                        f"{weight} {sequence}" for sequence, weight in exp_tuples_sorted
+                    ]
+
                 else:
                     # For non-graph files, just normalize whitespace
                     gen_content_sorted = [
@@ -169,21 +193,23 @@ def test_Create_subgraphs(conda_prefix):
                 for i, (gen_item, exp_item) in enumerate(
                     zip(gen_content_sorted, exp_content_sorted)
                 ):
-                    print(f"DEBUG Line {i + lines_to_skip + 1} (weight+sequence only):")
+                    print(
+                        f"DEBUG Line {i + lines_to_skip + 1} (weight+sequence only, sorted by sequence):"
+                    )
                     print(f"DEBUG Generated: '{repr(gen_item)}'")
                     print(f"DEBUG Expected:  '{repr(exp_item)}'")
                     print(f"DEBUG Are they equal? {gen_item == exp_item}")
 
                     if gen_item != exp_item:
                         raise AssertionError(
-                            f"Files differ at line {i + lines_to_skip + 1} (weight+sequence only):\n"
+                            f"Files differ at line {i + lines_to_skip + 1} (weight+sequence only, sorted by sequence):\n"
                             f"Generated: '{gen_item}'\n"
                             f"Expected:  '{exp_item}'\n"
                             f"Generated file: {generated_file}\nExpected file: {expected_file}"
                         )
 
                 extract_note = (
-                    " (weight+sequence only)"
+                    " (weight+sequence only, sorted by sequence)"
                     if _should_extract_weight_and_sequence(generated_file)
                     else ""
                 )
