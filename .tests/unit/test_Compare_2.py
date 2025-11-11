@@ -27,6 +27,23 @@ def test_Compare_2(conda_prefix):
         # Copy data to the temporary workdir.
         shutil.copytree(data_path, workdir, dirs_exist_ok=True)
 
+        # Test Symlinks
+        project_dir = Path.cwd()
+        symlink_items = [
+            'findviralstrains_2.smk',
+            'findviralstrains.smk', 
+            'findviralstrainsMain.smk',
+            'config_files',
+            'libs',
+            'reference_genomes',
+            'output'
+        ]
+        for item in symlink_items:
+            src = project_dir / item
+            dst = workdir / item
+            if src.exists() and not dst.exists():
+                dst.symlink_to(src)
+
         # Run the test job.
         check_output(
             [

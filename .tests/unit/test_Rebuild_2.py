@@ -2,7 +2,6 @@
 Rule test code for unit testing of rules generated with Snakemake 9.12.0.
 """
 
-
 import os
 import sys
 import shutil

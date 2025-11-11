@@ -79,10 +79,10 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
 input = None, capture_output = False, timeout = None, check = True
-popenargs = (['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')],)
+popenargs = (['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpf5e_ngzr/workdir/output/path_test/graphs/simulated.super_0.dbg')],)
 kwargs = {'stdout': -1}
 process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Add_super/expecte...>
-stdout = b'.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg /tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg differ: byte 5426, line 71\n'
+stdout = b'.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg /tmp/tmpf5e_ngzr/workdir/output/path_test/graphs/simulated.super_0.dbg differ: byte 5441, line 73\n'
 stderr = None, retcode = 1
 
     def run(*popenargs,
@@ -152,12 +152,12 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpf5e_ngzr/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
 input: {PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks'), PosixPath('output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources')}
-workdir: {PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9ncmFwaHMvc2ltdWxhdGVkLnN1cGVyXzAuZGJn'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('config_files/example_config.yaml'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg'), PosixPath('.snakemake/log/2025-11-05T131045.997170.snakemake.log'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources')}
+workdir: {PosixPath('config_files/example_config.yaml'), PosixPath('config_files/path_test.yml'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9ncmFwaHMvc2ltdWxhdGVkLnN1cGVyXzAuZGJn'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('.snakemake/log/2025-11-05T151139.259900.snakemake.log'), PosixPath('output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks'), PosixPath('output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg')}
 expected: {PosixPath('output/path_test/graphs/simulated.super_0.dbg')}
 ----------------------------- Captured stderr call -----------------------------
 Assuming unrestricted shared filesystem usage.
@@ -175,7 +175,7 @@ total            1
 Select jobs to execute...
 Execute 1 jobs...
 
-[Wed Nov  5 13:10:46 2025]
+[Wed Nov  5 15:11:39 2025]
 localrule Add_super:
     input: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg, output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources, output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks
     output: output/path_test/graphs/simulated.super_0.dbg
@@ -183,10 +183,10 @@ localrule Add_super:
     reason: Forced execution
     wildcards: sample=simulated, subgraph=0
     resources: tmpdir=/tmp
-[Wed Nov  5 13:10:46 2025]
+[Wed Nov  5 15:11:39 2025]
 Finished jobid: 0 (Rule: Add_super)
 1 of 1 steps (100%) done
-Complete log(s): /tmp/tmpdn4y4med/workdir/.snakemake/log/2025-11-05T131045.997170.snakemake.log
+Complete log(s): /tmp/tmpf5e_ngzr/workdir/.snakemake/log/2025-11-05T151139.259900.snakemake.log
 cp: cannot stat 'findviralstrains.smk': No such file or directory
 ________________________________ test_Compare_1 ________________________________
 
@@ -274,7 +274,7 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpceu06qhz/workdir')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpvg4o077z/workdir')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stderr call -----------------------------
@@ -304,6 +304,23 @@ conda_prefix = []
     
             # Copy data to the temporary workdir.
             shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Test Symlinks
+            project_dir = Path.cwd()
+            symlink_items = [
+                'findviralstrains_2.smk',
+                'findviralstrains.smk',
+                'findviralstrainsMain.smk',
+                'config_files',
+                'libs',
+                'reference_genomes',
+                'output'
+            ]
+            for item in symlink_items:
+                src = project_dir / item
+                dst = workdir / item
+                if src.exists() and not dst.exists():
+                    dst.symlink_to(src)
     
             # Run the test job.
             check_output(
@@ -335,7 +352,7 @@ conda_prefix = []
             import common
 >           common.OutputChecker(data_path, expected_path, workdir).check()
 
-.tests/unit/test_Compare_2.py:58: 
+.tests/unit/test_Compare_2.py:75: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 .tests/unit/common.py:45: in check
     self.compare_files(self.expected_path / f, self.workdir / f)
@@ -346,10 +363,10 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
 input = None, capture_output = False, timeout = None, check = True
-popenargs = (['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of...sixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')],)
+popenargs = (['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of...sixPath('/tmp/tmp6jxfhgkw/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')],)
 kwargs = {'stdout': -1}
 process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Compare_2/expecte...>
-stdout = b'.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt /tmp...2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt differ: byte 87, line 3\n'
+stdout = b'.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt /tmp...gkw/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt differ: byte 87, line 3\n'
 stderr = None, retcode = 1
 
     def run(*popenargs,
@@ -419,12 +436,12 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmp6jxfhgkw/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
-input: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('reference_genomes/covid19ref.fasta')}
-workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt'), PosixPath('config_files/example_config.yaml'), PosixPath('config_files/build_test.yaml'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8yX3ZzX3JlZi50eHQ='), PosixPath('.snakemake/log/2025-11-05T131047.901022.snakemake.log'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8yX3ZzX3JlZi50eHQ=')}
+input: {PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta')}
+workdir: {PosixPath('config_files/example_config.yaml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8yX3ZzX3JlZi50eHQ='), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta'), PosixPath('config_files/path_test.yml'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt'), PosixPath('findviralstrains_2.smk'), PosixPath('.snakemake/log/2025-11-05T151141.356864.snakemake.log'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('output/path_test/snakefile_used_copy.smk'), PosixPath('findviralstrains.smk'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8yX3ZzX3JlZi50eHQ='), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('findviralstrainsMain.smk')}
 expected: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt')}
 ----------------------------- Captured stderr call -----------------------------
 Assuming unrestricted shared filesystem usage.
@@ -442,7 +459,7 @@ total            1
 Select jobs to execute...
 Execute 1 jobs...
 
-[Wed Nov  5 13:10:47 2025]
+[Wed Nov  5 15:11:41 2025]
 localrule Compare_2:
     input: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2.fasta, reference_genomes/covid19ref.fasta
     output: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_2_vs_ref.txt
@@ -452,11 +469,10 @@ localrule Compare_2:
     resources: tmpdir=/tmp
 Smith-Waterman local alignment of sequences
 Smith-Waterman local alignment of sequences
-[Wed Nov  5 13:10:49 2025]
+[Wed Nov  5 15:11:42 2025]
 Finished jobid: 0 (Rule: Compare_2)
 1 of 1 steps (100%) done
-Complete log(s): /tmp/tmpxdsxd2io/workdir/.snakemake/log/2025-11-05T131047.901022.snakemake.log
-cp: cannot stat 'findviralstrains.smk': No such file or directory
+Complete log(s): /tmp/tmp6jxfhgkw/workdir/.snakemake/log/2025-11-05T151141.356864.snakemake.log
 ________________________________ test_Compare_3 ________________________________
 
 conda_prefix = []
@@ -517,10 +533,10 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
 input = None, capture_output = False, timeout = None, check = True
-popenargs = (['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of...sixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')],)
+popenargs = (['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of...sixPath('/tmp/tmp25l76q_2/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt')],)
 kwargs = {'stdout': -1}
 process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Compare_3/expecte...>
-stdout = b'.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt /tmp...wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt differ: byte 87, line 3\n'
+stdout = b'.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt /tmp...q_2/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt differ: byte 87, line 3\n'
 stderr = None, retcode = 1
 
     def run(*popenargs,
@@ -590,13 +606,13 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('/tmp/tmp25l76q_2/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
-input: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta')}
-workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfM19vZl8zX3ZzX3JlZi50eHQ='), PosixPath('config_files/example_config.yaml'), PosixPath('.snakemake/log/2025-11-05T131049.561024.snakemake.log'), PosixPath('config_files/build_test.yaml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta')}
-expected: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt')}
+input: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta')}
+workdir: {PosixPath('.snakemake/log/2025-11-05T151143.005727.snakemake.log'), PosixPath('config_files/example_config.yaml'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfM19vZl8zX3ZzX3JlZi50eHQ='), PosixPath('config_files/path_test.yml'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMl9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9vdXRwdXRfZ2Vub21lcy9zaW11bGF0ZWQvc3ViZ3JhcGhfMC9zaW11bGF0ZWRfMV9vZl8zX3ZzX3JlZi50eHQ='), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta'), PosixPath('reference_genomes/covid19ref.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')}
+expected: {PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt')}
 ----------------------------- Captured stderr call -----------------------------
 Assuming unrestricted shared filesystem usage.
 host: a-wing-02
@@ -613,7 +629,7 @@ total            1
 Select jobs to execute...
 Execute 1 jobs...
 
-[Wed Nov  5 13:10:49 2025]
+[Wed Nov  5 15:11:43 2025]
 localrule Compare_3:
     input: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3.fasta, output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3.fasta, reference_genomes/covid19ref.fasta
     output: output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_3_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt, output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt
@@ -624,10 +640,10 @@ localrule Compare_3:
 Smith-Waterman local alignment of sequences
 Smith-Waterman local alignment of sequences
 Smith-Waterman local alignment of sequences
-[Wed Nov  5 13:10:50 2025]
+[Wed Nov  5 15:11:44 2025]
 Finished jobid: 0 (Rule: Compare_3)
 1 of 1 steps (100%) done
-Complete log(s): /tmp/tmpai267wdh/workdir/.snakemake/log/2025-11-05T131049.561024.snakemake.log
+Complete log(s): /tmp/tmp25l76q_2/workdir/.snakemake/log/2025-11-05T151143.005727.snakemake.log
 cp: cannot stat 'findviralstrains.smk': No such file or directory
 ________________________________ test_Compress _________________________________
 
@@ -749,7 +765,7 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp675jwypp/workdir')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp82d7sdnr/workdir')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stderr call -----------------------------
@@ -768,7 +784,7 @@ total           1
 Select jobs to execute...
 Execute 1 jobs...
 
-[Wed Nov  5 13:10:51 2025]
+[Wed Nov  5 15:11:44 2025]
 localrule Compress:
     input: output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
     output: output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
@@ -776,11 +792,11 @@ localrule Compress:
     reason: Forced execution
     wildcards: sample=simulated, subgraph=0
     resources: tmpdir=/tmp
-python3: can't open file '/tmp/tmp675jwypp/workdir/libs/compress/compress.py': [Errno 2] No such file or directory
+python3: can't open file '/tmp/tmp82d7sdnr/workdir/libs/compress/compress.py': [Errno 2] No such file or directory
 RuleException:
 CalledProcessError in file "/home/mikhailu/Projects/research/FindViralStrainsStable/findviralstrains_2.smk", line 228:
 Command 'set -euo pipefail;  python3 libs/compress/compress.py output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg' returned non-zero exit status 2.
-[Wed Nov  5 13:10:51 2025]
+[Wed Nov  5 15:11:44 2025]
 Error in rule Compress:
     message: None
     jobid: 0
@@ -791,7 +807,7 @@ Error in rule Compress:
         (command exited with non-zero exit code)
 Shutting down, this might take some time.
 Exiting because a job execution failed. Look below for error messages
-[Wed Nov  5 13:10:51 2025]
+[Wed Nov  5 15:11:44 2025]
 Error in rule Compress:
     message: None
     jobid: 0
@@ -800,7 +816,7 @@ Error in rule Compress:
     shell:
         python3 libs/compress/compress.py output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg
         (command exited with non-zero exit code)
-Complete log(s): /tmp/tmp675jwypp/workdir/.snakemake/log/2025-11-05T131051.267091.snakemake.log
+Complete log(s): /tmp/tmp82d7sdnr/workdir/.snakemake/log/2025-11-05T151144.502460.snakemake.log
 WorkflowError:
 At least one job did not complete successfully.
 ________________________________ test_Decompose ________________________________
@@ -820,6 +836,24 @@ conda_prefix = []
     
             # Copy data to the temporary workdir.
             shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+    
+            # Test Symlinks
+            project_dir = Path.cwd()
+            symlink_items = [
+                'findviralstrains_2.smk',
+                'findviralstrains.smk',
+                'findviralstrainsMain.smk',
+                'config_files',
+                'libs',
+                'reference_genomes',
+                'output'
+            ]
+            for item in symlink_items:
+                src = project_dir / item
+                dst = workdir / item
+                if src.exists() and not dst.exists():
+                    dst.symlink_to(src)
+    
     
             # Run the test job.
             check_output(
@@ -852,7 +886,7 @@ conda_prefix = []
             import common
 >           common.OutputChecker(data_path, expected_path, workdir).check()
 
-.tests/unit/test_Decompose.py:59: 
+.tests/unit/test_Decompose.py:77: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 .tests/unit/common.py:45: in check
     self.compare_files(self.expected_path / f, self.workdir / f)
@@ -863,10 +897,10 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
 input = None, capture_output = False, timeout = None, check = True
-popenargs = (['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')],)
+popenargs = (['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpnk1va_m9/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')],)
 kwargs = {'stdout': -1}
 process = <Popen: returncode: 1 args: ['cmp', PosixPath('.tests/unit/Decompose/expecte...>
-stdout = b'.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths /tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths differ: byte 40, line 2\n'
+stdout = b'.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths /tmp/tmpnk1va_m9/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths differ: byte 40, line 2\n'
 stderr = None, retcode = 1
 
     def run(*popenargs,
@@ -936,13 +970,13 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpnk1va_m9/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
 input: {PosixPath('libs/decompose/kleast_errors.py'), PosixPath('home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py'), PosixPath('output/path_test/graphs/simulated.super_0.dbg')}
-workdir: {PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('config_files/path_test.yml'), PosixPath('libs/decompose/kleast_errors.py'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths'), PosixPath('config_files/example_config.yaml'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('config_files/build_test.yaml'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths_visualization.pdf'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths_visualization.pdf'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8xLnBhdGhz'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8yLnBhdGhz'), PosixPath('home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py'), PosixPath('.snakemake/log/2025-11-05T131052.750202.snakemake.log'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths_visualization.pdf'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8zLnBhdGhz')}
-expected: {PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths')}
+workdir: {PosixPath('config_files/path_test.yml'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths_visualization.pdf'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths_visualization.pdf'), PosixPath('output/path_test/snakefile_used_copy.smk'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8yLnBhdGhz'), PosixPath('home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('output/path_test/pipeline_log.tsv'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8zLnBhdGhz'), PosixPath('findviralstrainsMain.smk'), PosixPath('config_files/example_config.yaml'), PosixPath('findviralstrains_2.smk'), PosixPath('.snakemake/log/2025-11-05T151145.986240.snakemake.log'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths'), PosixPath('libs/decompose/kleast_errors.py'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths_visualization.pdf'), PosixPath('config_files/build_test.yaml'), PosixPath('findviralstrains.smk'), PosixPath('output/path_test/graphs/simulated.super_0.dbg'), PosixPath('.snakemake/metadata/b3V0cHV0L3BhdGhfdGVzdC9kZWNvbXBfcmVzdWx0cy9zaW11bGF0ZWRfc3ViZ3JhcGhfMF8xLnBhdGhz'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths')}
+expected: {PosixPath('output/path_test/decomp_results/simulated_subgraph_0_1.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('output/path_test/decomp_results/simulated_subgraph_0_2.paths')}
 ----------------------------- Captured stderr call -----------------------------
 Assuming unrestricted shared filesystem usage.
 host: a-wing-02
@@ -959,7 +993,7 @@ total            1
 Select jobs to execute...
 Execute 1 jobs...
 
-[Wed Nov  5 13:10:52 2025]
+[Wed Nov  5 15:11:46 2025]
 localrule Decompose:
     input: /home/mikhailu/Projects/research/FindViralStrainsStable/libs/decompose/kleast_errors.py, output/path_test/graphs/simulated.super_0.dbg
     output: output/path_test/decomp_results/simulated_subgraph_0_1.paths, output/path_test/decomp_results/simulated_subgraph_0_2.paths, output/path_test/decomp_results/simulated_subgraph_0_3.paths
@@ -967,11 +1001,10 @@ localrule Decompose:
     reason: Forced execution
     wildcards: sample=simulated, subgraph=0
     resources: tmpdir=/tmp
-[Wed Nov  5 13:10:58 2025]
+[Wed Nov  5 15:11:51 2025]
 Finished jobid: 0 (Rule: Decompose)
 1 of 1 steps (100%) done
-Complete log(s): /tmp/tmpo8jlguge/workdir/.snakemake/log/2025-11-05T131052.750202.snakemake.log
-cp: cannot stat 'findviralstrains.smk': No such file or directory
+Complete log(s): /tmp/tmpnk1va_m9/workdir/.snakemake/log/2025-11-05T151145.986240.snakemake.log
 ________________________________ test_Rebuild_1 ________________________________
 
 conda_prefix = []
@@ -1058,7 +1091,7 @@ stderr = None, retcode = 1
             if check and retcode:
 >               raise CalledProcessError(retcode, process.args,
                                          output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmppxb8bil_/workdir')]' returned non-zero exit status 1.
+E               subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp1k4ahf1q/workdir')]' returned non-zero exit status 1.
 
 ../../../anaconda3/envs/fvs/lib/python3.11/subprocess.py:571: CalledProcessError
 ----------------------------- Captured stderr call -----------------------------
@@ -1072,11 +1105,11 @@ Missing input files for rule Compress:
     affected files:
         output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg
 =========================== short test summary info ============================
-FAILED .tests/unit/test_Add_super.py::test_Add_super - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpdn4y4med/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Compare_1.py::test_Compare_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpceu06qhz/workdir')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Compare_2.py::test_Compare_2 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmpxdsxd2io/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Compare_3.py::test_Compare_3 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt'), PosixPath('/tmp/tmpai267wdh/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_3_of_3_vs_ref.txt')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Compress.py::test_Compress - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp675jwypp/workdir')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Decompose.py::test_Decompose - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpo8jlguge/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
-FAILED .tests/unit/test_Rebuild_1.py::test_Rebuild_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmppxb8bil_/workdir')]' returned non-zero exit status 1.
-========================= 7 failed, 5 passed in 21.34s =========================
+FAILED .tests/unit/test_Add_super.py::test_Add_super - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Add_super/expected/output/path_test/graphs/simulated.super_0.dbg'), PosixPath('/tmp/tmpf5e_ngzr/workdir/output/path_test/graphs/simulated.super_0.dbg')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_1.py::test_Compare_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1_vs_ref.txt', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmpvg4o077z/workdir')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_2.py::test_Compare_2 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_2/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt'), PosixPath('/tmp/tmp6jxfhgkw/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_2_vs_ref.txt')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compare_3.py::test_Compare_3 - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Compare_3/expected/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt'), PosixPath('/tmp/tmp25l76q_2/workdir/output/path_test/output_genomes/simulated/subgraph_0/simulated_2_of_3_vs_ref.txt')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Compress.py::test_Compress - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp82d7sdnr/workdir')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Decompose.py::test_Decompose - subprocess.CalledProcessError: Command '['cmp', PosixPath('.tests/unit/Decompose/expected/output/path_test/decomp_results/simulated_subgraph_0_3.paths'), PosixPath('/tmp/tmpnk1va_m9/workdir/output/path_test/decomp_results/simulated_subgraph_0_3.paths')]' returned non-zero exit status 1.
+FAILED .tests/unit/test_Rebuild_1.py::test_Rebuild_1 - subprocess.CalledProcessError: Command '['python', '-m', 'snakemake', 'output/path_test/output_genomes/simulated/subgraph_0/simulated_1_of_1.fasta', '--snakefile', 'findviralstrains_2.smk', '-f', '--notemp', '--show-failed-logs', '-j1', '--target-files-omit-workdir-adjustment', '--configfile', 'config_files/path_test.yml', '--directory', PosixPath('/tmp/tmp1k4ahf1q/workdir')]' returned non-zero exit status 1.
+========================= 7 failed, 5 passed in 20.56s =========================
