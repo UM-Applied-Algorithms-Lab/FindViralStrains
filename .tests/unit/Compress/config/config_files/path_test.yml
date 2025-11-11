@@ -8,8 +8,8 @@
 analysis_ID: path_test
 
 # Folder/Directory where where reads are stored.
-read_dir: /home/mikhailu/Projects/research/create_graph/temp/
-run_directory: /home/mikhailu/Projects/research/FindViralStrainsStable/
+read_dir: /home/mikhail/Projects/Research/FindViralStrainsStable/.test_paths
+run_directory: /home/mikhail/Projects/Research/FindViralStrainsStable/
 # Output directory
 # The pipeline will create a folder, analysis_ID, within this output directory.
 output_dir: output
@@ -19,7 +19,7 @@ output_dir: output
 sequencer: MiSeq
 
 # Where you are running these files from (. is fine for most use cases)
-run_location: /home/mikhailu/Projects/research/FindViralStrainsStable
+run_location: /home/mikhailu/Projects/Research/FindViralStrainsStable
 
 # How long Gurobi will run before stopping itself
 decomp_time_limit: 30
@@ -34,7 +34,6 @@ gurobi_threads: 1
 # All edges with weights at or below this number will be deleted
 # See documentation to better understand what averages are
 prune: 0
-
 
 visualize: True
 #######################

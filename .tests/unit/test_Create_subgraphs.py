@@ -13,13 +13,13 @@ from subprocess import check_output
 sys.path.insert(0, os.path.dirname(__file__))
 
 
-def test_Compress(conda_prefix):
+def test_Create_subgraphs(conda_prefix):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir) / "workdir"
-        config_path = Path(".tests/unit/Compress/config")
-        data_path = Path(".tests/unit/Compress/data")
-        expected_path = Path(".tests/unit/Compress/expected")
+        config_path = Path(".tests/unit/Create_subgraphs/config")
+        data_path = Path(".tests/unit/Create_subgraphs/data")
+        expected_path = Path(".tests/unit/Create_subgraphs/expected")
 
         # Copy config to the temporary workdir.
         shutil.copytree(config_path, workdir)
@@ -33,9 +33,12 @@ def test_Compress(conda_prefix):
                 "python",
                 "-m",
                 "snakemake",
-                "output/path_test/graphs/simulated/out.dbg_subgraphs/graph_0_compressed.dbg",
+                "output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.dbg",
+                "output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sources",
+                "output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_0.sinks",
+                "output/path_test/graphs/simulated/pruned.dbg_subgraphs/graph_stats.txt",
                 "--snakefile",
-                "findviralstrains_2.smk",
+                "findviralstrains.smk",
                 "-f",
                 "--notemp",
                 "--show-failed-logs",
