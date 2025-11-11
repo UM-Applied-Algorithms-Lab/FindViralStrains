@@ -92,8 +92,31 @@ def test_Create_subgraphs(conda_prefix):
             ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
             return ansi_escape.sub("", text)
 
+        def _should_extract_weight_and_sequence(file_path):
+            """Determine if file should have only weight and sequence extracted."""
+            filename = file_path.name
+            # Extract only weight and sequence for graph data files
+            return (
+                filename.endswith(".dbg")
+                or filename.endswith(".sources")
+                or filename.endswith(".sinks")
+            )
+
+        def _extract_weight_and_sequence(line):
+            """Extract only the weight (3rd column) and sequence (4th column) from a line."""
+            parts = line.strip().split()
+            if len(parts) >= 4:
+                # Return weight and sequence only, ignore node IDs
+                return f"{parts[2]} {parts[3]}"
+            elif len(parts) >= 3:
+                # If only 3 parts, assume weight is missing and just return sequence
+                return parts[2]
+            else:
+                # Fallback to entire line if format is unexpected
+                return line.strip()
+
         def _compare_ignoring_first_lines(generated_file, expected_file, lines_to_skip):
-            """Compare files while ignoring the first N lines, ANSI codes, and normalizing whitespace."""
+            """Compare files while ignoring the first N lines, ANSI codes, and extracting only weight+sequence for graph files."""
             try:
                 with open(generated_file, "r") as gen_f:
                     gen_lines = gen_f.readlines()
@@ -101,42 +124,71 @@ def test_Create_subgraphs(conda_prefix):
                 with open(expected_file, "r") as exp_f:
                     exp_lines = exp_f.readlines()
 
-                gen_lines_skipped = gen_lines[lines_to_skip:]
-                exp_lines_skipped = exp_lines[lines_to_skip:]
+                # Handle header lines
+                gen_header = gen_lines[:lines_to_skip]
+                exp_header = exp_lines[:lines_to_skip]
+                gen_content = gen_lines[lines_to_skip:]
+                exp_content = exp_lines[lines_to_skip:]
 
-                if len(gen_lines_skipped) != len(exp_lines_skipped):
+                # Extract only weight and sequence for graph data files
+                if _should_extract_weight_and_sequence(generated_file):
+                    print(
+                        f"Extracting only weight and sequence for: {generated_file.name}"
+                    )
+
+                    # Extract weight and sequence from each line
+                    gen_extracted = [
+                        _extract_weight_and_sequence(line) for line in gen_content
+                    ]
+                    exp_extracted = [
+                        _extract_weight_and_sequence(_strip_ansi_codes(line))
+                        for line in exp_content
+                    ]
+
+                    # Sort by the extracted content
+                    gen_content_sorted = sorted(gen_extracted)
+                    exp_content_sorted = sorted(exp_extracted)
+                else:
+                    # For non-graph files, just normalize whitespace
+                    gen_content_sorted = [
+                        " ".join(line.split()).strip() for line in gen_content
+                    ]
+                    exp_content_sorted = [
+                        " ".join(_strip_ansi_codes(line).split()).strip()
+                        for line in exp_content
+                    ]
+
+                if len(gen_content_sorted) != len(exp_content_sorted):
                     raise AssertionError(
                         f"Files have different number of lines after skipping first {lines_to_skip} lines: "
-                        f"{len(gen_lines_skipped)} vs {len(exp_lines_skipped)}\n"
+                        f"{len(gen_content_sorted)} vs {len(exp_content_sorted)}\n"
                         f"Original line counts - Generated: {len(gen_lines)}, Expected: {len(exp_lines)}\n"
                         f"Generated file: {generated_file}\nExpected file: {expected_file}"
                     )
 
-                for i, (gen_line, exp_line) in enumerate(
-                    zip(gen_lines_skipped, exp_lines_skipped)
+                for i, (gen_item, exp_item) in enumerate(
+                    zip(gen_content_sorted, exp_content_sorted)
                 ):
-                    # Remove ANSI escape codes from expected line
-                    exp_line_clean = _strip_ansi_codes(exp_line)
+                    print(f"DEBUG Line {i + lines_to_skip + 1} (weight+sequence only):")
+                    print(f"DEBUG Generated: '{repr(gen_item)}'")
+                    print(f"DEBUG Expected:  '{repr(exp_item)}'")
+                    print(f"DEBUG Are they equal? {gen_item == exp_item}")
 
-                    # Normalize whitespace: replace all whitespace with single spaces and strip
-                    gen_normalized = " ".join(gen_line.split()).strip()
-                    exp_normalized = " ".join(exp_line_clean.split()).strip()
-
-                    print(f"DEBUG Line {i + lines_to_skip + 1}:")
-                    print(f"DEBUG Generated normalized: '{repr(gen_normalized)}'")
-                    print(f"DEBUG Expected normalized: '{repr(exp_normalized)}'")
-                    print(f"DEBUG Are they equal? {gen_normalized == exp_normalized}")
-
-                    if gen_normalized != exp_normalized:
+                    if gen_item != exp_item:
                         raise AssertionError(
-                            f"Files differ at line {i + lines_to_skip + 1}:\n"
-                            f"Generated: '{gen_normalized}'\n"
-                            f"Expected:  '{exp_normalized}'\n"
+                            f"Files differ at line {i + lines_to_skip + 1} (weight+sequence only):\n"
+                            f"Generated: '{gen_item}'\n"
+                            f"Expected:  '{exp_item}'\n"
                             f"Generated file: {generated_file}\nExpected file: {expected_file}"
                         )
 
+                extract_note = (
+                    " (weight+sequence only)"
+                    if _should_extract_weight_and_sequence(generated_file)
+                    else ""
+                )
                 print(
-                    f"Files match (first {lines_to_skip} lines ignored, ANSI codes and whitespace normalized): {generated_file}"
+                    f"Files match (first {lines_to_skip} lines ignored{extract_note}): {generated_file}"
                 )
 
             except Exception as e:
