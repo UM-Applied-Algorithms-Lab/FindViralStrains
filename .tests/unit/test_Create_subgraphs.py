@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 
 def test_Create_subgraphs(conda_prefix):
-    # Create fake_temp directory in current run location
+    # Create fake_temp directory
     fake_temp_dir = Path("fake_temp")
     fake_temp_dir.mkdir(exist_ok=True)
 
@@ -55,14 +55,11 @@ def test_Create_subgraphs(conda_prefix):
             + conda_prefix
         )
 
-        # Simple custom comparison that handles the file order correctly
         def compare_files_with_line_skipping():
-            # Get the list of expected files
             expected_files = list(expected_path.rglob("*"))
             expected_files = [f for f in expected_files if f.is_file()]
 
             for expected_file in expected_files:
-                # Get the relative path from expected_path
                 rel_path = expected_file.relative_to(expected_path)
                 generated_file = workdir / rel_path
 
@@ -73,10 +70,8 @@ def test_Create_subgraphs(conda_prefix):
                         f"Generated file does not exist: {generated_file}"
                     )
 
-                # Determine how many lines to skip based on file type
                 lines_to_skip = _get_lines_to_skip(generated_file)
 
-                # Save the sorted versions for manual inspection before comparison
                 if generated_file.name == "graph_0.dbg":
                     _save_sorted_versions_for_inspection(
                         generated_file, expected_file, lines_to_skip
@@ -103,7 +98,7 @@ def test_Create_subgraphs(conda_prefix):
                 gen_content = gen_lines[lines_to_skip:]
                 exp_content = exp_lines[lines_to_skip:]
 
-                # Extract weight and sequence tuples for sorting (sequence first)
+                # Pull weights etc
                 gen_tuples = [
                     _extract_weight_and_sequence_for_sorting(line)
                     for line in gen_content
@@ -117,7 +112,7 @@ def test_Create_subgraphs(conda_prefix):
                 gen_tuples_sorted = sorted(gen_tuples)
                 exp_tuples_sorted = sorted(exp_tuples)
 
-                # Convert back to strings for comparison (weight first, then sequence)
+                # Convert back to strings
                 gen_content_sorted = [
                     f"{weight} {sequence}" for sequence, weight in gen_tuples_sorted
                 ]
@@ -125,7 +120,7 @@ def test_Create_subgraphs(conda_prefix):
                     f"{weight} {sequence}" for sequence, weight in exp_tuples_sorted
                 ]
 
-                # Save the sorted versions to fake_temp
+                # Save to fake_temp
                 fake_temp_dir.mkdir(exist_ok=True)
 
                 # Save generated sorted version
@@ -162,14 +157,15 @@ def test_Create_subgraphs(conda_prefix):
             """Determine how many lines to skip based on file type/name"""
             filename = file_path.name
             if filename.endswith(".dbg"):
-                return 3  # Skip first 3 lines for DBG files
+                return 3  # Skip 3 lines for DBG files
             elif filename.endswith(".sources") or filename.endswith(".sinks"):
-                return 2  # Skip first 2 lines for source/sink files
+                return 2  # Skip 2 lines for source/sink files
             elif filename.endswith(".txt"):
                 return 1  # Skip first line for text files
             else:
                 return 0  # Default: don't skip any lines
 
+        # Mismatched for text colours in the file was causing issues, pulled this from stack overflow
         def _strip_ansi_codes(text):
             """Remove ANSI escape codes from text."""
             ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
@@ -178,7 +174,7 @@ def test_Create_subgraphs(conda_prefix):
         def _should_extract_weight_and_sequence(file_path):
             """Determine if file should have only weight and sequence extracted."""
             filename = file_path.name
-            # Extract only weight and sequence for graph data files
+            # Extract only weight and sequence
             return (
                 filename.endswith(".dbg")
                 or filename.endswith(".sources")
@@ -189,25 +185,22 @@ def test_Create_subgraphs(conda_prefix):
             """Extract weight and sequence, but sort primarily by sequence."""
             parts = line.strip().split()
             if len(parts) >= 4:
-                weight = parts[2]  # Keep as string, don't convert to int
+                weight = parts[2]
                 sequence = parts[3]
-                return (sequence, weight)  # Sort by sequence first, then weight
+                return (sequence, weight)
             elif len(parts) >= 3:
-                return (parts[2], "0")  # No weight, just sequence
+                return (parts[2], "0")
             else:
-                return (line.strip(), "0")  # Fallback
+                return (line.strip(), "0")
 
         def _extract_weight_and_sequence_for_comparison(line):
             """Extract only the weight (3rd column) and sequence (4th column) from a line."""
             parts = line.strip().split()
             if len(parts) >= 4:
-                # Return weight and sequence only, ignore node IDs
                 return f"{parts[2]} {parts[3]}"
             elif len(parts) >= 3:
-                # If only 3 parts, assume weight is missing and just return sequence
                 return parts[2]
             else:
-                # Fallback to entire line if format is unexpected
                 return line.strip()
 
         def _compare_ignoring_first_lines(generated_file, expected_file, lines_to_skip):
@@ -219,19 +212,16 @@ def test_Create_subgraphs(conda_prefix):
                 with open(expected_file, "r") as exp_f:
                     exp_lines = exp_f.readlines()
 
-                # Handle header lines
                 gen_header = gen_lines[:lines_to_skip]
                 exp_header = exp_lines[:lines_to_skip]
                 gen_content = gen_lines[lines_to_skip:]
                 exp_content = exp_lines[lines_to_skip:]
 
-                # Extract only weight and sequence for graph data files
                 if _should_extract_weight_and_sequence(generated_file):
                     print(
                         f"Extracting only weight and sequence for: {generated_file.name}"
                     )
 
-                    # Extract weight and sequence tuples for sorting (sequence first)
                     gen_tuples = [
                         _extract_weight_and_sequence_for_sorting(line)
                         for line in gen_content
@@ -243,11 +233,9 @@ def test_Create_subgraphs(conda_prefix):
                         for line in exp_content
                     ]
 
-                    # Sort by sequence first, then weight
                     gen_tuples_sorted = sorted(gen_tuples)
                     exp_tuples_sorted = sorted(exp_tuples)
 
-                    # Convert back to strings for comparison (weight first, then sequence)
                     gen_content_sorted = [
                         f"{weight} {sequence}" for sequence, weight in gen_tuples_sorted
                     ]
@@ -256,7 +244,6 @@ def test_Create_subgraphs(conda_prefix):
                     ]
 
                 else:
-                    # For non-graph files, just normalize whitespace
                     gen_content_sorted = [
                         " ".join(line.split()).strip() for line in gen_content
                     ]
@@ -276,16 +263,14 @@ def test_Create_subgraphs(conda_prefix):
                 for i, (gen_item, exp_item) in enumerate(
                     zip(gen_content_sorted, exp_content_sorted)
                 ):
-                    print(
-                        f"DEBUG Line {i + lines_to_skip + 1} (weight+sequence only, sorted by sequence):"
-                    )
+                    print(f"DEBUG Line {i + lines_to_skip + 1} (weight+sequence):")
                     print(f"DEBUG Generated: '{repr(gen_item)}'")
                     print(f"DEBUG Expected:  '{repr(exp_item)}'")
                     print(f"DEBUG Are they equal? {gen_item == exp_item}")
 
                     if gen_item != exp_item:
                         raise AssertionError(
-                            f"Files differ at line {i + lines_to_skip + 1} (weight+sequence only, sorted by sequence):\n"
+                            f"Files differ at line {i + lines_to_skip + 1} (weight+sequence only):\n"
                             f"Generated: '{gen_item}'\n"
                             f"Expected:  '{exp_item}'\n"
                             f"Generated file: {generated_file}\nExpected file: {expected_file}"
@@ -303,5 +288,4 @@ def test_Create_subgraphs(conda_prefix):
             except Exception as e:
                 raise AssertionError(f"Comparison failed for {generated_file}: {e}")
 
-        # Run the custom comparison
         compare_files_with_line_skipping()
