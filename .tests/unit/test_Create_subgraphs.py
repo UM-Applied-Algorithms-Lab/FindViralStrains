@@ -14,6 +14,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 
 def test_Create_subgraphs(conda_prefix):
+    # Create fake_temp directory in current run location
+    fake_temp_dir = Path("fake_temp")
+    fake_temp_dir.mkdir(exist_ok=True)
+
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir) / "workdir"
         config_path = Path(".tests/unit/Create_subgraphs/config")
@@ -71,9 +75,88 @@ def test_Create_subgraphs(conda_prefix):
 
                 # Determine how many lines to skip based on file type
                 lines_to_skip = _get_lines_to_skip(generated_file)
+
+                # Save the sorted versions for manual inspection before comparison
+                if generated_file.name == "graph_0.dbg":
+                    _save_sorted_versions_for_inspection(
+                        generated_file, expected_file, lines_to_skip
+                    )
+
                 _compare_ignoring_first_lines(
                     generated_file, expected_file, lines_to_skip
                 )
+
+        def _save_sorted_versions_for_inspection(
+            generated_file, expected_file, lines_to_skip
+        ):
+            """Save sorted versions of both files to fake_temp for manual inspection"""
+            try:
+                with open(generated_file, "r") as gen_f:
+                    gen_lines = gen_f.readlines()
+
+                with open(expected_file, "r") as exp_f:
+                    exp_lines = exp_f.readlines()
+
+                # Handle header lines
+                gen_header = gen_lines[:lines_to_skip]
+                exp_header = exp_lines[:lines_to_skip]
+                gen_content = gen_lines[lines_to_skip:]
+                exp_content = exp_lines[lines_to_skip:]
+
+                # Extract weight and sequence tuples for sorting (sequence first)
+                gen_tuples = [
+                    _extract_weight_and_sequence_for_sorting(line)
+                    for line in gen_content
+                ]
+                exp_tuples = [
+                    _extract_weight_and_sequence_for_sorting(_strip_ansi_codes(line))
+                    for line in exp_content
+                ]
+
+                # Sort by sequence first, then weight
+                gen_tuples_sorted = sorted(gen_tuples)
+                exp_tuples_sorted = sorted(exp_tuples)
+
+                # Convert back to strings for comparison (weight first, then sequence)
+                gen_content_sorted = [
+                    f"{weight} {sequence}" for sequence, weight in gen_tuples_sorted
+                ]
+                exp_content_sorted = [
+                    f"{weight} {sequence}" for sequence, weight in exp_tuples_sorted
+                ]
+
+                # Save the sorted versions to fake_temp
+                fake_temp_dir.mkdir(exist_ok=True)
+
+                # Save generated sorted version
+                gen_sorted_path = fake_temp_dir / "generated_sorted_graph_0.txt"
+                with open(gen_sorted_path, "w") as f:
+                    f.write("# Sorted by sequence then weight\n")
+                    f.write("# Format: weight sequence\n")
+                    for item in gen_content_sorted:
+                        f.write(item + "\n")
+                print(f"Saved sorted generated file to: {gen_sorted_path}")
+
+                # Save expected sorted version
+                exp_sorted_path = fake_temp_dir / "expected_sorted_graph_0.txt"
+                with open(exp_sorted_path, "w") as f:
+                    f.write("# Sorted by sequence then weight\n")
+                    f.write("# Format: weight sequence\n")
+                    for item in exp_content_sorted:
+                        f.write(item + "\n")
+                print(f"Saved sorted expected file to: {exp_sorted_path}")
+
+                # Also save the original files for reference
+                shutil.copy2(
+                    generated_file, fake_temp_dir / "original_generated_graph_0.dbg"
+                )
+                shutil.copy2(
+                    expected_file, fake_temp_dir / "original_expected_graph_0.dbg"
+                )
+                print(f"Saved original files to fake_temp directory")
+
+            except Exception as e:
+                print(f"Warning: Could not save sorted files for inspection: {e}")
 
         def _get_lines_to_skip(file_path):
             """Determine how many lines to skip based on file type/name"""
