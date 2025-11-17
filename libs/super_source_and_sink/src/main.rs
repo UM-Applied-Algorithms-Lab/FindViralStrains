@@ -75,24 +75,38 @@ fn create_super_sources_and_sinks(
     full_nodes.insert("0".to_string());
     full_nodes.insert("1".to_string());
 
-    // Write all original edges to the output file (skip the first line of the edge file)
+    // Read and sort all original edges for deterministic output
     let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
-    let mut edge_lines = edge_file_content.lines();
-    edge_lines.next(); // Skip the first line
+    let mut edge_lines: Vec<&str> = edge_file_content.lines().collect();
 
+    // Skip the first line (header) and sort the remaining edges
+    if !edge_lines.is_empty() {
+        let header = edge_lines.remove(0);
+        edge_lines.sort(); // Sort edges for deterministic output
+        edge_lines.insert(0, header); // Put header back at the beginning
+    }
+
+    // Write all sorted original edges to the output file
     for line in edge_lines {
         writeln!(output_file, "{}", line)?;
     }
 
+    // Sort sources and sinks for deterministic output
+    let mut sorted_sources: Vec<String> = sources.into_iter().collect();
+    sorted_sources.sort();
+
+    let mut sorted_sinks: Vec<String> = sinks.into_iter().collect();
+    sorted_sinks.sort();
+
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
     let super_source = "0".to_string();
-    for source in &sources {
+    for source in sorted_sources {
         writeln!(output_file, "{} {} 0", super_source, source)?;
     }
 
     // Add edges from each sink node to the "super sink" (node "1") with weight 0
     let super_sink = "1".to_string();
-    for sink in &sinks {
+    for sink in sorted_sinks {
         writeln!(output_file, "{} {} 0", sink, super_sink)?;
     }
 
@@ -139,6 +153,4 @@ fn main() {
         graph_name,
     )
     .expect("unable to create super sources and sinks");
-
-
 }
