@@ -105,7 +105,8 @@ fn main() {
     let args = InputArgs::parse();
 
     //parse the main de bruijn graph from the input mer-graph file
-    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name)) {
+    let (main_graph, edge_info, graph_label) = match make_main_graph(Path::new(&args.dbg_file_name))
+    {
         Ok(graph) => graph,
         Err(err) => panic!("Unable to generate graph, check file: {}", err),
     };
@@ -165,11 +166,14 @@ fn write_subgraph_files(
             None => Path::new(&subgraph_sub_dir).to_path_buf(),
         };
 
-        std::fs::create_dir_all(&subgraph_directory_name).expect(
-            "could not create subgraph directory"
-        );
+        std::fs::create_dir_all(&subgraph_directory_name)
+            .expect("could not create subgraph directory");
         let subgraph_idx_string = subgraph_idx.to_string();
-        let (sources, sinks) = make_source_sink_lists(&subgraph);
+
+        let (mut sources, mut sinks) = make_source_sink_lists(&subgraph);
+        // Sort sources and sinks for deterministic output
+        sources.sort();
+        sinks.sort();
 
         let _ = std::fs::write(
             Path::new(&subgraph_directory_name)
@@ -207,18 +211,24 @@ fn write_subgraph_files(
             .write_fmt(format_args!("{}\n", subgraph_num_nodes))
             .expect("unable to write subgraph node count to file");
 
-        for (from_node, edges) in *subgraph {
-            for to_node in &edges.out_edges {
+        // Sort nodes for deterministic output
+        let mut sorted_nodes: Vec<&Rc<str>> = subgraph.keys().collect();
+        sorted_nodes.sort();
+
+        for from_node in sorted_nodes {
+            let edges = subgraph.get(from_node).unwrap();
+            // Sort out_edges for deterministic output
+            let mut sorted_out_edges: Vec<&Rc<str>> = edges.out_edges.iter().collect();
+            sorted_out_edges.sort();
+
+            for to_node in sorted_out_edges {
                 match edge_info.get(&(from_node.clone(), to_node.clone())) {
                     Some(result) => {
                         let (count, kmer) = result;
                         subgraph_mg_file
                             .write_fmt(format_args!(
                                 "{}\t{}\t{}\t{}\n",
-                                from_node,
-                                to_node,
-                                count,
-                                kmer
+                                from_node, to_node, count, kmer
                             ))
                             .expect("unable to write graph line to subgraph file");
                     }
@@ -240,7 +250,7 @@ fn display_graph_stats(
     stats_output_file: &Option<String>,
 ) -> std::io::Result<()> {
     let mut output = String::new();
-    
+
     output.push_str(&format!(
         "Main Graph Stats:\n{}\n",
         make_graph_stats(main_graph, &edge_info, subgraph_list.len())
@@ -248,10 +258,17 @@ fn display_graph_stats(
 
     match subgraph_display_type {
         SubgraphDisplayType::All => {
-            for (subgraph_idx, subgraph) in subgraph_list.iter().enumerate() {
+            // Create indexed list and sort by size then original index for deterministic order
+            let mut indexed_subgraphs: Vec<(usize, &HashMap<Rc<str>, NodeEdges>)> =
+                subgraph_list.iter().enumerate().collect();
+
+            // Sort by size (descending) then by original index (ascending) for deterministic order
+            indexed_subgraphs.sort_by(|a, b| b.1.len().cmp(&a.1.len()).then(a.0.cmp(&b.0)));
+
+            for (original_idx, subgraph) in indexed_subgraphs {
                 output.push_str(&format!(
                     "Subgraph {}:\n{}\n",
-                    subgraph_idx,
+                    original_idx,
                     make_graph_stats(subgraph, &edge_info, 0)
                 ));
             }
@@ -287,16 +304,37 @@ fn make_graph_stats(
     edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     num_subgraphs: usize,
 ) -> GraphAnalysisData {
-    let (sources, sinks) = make_source_sink_lists(&graph);
-    let total_edge_weight = graph.iter().flat_map(|(from, edges)| {
-        edges.out_edges.iter().filter_map(move |to| {
-             edge_info.get(&(from.clone(), to.clone())).map(|(count, _)| count)
-        })
-    }).sum();
+    let (mut sources, mut sinks) = make_source_sink_lists(&graph);
+    // Sort sources and sinks for deterministic output
+    sources.sort();
+    sinks.sort();
+
+    // Calculate total edge weight with deterministic iteration order
+    let mut sorted_nodes: Vec<&Rc<str>> = graph.keys().collect();
+    sorted_nodes.sort();
+
+    let mut total_edge_weight = 0;
+    for from_node in &sorted_nodes {
+        let edges = graph.get(*from_node).unwrap();
+        let mut sorted_out_edges: Vec<&Rc<str>> = edges.out_edges.iter().collect();
+        sorted_out_edges.sort();
+
+        for to_node in &sorted_out_edges {
+            if let Some((count, _)) = edge_info.get(&((*from_node).clone(), (*to_node).clone())) {
+                total_edge_weight += count;
+            }
+        }
+    }
+
+    // Calculate number of edges with deterministic iteration
+    let num_edges: usize = sorted_nodes
+        .iter()
+        .map(|node| graph.get(*node).unwrap().out_edges.len())
+        .sum();
 
     GraphAnalysisData {
         num_nodes: graph.len(),
-        num_edges: graph.iter().map(|(_, edges)| edges.out_edges.len()).sum(),
+        num_edges,
         total_edge_weight,
         num_disconnected_subgraphs: num_subgraphs,
         sources,
@@ -313,28 +351,53 @@ fn make_subgraph_list(
     let mut node_colors: HashMap<Rc<str>, usize> = HashMap::new();
     let mut subgraph_list: Vec<HashMap<Rc<str>, NodeEdges>> = Vec::new();
 
+    // Sort nodes for deterministic flood-fill order
+    let mut sorted_nodes: Vec<&Rc<str>> = main_graph.keys().collect();
+    sorted_nodes.sort();
+
     // flood fills the graph to find all connected nodes
-    for (node_idx, (node_name, _)) in main_graph.iter().enumerate() {
+    for (node_idx, node_name) in sorted_nodes.iter().enumerate() {
         graph_color_flood_fill(main_graph, &mut node_colors, node_name, node_idx);
     }
 
     // finds the number of colors that were used to color all nodes of the graph, and therefore,
     // finds the set (and count) of subgraphs
-    let node_color_set: HashSet<usize> = node_colors
+    let mut node_color_set: Vec<usize> = node_colors
         .iter()
-        .map(|(_, node_color)| node_color.clone())
+        .map(|(_, node_color)| *node_color)
         .collect();
+    node_color_set.sort(); // Sort colors for deterministic subgraph order
+    node_color_set.dedup();
 
     // generates separate hashmaps for each subgraph
     for node_color in node_color_set {
-        let subgraph: HashMap<Rc<str>, NodeEdges> = node_colors
+        let mut subgraph_entries: Vec<(Rc<str>, NodeEdges)> = node_colors
             .iter()
             .filter(|(_, color)| node_color == **color)
-            .map(|(node_name, _)| main_graph.get_key_value(node_name).unwrap())
-            .map(|(node_name, node_edges)| (node_name.clone(), node_edges.clone()))
+            .map(|(node_name, _)| {
+                (
+                    node_name.clone(),
+                    main_graph.get(node_name).unwrap().clone(),
+                )
+            })
             .collect();
+
+        // Sort subgraph entries for deterministic HashMap creation
+        subgraph_entries.sort_by(|a, b| a.0.cmp(&b.0));
+
+        let subgraph: HashMap<Rc<str>, NodeEdges> = subgraph_entries.into_iter().collect();
         subgraph_list.push(subgraph);
     }
+
+    // Sort subgraph list by size (largest first) then by minimum node name for consistent ordering
+    subgraph_list.sort_by(|a, b| {
+        b.len().cmp(&a.len()).then_with(|| {
+            let a_min = a.keys().min().unwrap();
+            let b_min = b.keys().min().unwrap();
+            a_min.cmp(b_min)
+        })
+    });
+
     return subgraph_list;
 }
 
@@ -347,10 +410,22 @@ fn make_significant_subgraph_list(
     let num_total_nodes: usize = subgraph_list.iter().map(|subgraph| subgraph.len()).sum();
     let min_nodes_for_significant_subgraph: usize =
         ((num_total_nodes as f32) * node_percent_cutoff) as usize;
-    return subgraph_list
+
+    let mut significant: Vec<&HashMap<Rc<str>, NodeEdges>> = subgraph_list
         .iter()
         .filter(|subgraph| subgraph.len() >= min_nodes_for_significant_subgraph)
         .collect();
+
+    // Sort significant subgraphs by size (descending) then by minimum node name for deterministic order
+    significant.sort_by(|a, b| {
+        b.len().cmp(&a.len()).then_with(|| {
+            let a_min = a.keys().min().unwrap();
+            let b_min = b.keys().min().unwrap();
+            a_min.cmp(b_min)
+        })
+    });
+
+    return significant;
 }
 
 /// reads in the mer-graph from the file_path, and generates the full de bruijn graph as a hashmap
@@ -385,7 +460,8 @@ fn make_main_graph(
             could not parse second node name",
         ));
 
-        let count: usize = split_line.next().unwrap().parse().expect( // TODO change to int
+        let count: usize = split_line.next().unwrap().parse().expect(
+            // TODO change to int
             "encountered incorrectly formatted line in input file: \
             could not parse second node name",
         );
@@ -446,19 +522,30 @@ fn graph_color_flood_fill(
             node_colors.insert(current_node.clone(), color);
 
             let node_edges = edge_map.get(&current_node).unwrap();
-            node_stack.extend_from_slice(&node_edges.in_edges);
-            node_stack.extend_from_slice(&node_edges.out_edges);
+
+            // Sort edges for deterministic traversal order
+            let mut sorted_in_edges: Vec<Rc<str>> = node_edges.in_edges.clone();
+            let mut sorted_out_edges: Vec<Rc<str>> = node_edges.out_edges.clone();
+            sorted_in_edges.sort();
+            sorted_out_edges.sort();
+
+            // Use sorted order for deterministic behavior
+            node_stack.extend_from_slice(&sorted_in_edges);
+            node_stack.extend_from_slice(&sorted_out_edges);
         }
     }
 }
 
 /// determines if the given graph has any cycles
 fn graph_is_acyclic(node_map: &HashMap<Rc<str>, NodeEdges>) -> bool {
-    let source_nodes: Vec<Rc<str>> = node_map
+    let mut source_nodes: Vec<Rc<str>> = node_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())
         .map(|(node_name, _)| node_name.clone())
         .collect();
+
+    // Sort source nodes for deterministic cycle detection
+    source_nodes.sort();
 
     for source in source_nodes {
         let mut acyclic_nodes: HashSet<Rc<str>> = HashSet::new();

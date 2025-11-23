@@ -1,15 +1,51 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::env;
 use std::fs::{self, File};
+use std::hash::{BuildHasher, Hasher};
 use std::io::{self, BufRead, BufReader, Write};
 use std::path::Path;
 
+// Custom hasher with fixed seed
+#[derive(Default)]
+struct FixedHasher(u64);
+
+impl Hasher for FixedHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+
+    fn write(&mut self, bytes: &[u8]) {
+        // Simple deterministic hash function - DJB2 algorithm
+        let mut hash: u64 = 5381;
+        for &byte in bytes {
+            hash = ((hash << 5).wrapping_add(hash)).wrapping_add(byte as u64);
+        }
+        self.0 = hash;
+    }
+}
+
+#[derive(Default)]
+struct FixedBuildHasher;
+
+impl BuildHasher for FixedBuildHasher {
+    type Hasher = FixedHasher;
+
+    fn build_hasher(&self) -> FixedHasher {
+        FixedHasher(123) // Fixed seed
+    }
+}
+
 // Helper function to read nodes from a file
-fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
+fn read_nodes_from_file(filename: &str) -> io::Result<HashMap<String, (), FixedBuildHasher>> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
 
-    let nodes: HashSet<String> = reader.lines().filter_map(|line| line.ok()).collect();
+    let mut nodes = HashMap::with_hasher(FixedBuildHasher);
+    for line in reader.lines() {
+        if let Ok(node) = line {
+            nodes.insert(node, ());
+        }
+    }
 
     Ok(nodes)
 }
@@ -17,11 +53,14 @@ fn read_nodes_from_file(filename: &str) -> io::Result<HashSet<String>> {
 // Helper function to read edges with weights and k-mers from a file
 fn read_edges_with_weights(
     filename: &str,
-) -> io::Result<(HashSet<String>, Vec<(String, String, i32)>)> {
+) -> io::Result<(
+    HashMap<String, (), FixedBuildHasher>,
+    Vec<(String, String, i32)>,
+)> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
     let mut edges = Vec::new();
-    let mut nodes = HashSet::new();
+    let mut nodes = HashMap::with_hasher(FixedBuildHasher);
     let mut line_count = 0;
 
     for line in reader.lines() {
@@ -39,8 +78,8 @@ fn read_edges_with_weights(
                 let to = parts[1].to_string();
 
                 // Add nodes to the full node list
-                nodes.insert(from.clone());
-                nodes.insert(to.clone());
+                nodes.insert(from.clone(), ());
+                nodes.insert(to.clone(), ());
 
                 // Attempt to parse the weight as an integer
                 if let Ok(weight) = parts[2].parse::<i32>() {
@@ -72,8 +111,8 @@ fn create_super_sources_and_sinks(
     let (mut full_nodes, edges) = read_edges_with_weights(edge_file)?;
 
     // Add super source ("0") and super sink ("1") to the full node list
-    full_nodes.insert("0".to_string());
-    full_nodes.insert("1".to_string());
+    full_nodes.insert("0".to_string(), ());
+    full_nodes.insert("1".to_string(), ());
 
     // Read and sort all original edges for deterministic output
     let edge_file_content = fs::read_to_string(edge_file).expect("unable to read edge file");
@@ -91,11 +130,11 @@ fn create_super_sources_and_sinks(
         writeln!(output_file, "{}", line)?;
     }
 
-    // Sort sources and sinks for deterministic output
-    let mut sorted_sources: Vec<String> = sources.into_iter().collect();
+    // Convert HashMap keys to sorted vectors for deterministic output
+    let mut sorted_sources: Vec<String> = sources.keys().cloned().collect();
     sorted_sources.sort();
 
-    let mut sorted_sinks: Vec<String> = sinks.into_iter().collect();
+    let mut sorted_sinks: Vec<String> = sinks.keys().cloned().collect();
     sorted_sinks.sort();
 
     // Add edges from the "super source" (node "0") to all source nodes with weight 0
