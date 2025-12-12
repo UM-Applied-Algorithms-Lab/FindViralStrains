@@ -2,40 +2,9 @@ use clap::Parser;
 use colored::Colorize;
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
-use std::hash::{BuildHasher, Hasher};
 use std::io::{BufRead, BufReader, Result, Write};
 use std::path::Path;
 use std::rc::Rc;
-
-// Custom hasher with fixed seed
-#[derive(Default)]
-struct FixedHasher(u64);
-
-impl Hasher for FixedHasher {
-    fn finish(&self) -> u64 {
-        self.0
-    }
-
-    fn write(&mut self, bytes: &[u8]) {
-        // Simple deterministic hash function - DJB2 algorithm
-        let mut hash: u64 = 5381;
-        for &byte in bytes {
-            hash = ((hash << 5).wrapping_add(hash)).wrapping_add(byte as u64);
-        }
-        self.0 = hash;
-    }
-}
-
-#[derive(Default)]
-struct FixedBuildHasher;
-
-impl BuildHasher for FixedBuildHasher {
-    type Hasher = FixedHasher;
-
-    fn build_hasher(&self) -> FixedHasher {
-        FixedHasher(123) // Fixed seed
-    }
-}
 
 //Struct used to handle input args, with the Clap rust crate.
 //This pulls help text from the comments, and compiler flags/options from the variable names
@@ -178,10 +147,10 @@ fn main() {
 ///
 /// significant_subgraph_list should be the list of all subgraphs to print
 fn write_subgraph_files(
-    significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges, FixedBuildHasher>>,
+    significant_subgraph_list: Vec<&HashMap<Rc<str>, NodeEdges>>,
     base_file_name: &String,
     main_graph_label: &String,
-    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>), FixedBuildHasher>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     output_dir: Option<String>,
     exclude_cyclic_graphs: bool,
 ) {
@@ -274,9 +243,9 @@ fn write_subgraph_files(
 
 /// displays the statistics of the main graph and all subgraphs (or only all significant subgraphs)
 fn display_graph_stats(
-    main_graph: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges, FixedBuildHasher>>,
-    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>), FixedBuildHasher>,
+    main_graph: &HashMap<Rc<str>, NodeEdges>,
+    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     subgraph_display_type: SubgraphDisplayType,
     stats_output_file: &Option<String>,
 ) -> std::io::Result<()> {
@@ -290,10 +259,8 @@ fn display_graph_stats(
     match subgraph_display_type {
         SubgraphDisplayType::All => {
             // Create indexed list and sort by size then original index for deterministic order
-            let mut indexed_subgraphs: Vec<(
-                usize,
-                &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-            )> = subgraph_list.iter().enumerate().collect();
+            let mut indexed_subgraphs: Vec<(usize, &HashMap<Rc<str>, NodeEdges>)> =
+                subgraph_list.iter().enumerate().collect();
 
             // Sort by size (descending) then by original index (ascending) for deterministic order
             indexed_subgraphs.sort_by(|a, b| b.1.len().cmp(&a.1.len()).then(a.0.cmp(&b.0)));
@@ -333,8 +300,8 @@ fn display_graph_stats(
 /// generates the stats for a graph (or subgraph)
 /// If using for the full graph, give the num_subgraphs, for a subgraph just give zero, I guess...
 fn make_graph_stats(
-    graph: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>), FixedBuildHasher>,
+    graph: &HashMap<Rc<str>, NodeEdges>,
+    edge_info: &HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     num_subgraphs: usize,
 ) -> GraphAnalysisData {
     let (mut sources, mut sinks) = make_source_sink_lists(&graph);
@@ -379,11 +346,10 @@ fn make_graph_stats(
 /// generates the list of subgraphs. This is a new graph list, so it increaes memory, but avoids memory issues and the
 /// borrow checker (and lifetimes)
 fn make_subgraph_list(
-    main_graph: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-) -> Vec<HashMap<Rc<str>, NodeEdges, FixedBuildHasher>> {
-    let mut node_colors: HashMap<Rc<str>, usize, FixedBuildHasher> =
-        HashMap::with_hasher(FixedBuildHasher);
-    let mut subgraph_list: Vec<HashMap<Rc<str>, NodeEdges, FixedBuildHasher>> = Vec::new();
+    main_graph: &HashMap<Rc<str>, NodeEdges>,
+) -> Vec<HashMap<Rc<str>, NodeEdges>> {
+    let mut node_colors: HashMap<Rc<str>, usize> = HashMap::new();
+    let mut subgraph_list: Vec<HashMap<Rc<str>, NodeEdges>> = Vec::new();
 
     // Sort nodes for deterministic flood-fill order
     let mut sorted_nodes: Vec<&Rc<str>> = main_graph.keys().collect();
@@ -419,8 +385,7 @@ fn make_subgraph_list(
         // Sort subgraph entries for deterministic HashMap creation
         subgraph_entries.sort_by(|a, b| a.0.cmp(&b.0));
 
-        let subgraph: HashMap<Rc<str>, NodeEdges, FixedBuildHasher> =
-            subgraph_entries.into_iter().collect();
+        let subgraph: HashMap<Rc<str>, NodeEdges> = subgraph_entries.into_iter().collect();
         subgraph_list.push(subgraph);
     }
 
@@ -439,14 +404,14 @@ fn make_subgraph_list(
 /// using a percent cutoff, filters the list of subgraphs to only those who have a large enough share of nodes.
 /// "large enough share" is defined as at least 'node_percent_cutoff' percent of the total nodes of the full graph.
 fn make_significant_subgraph_list(
-    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges, FixedBuildHasher>>,
+    subgraph_list: &Vec<HashMap<Rc<str>, NodeEdges>>,
     node_percent_cutoff: f32,
-) -> Vec<&HashMap<Rc<str>, NodeEdges, FixedBuildHasher>> {
+) -> Vec<&HashMap<Rc<str>, NodeEdges>> {
     let num_total_nodes: usize = subgraph_list.iter().map(|subgraph| subgraph.len()).sum();
     let min_nodes_for_significant_subgraph: usize =
         ((num_total_nodes as f32) * node_percent_cutoff) as usize;
 
-    let mut significant: Vec<&HashMap<Rc<str>, NodeEdges, FixedBuildHasher>> = subgraph_list
+    let mut significant: Vec<&HashMap<Rc<str>, NodeEdges>> = subgraph_list
         .iter()
         .filter(|subgraph| subgraph.len() >= min_nodes_for_significant_subgraph)
         .collect();
@@ -468,17 +433,15 @@ fn make_significant_subgraph_list(
 fn make_main_graph(
     file_path: &Path,
 ) -> Result<(
-    HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-    HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>), FixedBuildHasher>,
+    HashMap<Rc<str>, NodeEdges>,
+    HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)>,
     String,
 )> {
     let file = File::open(file_path)?;
     let file_reader = BufReader::new(file);
 
-    let mut main_graph: HashMap<Rc<str>, NodeEdges, FixedBuildHasher> =
-        HashMap::with_hasher(FixedBuildHasher);
-    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>), FixedBuildHasher> =
-        HashMap::with_hasher(FixedBuildHasher);
+    let mut main_graph: HashMap<Rc<str>, NodeEdges> = HashMap::new();
+    let mut edge_info: HashMap<(Rc<str>, Rc<str>), (usize, Rc<str>)> = HashMap::new();
     let lines = file_reader.lines();
     // decompose needs a graph label, but assembly graph generator does not make one //
     let graph_label = "# fake label".to_string();
@@ -526,9 +489,7 @@ fn make_main_graph(
 }
 
 /// generates lists of sources and sinks for the given graph or subgraph
-fn make_source_sink_lists(
-    edge_map: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-) -> (Vec<Rc<str>>, Vec<Rc<str>>) {
+fn make_source_sink_lists(edge_map: &HashMap<Rc<str>, NodeEdges>) -> (Vec<Rc<str>>, Vec<Rc<str>>) {
     let sources: Vec<Rc<str>> = edge_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())
@@ -547,8 +508,8 @@ fn make_source_sink_lists(
 /// uses a flood-fill algorithm to find all nodes connected to the given base_node.
 /// the given color labels the nodes referenced in the node_colors hashmap.
 fn graph_color_flood_fill(
-    edge_map: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>,
-    node_colors: &mut HashMap<Rc<str>, usize, FixedBuildHasher>,
+    edge_map: &HashMap<Rc<str>, NodeEdges>,
+    node_colors: &mut HashMap<Rc<str>, usize>,
     base_node: &Rc<str>,
     color: usize,
 ) {
@@ -576,7 +537,7 @@ fn graph_color_flood_fill(
 }
 
 /// determines if the given graph has any cycles
-fn graph_is_acyclic(node_map: &HashMap<Rc<str>, NodeEdges, FixedBuildHasher>) -> bool {
+fn graph_is_acyclic(node_map: &HashMap<Rc<str>, NodeEdges>) -> bool {
     let mut source_nodes: Vec<Rc<str>> = node_map
         .iter()
         .filter(|(_, edges)| edges.in_edges.is_empty())
