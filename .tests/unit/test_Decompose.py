@@ -1,11 +1,10 @@
 """
-Rule test code for unit testing of rules generated with Snakemake 9.13.7.
+Rule test code for unit testing of rules generated with Snakemake 9.12.0.
 """
 
-
 import os
-import sys
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 from subprocess import check_output
@@ -26,6 +25,23 @@ def test_Decompose(conda_prefix):
 
         # Copy data to the temporary workdir.
         shutil.copytree(data_path, workdir, dirs_exist_ok=True)
+
+        # Test Symlinks
+        project_dir = Path.cwd()
+        symlink_items = [
+            "findviralstrains_2.smk",
+            "findviralstrains.smk",
+            "findviralstrainsMain.smk",
+            "config_files",
+            "libs",
+            "reference_genomes",
+            "output",
+        ]
+        for item in symlink_items:
+            src = project_dir / item
+            dst = workdir / item
+            if src.exists() and not dst.exists():
+                dst.symlink_to(src)
 
         # Run the test job.
         check_output(
@@ -53,7 +69,8 @@ def test_Decompose(conda_prefix):
 
         # Check the output byte by byte using cmp/zmp/bzcmp/xzcmp.
         # To modify this behavior, you can inherit from common.OutputChecker in here
-        # and overwrite the method `compare_files(generated_file, expected_file), 
+        # and overwrite the method `compare_files(generated_file, expected_file),
         # also see common.py.
         import common
+
         common.OutputChecker(data_path, expected_path, workdir).check()
