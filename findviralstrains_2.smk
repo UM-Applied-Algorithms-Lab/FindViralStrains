@@ -160,7 +160,7 @@ def get_subgraph_indices(sample):
             subgraph_indices.append(num)
         except (IndexError, ValueError):
             continue
-  
+
     # Return sorted unique indices
     return sorted(subgraph_indices)
 
@@ -205,7 +205,7 @@ def get_subgraph_count(sample):
 subgraph_counts = {sample: get_subgraph_count(sample) for sample in fastq_filenames}
 
 # Create dictionary mapping each sample to its subgraph indices #
-subgraph_indices = {sample: get_subgraph_indices(sample) 
+subgraph_indices = {sample: get_subgraph_indices(sample)
                    for sample in fastq_filenames}
 
 rule all:
@@ -252,7 +252,8 @@ rule Decompose:
     params:
         decomp = bd("decomp_results/{sample}_subgraph_{subgraph}.txt"),
     shell:
-        "python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 --timelimit {DECOMP_TIME_LIMIT} -t {GUROBI_THREADS} --visualize {VISUALIZE}"
+        "python3 {input.script} -i {input.swg} -o {params.decomp} -M 3 -t {GUROBI_THREADS}"
+
 
 # Runs rebuild.py to create a genome that follows the paths from Gurobi #
 rule Rebuild_1:

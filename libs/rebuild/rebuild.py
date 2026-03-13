@@ -1,11 +1,21 @@
 import sys
 from collections import defaultdict
 
+
 def reverse_complement(seq):
     """Return the reverse complement of a DNA sequence."""
-    complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C',
-                  'a': 't', 't': 'a', 'c': 'g', 'g': 'c'}
-    return ''.join([complement.get(base, base) for base in reversed(seq)])
+    complement = {
+        "A": "T",
+        "T": "A",
+        "C": "G",
+        "G": "C",
+        "a": "t",
+        "t": "a",
+        "c": "g",
+        "g": "c",
+    }
+    return "".join([complement.get(base, base) for base in reversed(seq)])
+
 
 def is_path_line(line):
     """Check if a line is a path line (starts with a float)"""
@@ -18,19 +28,51 @@ def is_path_line(line):
     except ValueError:
         return False
 
+
+def parse_path_edges(parts):
+    """
+    Parse path edges that could be either:
+    - Simple node list: ["0", "3116", "592", ..., "1"]
+    - Edge list with format: ["0-3116(key)", "3116-592(key)", ...]
+    Returns list of (from_node, to_node) tuples
+    """
+    edges = []
+
+    # Check if this is edge format (contains hyphens)
+    if "-" in parts[0]:
+        # Edge format: 0-3116(key)
+        for edge in parts:
+            try:
+                edge_parts = edge.split("-")
+                from_node = edge_parts[0]
+                to_node_with_key = edge_parts[1]
+                to_node = to_node_with_key.split("(")[0]
+                edges.append((from_node, to_node))
+            except Exception as e:
+                print(f"Error parsing edge '{edge}': {e}")
+                continue
+    else:
+        # Simple node list format
+        nodes = parts
+        for i in range(len(nodes) - 1):
+            edges.append((nodes[i], nodes[i + 1]))
+
+    return edges
+
+
 def main(path_file, edge_file, bd_outfile):
     # Read sequences into a dictionary with special handling for source/sink
     sequences = defaultdict(dict)
     special_edges = set()
-    
-    with open(edge_file, 'r') as f:
+
+    with open(edge_file, "r") as f:
         for line in f:
             # Skip comment lines
-            if line.startswith('#'):
+            if line.startswith("#"):
                 continue
-                
+
             elements = line.strip().split()
-            if len(elements) == 3 and elements[2] == '0':
+            if len(elements) == 3 and elements[2] == "0":
                 # Special edge (source/sink) with no sequence
                 from_node, to_node, weight = elements
                 special_edges.add((from_node, to_node))
@@ -40,50 +82,34 @@ def main(path_file, edge_file, bd_outfile):
                 sequences[node1][node2] = sequence
 
     # Count total number of paths
-    with open(path_file, 'r') as f:
+    with open(path_file, "r") as f:
         total_paths = sum(1 for line in f if is_path_line(line))
 
     # Process the paths and reconstruct genomes
     counter = 1
-    with open(path_file, 'r') as f:
+    with open(path_file, "r") as f:
         for line in f:
             if is_path_line(line):
                 parts = line.strip().split()
                 weight = parts[0]
                 path_edges = parts[1:]
-                
-                # Extract nodes from the edge descriptions
-                nodes = []
-                for edge in path_edges:
-                    try:
-                        edge_parts = edge.split('-')
-                        if len(edge_parts) == 2:
-                            from_node = edge_parts[0]
-                            to_node_with_weight = edge_parts[1]
-                            to_node = to_node_with_weight.split('(')[0]
-                            if not nodes or from_node != nodes[-1]:
-                                nodes.append(from_node)
-                            nodes.append(to_node)
-                    except Exception as e:
-                        print(f"Error parsing edge '{edge}': {e}")
-                        continue
-                
-                if len(nodes) < 2:
-                    print(f"Skipping path - not enough nodes: {nodes}")
+
+                # Parse the path to get node pairs
+                edges = parse_path_edges(path_edges)
+
+                if len(edges) == 0:
+                    print(f"Skipping path - no valid edges")
                     continue
 
                 genome = ""
                 is_first_node = True
 
                 # Process each edge in the path
-                for i in range(len(nodes) - 1):
-                    from_node = nodes[i]
-                    to_node = nodes[i+1]
-                    
+                for from_node, to_node in edges:
                     # Check if this is a special source/sink edge
                     if (from_node, to_node) in special_edges:
                         continue
-                    
+
                     # Try forward direction first
                     if to_node in sequences.get(from_node, {}):
                         sequence = sequences[from_node][to_node]
@@ -101,17 +127,23 @@ def main(path_file, edge_file, bd_outfile):
                             genome += sequence
                         else:
                             # Add gap of Ns proportional to expected length
-                            gap_size = 100 if (from_node == '0' or to_node == '1') else 30
+                            gap_size = (
+                                100 if (from_node == "0" or to_node == "1") else 30
+                            )
                             genome += "N" * gap_size
-                    
+
                     is_first_node = False
 
                 # Generate output filename
-                output_file = f"{bd_outfile.rsplit('.', 1)[0]}_{counter}_of_{total_paths}.fasta"
-                with open(output_file, 'w') as out_f:
+                output_file = (
+                    f"{bd_outfile.rsplit('.', 1)[0]}_{counter}_of_{total_paths}.fasta"
+                )
+                with open(output_file, "w") as out_f:
                     out_f.write(f">Weight: {weight}\n{genome}\n")
-                
+
+                print(f"Generated {output_file}")
                 counter += 1
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
