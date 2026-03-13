@@ -58,7 +58,7 @@ for root, dirs, files in os.walk(READ_DIR):
             samples.append(sample_name)
             fastq_fullpath.append(os.path.join(root, name))
             fastq_filenames.append(sample_name)
-	
+
 if len(fastq_fullpath) < 1:
     raise OSError("\nNo .fastq files matching Illumina naming scheme found in input dir:\n" + READ_DIR + "\n")
 
@@ -238,4 +238,3 @@ rule Create_subgraphs:
         script = RUN_DIRECTORY + "target/release/graph_analyzer"
     shell:
         "{params.script} --dbg-file-name {input.dbg} --stats-output-file {output.stats} -x"
-
